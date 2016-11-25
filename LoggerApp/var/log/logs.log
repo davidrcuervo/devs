@@ -1,0 +1,7 @@
+COUNTER	DATE	USER	LEVEL	PROGRAM	METHOD	LINE		MESSAGE
+0	2016-11-14 09:59:07	Logger	debug	null	null	0	test logger command line	
+0	2016-11-14 10:03:19	Logger	debug	null	null	0	test logger command line	
+0	2016-11-14 10:06:41	Logger	info	null	null	0	test logger command line	
+0	2016-11-14 10:10:43	Logger	error	null	null	0	test logger command line	
+0	2016-11-14 10:13:43	Logger	critical	null	null	0	test logger command line	
+0	2016-11-14 10:14:12	Logger	alert	null	null	0	test logger command line	

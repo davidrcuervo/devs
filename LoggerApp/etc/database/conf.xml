@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>Configuration properties to connect to the database</comment>
+	<entry key="PERSISTENCE_UNIT_NAME">logger</entry>
+	<entry key="database">logger</entry>
+	<entry key="db_host">db.laetienda.lan</entry>
+	<entry key="db_port">5432</entry>
+	<entry key="db_username">logger</entry>
+	<entry key="db_password">1234</entry>
+</properties>
