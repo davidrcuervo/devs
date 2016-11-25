@@ -3,21 +3,27 @@ package com.laetienda.tomcat.lib;
 import org.apache.catalina.startup.Tomcat;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.util.Properties;
 
 import org.apache.catalina.Context;
-import org.apache.catalina.LifecycleException;
 
 public class Service {
+	
+	private final String WIN_DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
 	
 	Tomcat tomcat = new Tomcat();
 	String directory;
 	Integer port;
 	Context context;
 	
-	Service(){
-		tomcat = new Tomcat();
-		directory = System.getProperty("user.dir") + File.separator + ".." + File.separator + "tomcat";
+	public Service() throws Exception{
+		directory = System.getProperty("user.dir") + File.separator + "..";
+		directory = WIN_DIRECTORY + File.separator + ".."; //This line is for testing propouses
+		
 		port = 8080;
+		loadConfFile(directory);
+		tomcat = new Tomcat();
 	}
 	
 	public void start(){
@@ -27,6 +33,27 @@ public class Service {
 		tomcat.getHost().setAutoDeploy(true);
 		tomcat.getHost().setDeployOnStartup(true);
 		
+		tomcat.getServer().await();
+	}
+	
+	public Properties loadConfFile(String dirPath) throws Exception{
+		
+		FileInputStream conf;
+		Properties settings = new Properties();
+		
+		File confFile = new File(dirPath + File.separator + "etc" + File.separator + "tomcat" + File.separator + "conf.xml");
+		conf = new FileInputStream(new File(confFile.getAbsolutePath()));
+		settings.loadFromXML(conf);
+		
+		if(settings.containsKey("port")){
+			setPort(Integer.parseInt(settings.getProperty("port")));
+		}
+		
+		return settings;
+	}
+	
+	public void stop() throws Exception{
+		tomcat.getServer().stop();
 	}
 
 	/**
@@ -56,7 +83,4 @@ public class Service {
 	public void setPort(Integer port) {
 		this.port = port;
 	}
-	
-	
-
 }
