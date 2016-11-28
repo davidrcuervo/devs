@@ -3,4 +3,5 @@
 <properties>
 	<comment>Configuration properties to run tomcat</comment>
 	<entry key="port">8082</entry>
+	<entry key="shutdownPort">8083</entry>
 </properties>

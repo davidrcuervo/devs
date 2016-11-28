@@ -4,36 +4,43 @@ import org.apache.catalina.startup.Tomcat;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.PrintWriter;
 import java.util.Properties;
-
-import org.apache.catalina.Context;
+import java.net.Socket;
 
 public class Service {
 	
 	private final String WIN_DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
 	
-	Tomcat tomcat = new Tomcat();
-	String directory;
-	Integer port;
-	Context context;
+	
+	private Tomcat tomcat = new Tomcat();
+	private String directory;
+	private Integer port;
+	private Integer shutdownPort;
+	private String shutdown;
 	
 	public Service() throws Exception{
 		directory = System.getProperty("user.dir") + File.separator + "..";
 		directory = WIN_DIRECTORY + File.separator + ".."; //This line is for testing propouses
 		
 		port = 8080;
+		shutdownPort = 8081;
+		shutdown = "shutdown";
 		loadConfFile(directory);
 		tomcat = new Tomcat();
 	}
 	
-	public void start(){
+	public void start() throws Exception{
 		tomcat.setPort(port);
 		tomcat.setBaseDir(directory);
 		tomcat.getHost().setAppBase(directory);
 		tomcat.getHost().setAutoDeploy(true);
 		tomcat.getHost().setDeployOnStartup(true);
-		
-		tomcat.getServer().await();
+		tomcat.getHost().setAppBase(directory + File.separator + "WebContent");
+		tomcat.addWebapp("", directory + File.separator + "WebContent");
+		tomcat.getServer().setPort(shutdownPort);
+		tomcat.getServer().setShutdown(shutdown);
+		tomcat.start();
 	}
 	
 	public Properties loadConfFile(String dirPath) throws Exception{
@@ -49,11 +56,26 @@ public class Service {
 			setPort(Integer.parseInt(settings.getProperty("port")));
 		}
 		
+		if(settings.containsKey("shutdownPort")){
+			setShutdownPort(Integer.parseInt(settings.getProperty("shutdownPort")));
+		}
+		
 		return settings;
 	}
 	
-	public void stop() throws Exception{
-		tomcat.getServer().stop();
+	public void await() throws Exception{
+		tomcat.getServer().await();
+	}
+	
+	public void shutdown() throws Exception{
+		Socket socket = new Socket("localhost", shutdownPort);
+		
+		if(socket.isConnected()){
+			PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
+			pw.println(shutdown);
+			pw.close();
+			socket.close();
+		}
 	}
 
 	/**
@@ -82,5 +104,21 @@ public class Service {
 	 */
 	public void setPort(Integer port) {
 		this.port = port;
+	}
+
+	public Integer getShutdownPort() {
+		return shutdownPort;
+	}
+
+	public void setShutdownPort(Integer shutdownPort) {
+		this.shutdownPort = shutdownPort;
+	}
+
+	public String getShutdown() {
+		return shutdown;
+	}
+
+	public void setShutdown(String shutdown) {
+		this.shutdown = shutdown;
 	}
 }

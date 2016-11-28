@@ -44,9 +44,9 @@ public class Command {
 	public void processOption(){
 		
 		switch (option){
-			case 0:
+			case 1:
 				try{
-					notes.getTomcat().stop();
+					notes.getTomcat().shutdown();
 				}catch(Exception ex){
 					System.err.println("Error while closing tomcat");
 				}finally{
@@ -54,7 +54,7 @@ public class Command {
 				}
 				break;
 				
-			case 1:
+			case 2:
 				//TODO implement status option
 				System.out.println("Option not implemented yet");
 				break;

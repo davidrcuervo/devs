@@ -13,11 +13,10 @@ import com.laetienda.notes.lib.Notes;
 
 public class Controller {
 	
-	
-	Options options;
-	CommandLineParser parser;
-	CommandLine line;
-	Notes notes;
+	private Options options;
+	private CommandLineParser parser;
+	private CommandLine line;
+	private Notes notes;
 	
 	Controller() throws Exception{
 		options = setOptions();
@@ -36,30 +35,25 @@ public class Controller {
 				.addOption(new Option("h", "help", false, "Show help."))
 				.addOption(new Option("start", false, "Start notes Service"))
 				.addOption(new Option("stop", false, "Stop notes service"))
-				.addOption(new Option("status", false, "Status of notes service"));
+				/*.addOption(new Option("status", false, "Status of notes service"))*/;
 	}
 	
 	private void parseArguments(String[] args) throws Exception{
 		
 		line = parser.parse(options, args);
 		
-		if(line.hasOption("help")){
-			
+		if(line.hasOption("help")){			
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("Logger", options);
-			
-		}else if(line.hasOption("status")){
+			formatter.printHelp("Notes service", options);
 			
 		}else if(line.hasOption("stop")){
-			//TODO make the client http to stop the service
+			notes.getTomcat().shutdown();
 			
 		}else if(line.hasOption("start")){
 			notes.getTomcat().start();
+			notes.getTomcat().await();
 		}else{
 			throw new IOException("You have chose wrong option");
 		}
-		
 	}
-	
-	
 }
