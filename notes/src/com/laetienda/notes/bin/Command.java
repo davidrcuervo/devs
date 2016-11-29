@@ -2,7 +2,7 @@ package com.laetienda.notes.bin;
 
 import java.util.Scanner;
 import com.laetienda.printer.Console;
-import com.laetienda.notes.lib.Notes;
+import com.laetienda.tomcat.lib.Service;
 
 public class Command {
 	
@@ -11,11 +11,11 @@ public class Command {
 			"Status of application"
 			};
 	
-	private Notes notes;
 	private Console console;
 	private boolean flag;
 	private int option;
 	Scanner scan;
+	private Service daemon;
 	
 	
 	public Command() throws Exception{
@@ -23,13 +23,13 @@ public class Command {
 		console = new Console();
 		option = -1;
 		scan = new Scanner(System.in);
-		notes = new Notes();
+		daemon = new Service();
 	}
 	
 	public static void main(String[] args) throws Exception {
 		
 		Command cmd = new Command();
-		cmd.notes.getTomcat().start();
+		cmd.daemon.start();
 		cmd.printHeader();
 		
 		do{
@@ -46,7 +46,7 @@ public class Command {
 		switch (option){
 			case 1:
 				try{
-					notes.getTomcat().shutdown();
+					daemon.shutdown();
 				}catch(Exception ex){
 					System.err.println("Error while closing tomcat");
 				}finally{

@@ -1,6 +1,7 @@
 package com.laetienda.tomcat.lib;
 
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.Context;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +38,8 @@ public class Service {
 		tomcat.getHost().setAutoDeploy(true);
 		tomcat.getHost().setDeployOnStartup(true);
 		tomcat.getHost().setAppBase(directory + File.separator + "WebContent");
-		tomcat.addWebapp("", directory + File.separator + "WebContent");
+		Context context = tomcat.addWebapp("", directory + File.separator + "WebContent");
+		context.addParameter("directory", directory);
 		tomcat.getServer().setPort(shutdownPort);
 		tomcat.getServer().setShutdown(shutdown);
 		tomcat.start();

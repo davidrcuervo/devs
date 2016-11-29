@@ -1,38 +1,68 @@
 package com.laetienda.notes.lib;
 
 import java.io.File;
-
-import com.laetienda.tomcat.lib.Service;
+import java.io.FileInputStream;
+import java.util.Properties;
 
 public class Notes{
 	
 	private final String WIN_DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
 
-	String directory;
-	
-	Service tomcat;
+	private String directory;
+	private String pathToNotes;
+	private String pandoc;
 	
 	public Notes() throws Exception{
-		super();
+		
 		directory = System.getProperty("user.dir") + File.separator + "..";
-
 		directory = WIN_DIRECTORY + File.separator + ".."; //for test proposes, directory will be replaced with the fine windirectory
-		tomcat = new Service();
+		pathToNotes = directory + File.separator + "var" + File.separator + "notes";
+		pandoc = "pandoc";
+		loadConfFile(directory);	
 	}
 	
-	public Service getTomcat() {
-		return tomcat;
+	public Properties loadConfFile(String dirPath) throws Exception{
+		
+		FileInputStream conf;
+		Properties settings = new Properties();
+		
+		File confFile = new File(dirPath + File.separator + "etc" + File.separator + "notes" + File.separator + "conf.xml");
+		conf = new FileInputStream(new File(confFile.getAbsolutePath()));
+		settings.loadFromXML(conf);
+		
+		if(settings.containsKey("pathToNotes")){
+			setPathToNotes(settings.getProperty("pathToNotes"));
+		}
+		
+		if(settings.containsKey("pathToNotes")){
+			pandoc = settings.getProperty("pandoc");
+		}
+		
+		return settings;
 	}
-
-	public void setTomcat(Service tomcat) {
-		this.tomcat = tomcat;
+	
+	public void setPathToNotes(String path){
+		pathToNotes = path;
 	}
-
+	
+	public String getPathToNotes(){
+		return pathToNotes;
+	}
+	
 	public String getDirectory() {
 		return directory;
 	}
 
-	public void setDirectory(String directory) {
+	public void setDirectory(String directory) throws Exception{
 		this.directory = directory;
+		loadConfFile(directory);
+	}
+
+	public String getPandoc() {
+		return pandoc;
+	}
+
+	public void setPandoc(String pandoc) {
+		this.pandoc = pandoc;
 	}
 }

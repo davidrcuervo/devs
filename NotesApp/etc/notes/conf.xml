@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>Configuration properties to run notes</comment>
+	<entry key="pathToNotes">C:\Users\i849921\Documents\MySAP\notes</entry>
+	<entry key="pandoc">C:\Users\i849921\AppData\Local\Pandoc\pandoc.exe</entry>
+</properties>
