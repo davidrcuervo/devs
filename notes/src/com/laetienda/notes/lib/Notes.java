@@ -34,12 +34,12 @@ public class Notes{
 		if(settings.containsKey("pathToNotes")){
 			
 			setPathToNotes(settings.getProperty("pathToNotes"));
-			System.out.println(settings.getProperty("pathToNotes"));
+			//System.out.println(settings.getProperty("pathToNotes"));
 		}
 		
 		if(settings.containsKey("pathToNotes")){
 			pandoc = settings.getProperty("pandoc");
-			System.out.println(settings.getProperty("pandoc"));
+			//System.out.println(settings.getProperty("pandoc"));
 		}
 		
 		return settings;

@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set scope="request" var="content">
 	<%--${notes.directory} --%>
-	
+	here
 	<div><a href="../../${notes.file.parentFile.name}/">${notes.file.parentFile.name}</a> -> ${notes.file.name}</div>
 	
 	<c:if test="${notes.file.isDirectory()}">
