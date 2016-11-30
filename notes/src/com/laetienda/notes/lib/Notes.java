@@ -7,7 +7,7 @@ import java.util.Properties;
 public class Notes{
 	
 	//private final String DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
-	private final String DIRECTORY = "/home/myself/dev/NotesApp/bin";
+	private final String DIRECTORY = "/home/myself/git/eclipse/NotesApp/bin";
 
 	private String directory;
 	private String pathToNotes;

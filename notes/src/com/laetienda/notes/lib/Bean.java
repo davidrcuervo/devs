@@ -24,13 +24,13 @@ public class Bean {
 		String s = null;
 		
 		try{
-			Process p = Runtime.getRuntime().exec(pandoc + " -f markdown -t html " + file.getAbsolutePath());
-			
+			Process p = Runtime.getRuntime().exec(pandoc + " -f markdown --wrap=preserve --table-of-contents -t html5 " + file.getAbsolutePath());
+			System.out.println(pandoc + " -f markdown --wrap=preserve --table-of-contents -t html5 " + file.getAbsolutePath());
 			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			//BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 			
 			while((s = stdInput.readLine()) != null){
-				result += s;
+				result += s + "\n";
 			}
 			
 		}catch(IOException ex){
