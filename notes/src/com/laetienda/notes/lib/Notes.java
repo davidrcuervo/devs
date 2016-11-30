@@ -6,7 +6,8 @@ import java.util.Properties;
 
 public class Notes{
 	
-	private final String WIN_DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
+	//private final String DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
+	private final String DIRECTORY = "/home/myself/dev/NotesApp/bin";
 
 	private String directory;
 	private String pathToNotes;
@@ -15,7 +16,7 @@ public class Notes{
 	public Notes() throws Exception{
 		
 		directory = System.getProperty("user.dir") + File.separator + "..";
-		directory = WIN_DIRECTORY + File.separator + ".."; //for test proposes, directory will be replaced with the fine windirectory
+		directory = DIRECTORY + File.separator + ".."; //for test proposes, directory will be replaced with the fine windirectory
 		pathToNotes = directory + File.separator + "var" + File.separator + "notes";
 		pandoc = "pandoc";
 		loadConfFile(directory);	
@@ -31,11 +32,14 @@ public class Notes{
 		settings.loadFromXML(conf);
 		
 		if(settings.containsKey("pathToNotes")){
+			
 			setPathToNotes(settings.getProperty("pathToNotes"));
+			System.out.println(settings.getProperty("pathToNotes"));
 		}
 		
 		if(settings.containsKey("pathToNotes")){
 			pandoc = settings.getProperty("pandoc");
+			System.out.println(settings.getProperty("pandoc"));
 		}
 		
 		return settings;

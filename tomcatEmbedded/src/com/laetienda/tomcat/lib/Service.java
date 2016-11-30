@@ -11,8 +11,8 @@ import java.net.Socket;
 
 public class Service {
 	
-	private final String WIN_DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
-	
+	//private final String DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
+	private final String DIRECTORY = "/home/myself/dev/NotesApp/bin";
 	
 	private Tomcat tomcat = new Tomcat();
 	private String directory;
@@ -22,7 +22,7 @@ public class Service {
 	
 	public Service() throws Exception{
 		directory = System.getProperty("user.dir") + File.separator + "..";
-		directory = WIN_DIRECTORY + File.separator + ".."; //This line is for testing propouses
+		directory = DIRECTORY + File.separator + ".."; //This line is for testing propouses
 		
 		port = 8080;
 		shutdownPort = 8081;
