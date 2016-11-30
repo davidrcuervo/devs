@@ -44,7 +44,7 @@ public class Notas extends HttpServlet {
 		request.setAttribute("notes", notes);
 		//System.out.println(notes.getFile().getAbsolutePath());
 		if(notes.getFile().exists()){
-			request.getRequestDispatcher("/WEB-INF/jsp/pages/home.jsp").forward(request, response);
+			request.getRequestDispatcher("/WEB-INF/jsp/pages/notes.jsp").forward(request, response);
 		}else{
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}

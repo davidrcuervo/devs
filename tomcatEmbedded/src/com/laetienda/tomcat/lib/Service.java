@@ -11,8 +11,8 @@ import java.net.Socket;
 
 public class Service {
 	
-	//private final String DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
-	private final String DIRECTORY = "/home/myself/git/eclipse/NotesApp/bin";
+	private final String DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
+	//private final String DIRECTORY = "/home/myself/git/eclipse/NotesApp/bin";
 	
 	private Tomcat tomcat = new Tomcat();
 	private String directory;

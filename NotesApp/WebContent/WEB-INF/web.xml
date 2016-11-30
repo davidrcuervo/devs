@@ -31,4 +31,12 @@
 		<filter-name>pathParts</filter-name>
 		<url-pattern>/notes/*</url-pattern>
 	</filter-mapping>
+	<filter>
+		<filter-name>page</filter-name>
+		<filter-class>com.laetienda.tomcat.filters.Page</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>page</filter-name>
+		<url-pattern>/notes/*</url-pattern>
+	</filter-mapping>
 </web-app>

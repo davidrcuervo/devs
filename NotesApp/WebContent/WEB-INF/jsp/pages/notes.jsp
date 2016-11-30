@@ -1,4 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+${page.addStyle('<link rel="stylesheet" href="/assets/styles/notes.css">')}
+${page.addScript('<script src="/assets/scripts/notes.js"></script>')}
+
 <c:set scope="request" var="content">
 	<div><a href="../../${notes.file.parentFile.name}/">${notes.file.parentFile.name}</a> -> ${notes.file.name}</div>
 	
