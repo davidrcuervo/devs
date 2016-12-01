@@ -25,7 +25,7 @@ public class Bean {
 		
 		try{
 			Process p = Runtime.getRuntime().exec(pandoc + " -f markdown --wrap=preserve --table-of-contents -t html5 " + file.getAbsolutePath());
-			System.out.println(pandoc + " -f markdown --wrap=preserve --table-of-contents -t html5 " + file.getAbsolutePath());
+			//System.out.println(pandoc + " -f markdown --wrap=preserve --table-of-contents -t html5 " + file.getAbsolutePath());
 			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			//BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 			
