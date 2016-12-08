@@ -1,0 +1,9 @@
+ span.editable {
+    color: #f00;
+    border: 1px solid #DDC9C9;
+    min-width: 100px;
+    min-height: 20px;
+    display: inline-block;
+    padding-left: 20px;
+    margin: 0px 20px;
+}
