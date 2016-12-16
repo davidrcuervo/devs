@@ -1,5 +1,9 @@
 $(document).ready(
 	function() {
-		$('table').addClass('table table-bordered');
+		$('div.bootstrap_table').children('table').addClass('table table-bordered');
 	}
 );
+
+function openNote(){
+	
+}

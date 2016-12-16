@@ -6,7 +6,7 @@ import java.util.Properties;
 
 public class Notes{
 	
-	//private final String DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
+	private final String DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
 	//private final String DIRECTORY = "/home/myself/git/eclipse/NotesApp/bin";
 
 	private String directory;
@@ -17,8 +17,8 @@ public class Notes{
 		
 		String tempPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		directory = new File(tempPath).getParentFile().getAbsolutePath()  + File.separator + "..";
-		//directory = System.getProperty("user.dir") + File.separator + "..";
-		//directory = DIRECTORY + File.separator + ".."; //for test proposes, directory will be replaced with the fine windirectory
+		
+		directory = DIRECTORY + File.separator + ".."; //for test proposes, directory will be replaced with the fine windirectory
 		pathToNotes = directory + File.separator + "var" + File.separator + "notes";
 		pandoc = "pandoc";
 		loadConfFile(directory);	

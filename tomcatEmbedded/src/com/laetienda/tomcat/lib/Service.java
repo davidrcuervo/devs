@@ -11,7 +11,7 @@ import java.net.Socket;
 
 public class Service {
 	
-	//private final String DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
+	private final String DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
 	//private final String DIRECTORY = "/home/myself/git/eclipse/NotesApp/bin";
 	
 	private Tomcat tomcat = new Tomcat();
@@ -24,8 +24,8 @@ public class Service {
 		
 		String tempPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		directory = new File(tempPath).getParentFile().getAbsolutePath() + File.separator + "..";
-		//directory = System.getProperty("user.dir") + File.separator + "..";
-		//directory = DIRECTORY + File.separator + ".."; //This line is for testing propouses
+		
+		directory = DIRECTORY + File.separator + ".."; //This line is for testing porpuses
 		
 		port = 8080;
 		shutdownPort = 8081;

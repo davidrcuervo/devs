@@ -4,12 +4,13 @@
 	<comment>Configuration properties to run notes</comment>
 		
 	<!-- For linux machine -->
+	<!-- 
 	<entry key="pathToNotes">/media/storage/home/myself/MyFiles/Notes</entry>
 	<entry key="pandoc">/usr/bin/pandoc</entry>
-	 
+	 -->
 	
 	<!-- For windows machine -->
-	<!--  <entry key="pathToNotes">C:\Users\i849921\Documents\MySAP\notes</entry>
+	<entry key="pathToNotes">C:\Users\i849921\Documents\MySAP\notes</entry>
 	<entry key="pandoc">C:\Users\i849921\AppData\Local\Pandoc\pandoc.exe</entry>
-	-->
+	
 </properties>
