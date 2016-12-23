@@ -39,4 +39,8 @@
 		<filter-name>page</filter-name>
 		<url-pattern>/notes/*</url-pattern>
 	</filter-mapping>
+	 <mime-mapping>
+        <extension>zip</extension>
+        <mime-type>application/zip</mime-type>
+    </mime-mapping>
 </web-app>

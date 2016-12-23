@@ -4,6 +4,3 @@ $(document).ready(
 	}
 );
 
-function openNote(){
-	
-}
