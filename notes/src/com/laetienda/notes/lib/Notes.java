@@ -21,7 +21,7 @@ public class Notes{
 		directory = DIRECTORY + File.separator + ".."; //for test proposes, directory will be replaced with the fine windirectory
 		pathToNotes = directory + File.separator + "var" + File.separator + "notes";
 		pandoc = "pandoc";
-		loadConfFile(directory);	
+		loadConfFile(directory);
 	}
 	
 	public Properties loadConfFile(String dirPath) throws Exception{
@@ -39,7 +39,7 @@ public class Notes{
 			//System.out.println(settings.getProperty("pathToNotes"));
 		}
 		
-		if(settings.containsKey("pathToNotes")){
+		if(settings.containsKey("pandoc")){
 			pandoc = settings.getProperty("pandoc");
 			//System.out.println(settings.getProperty("pandoc"));
 		}

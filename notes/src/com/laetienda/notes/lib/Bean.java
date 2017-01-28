@@ -27,7 +27,7 @@ public class Bean {
 			String command = pandoc + " -f markdown --wrap=preserve --table-of-contents -t html5 " + file.getAbsolutePath();
 			Process p = Runtime.getRuntime().exec(command);
 			System.out.println(command);
-			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream(), "UTF-8"));
 			//BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 			
 			while((s = stdInput.readLine()) != null){
