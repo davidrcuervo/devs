@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.laetienda.tomcat.beans.Page;
+
 import com.laetienda.notes.lib.Notes;
 
 public class Root extends HttpServlet {
@@ -25,7 +27,8 @@ public class Root extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		request.getRequestDispatcher("/WEB-INF/jsp/home.jsp").forward(request, response);
+		Page page = (Page)request.getAttribute("page");
+		response.sendRedirect(page.getRootUrl() + "/notes/");
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

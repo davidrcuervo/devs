@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.laetienda.notes.lib.*;
+import com.laetienda.tomcat.beans.Page;
 
 public class Notas extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -33,8 +34,11 @@ public class Notas extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		Page page = (Page)request.getAttribute("page");
 		pathParts = (String[])request.getAttribute("pathParts");
 		path = pathToNotes;
+		
+		System.out.println(page.getUrl());
 		
 		for(int c=2; c < pathParts.length; c++){
 			path = path + File.separator + pathParts[c];

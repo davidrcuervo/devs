@@ -17,7 +17,7 @@ public class Load implements ServletContextListener {
 	}
 	
 	public void contextInitialized(ServletContextEvent arg0){
-		System.out.println("running listener");
+		
 		try{
 			ServletContext sc = arg0.getServletContext();
 			directory = sc.getInitParameter("directory");

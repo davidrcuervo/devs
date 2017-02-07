@@ -7,14 +7,27 @@ import javax.servlet.http.HttpServletRequest;
 public class Page {
 	
 	private String url;
+	private String rootUrl;
+	private String[] pathParts;
 	private List<String> styles;
 	private List<String> scripts;
 	
 	public Page(HttpServletRequest request){
+		pathParts = findPathParts(request);
+		rootUrl = buildRootUrl(request);
 		url = buildUrl(request);
 	}
 	
-	private String buildUrl(HttpServletRequest request){
+	private String[] findPathParts(HttpServletRequest request){
+		
+		String[] result = (String[])request.getAttribute("pathParts");
+		
+		System.out.println(request.getRequestURI());
+		
+		return result;
+	}
+	
+	private String buildRootUrl(HttpServletRequest request){
 		
 		int port = request.getServerPort();
 		String result = request.getScheme() + "://" + request.getServerName();
@@ -23,8 +36,20 @@ public class Page {
 			result += ":" + Integer.toString(port);
 		}
 		
-		result += request.getContextPath();
-				
+		return result;
+	}
+	
+	private String buildUrl(HttpServletRequest request){
+		
+		String result = rootUrl;
+		
+		if(pathParts != null)
+			for(int c=1; c < pathParts.length; c++){
+				result += "/" + pathParts[c];
+			}
+		
+		System.out.println(result);
+		
 		return result;
 	}
 	
@@ -61,5 +86,12 @@ public class Page {
 
 	public List<String> getScripts() {
 		return scripts;
+	}
+
+	/**
+	 * @return the rootUrl
+	 */
+	public String getRootUrl() {
+		return rootUrl;
 	}
 }

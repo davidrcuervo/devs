@@ -9,12 +9,12 @@ ${page.addScript('<script src="/assets/scripts/notes.js"></script>')}
 	<c:if test="${notes.file.isDirectory()}">
 		<div><b>FOLDERS</b></div>
 		<c:forEach var="folder" items="${notes.folders}">
-			<div><a href="./${folder}/">${folder}</a></div>
+			<div><a href="${page.url}/${folder}/">${folder}</a></div>
 		</c:forEach>
 		
 		<div><b>NOTES</b></div>
 		<c:forEach var="file" items="${notes.files}">
-			<div><a href="./${file}/">${file}</a></div>
+			<div><a href="${page.url}/${file}">${file}</a></div>
 		</c:forEach>
 	</c:if>
 	
