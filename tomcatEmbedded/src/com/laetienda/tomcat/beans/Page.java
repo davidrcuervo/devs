@@ -1,5 +1,8 @@
 package com.laetienda.tomcat.beans;
 
+import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
@@ -94,4 +97,35 @@ public class Page {
 	public String getRootUrl() {
 		return rootUrl;
 	}
+	
+	/**
+	 * It takes the parameter and encode the string antxyto be used on the url of a web
+	 * @param url String that will be encoded
+	 * @exception IOException url can not be empty or null
+	 * @return String returns the string encoded
+	 */
+	public String getEncodeUrl(String url) throws IOException{
+		
+		if(url == null || url.isEmpty()){
+			throw new IOException("url parameter is null or empty");
+		}
+		
+		return URLEncoder.encode(url, "utf-8");
+	}
+	
+	/**
+	 * It decodes the encoded String 
+	 * @param encodedUrl String that will be dencoded
+	 * @exception IOException encodedUrl can not be empty or null
+	 * @return String returns the string dencoded
+	 */
+	public String getDecoedeUrl(String encodedUrl) throws IOException{
+		
+		if(encodedUrl == null || encodedUrl.isEmpty()){
+			throw new IOException("encodedUrl parameter is null or empty");
+		}
+		
+		return URLDecoder.decode(encodedUrl, "utf-8");
+	}
+	
 }

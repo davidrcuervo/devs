@@ -41,7 +41,7 @@ public class Notas extends HttpServlet {
 		System.out.println(page.getUrl());
 		
 		for(int c=2; c < pathParts.length; c++){
-			path = path + File.separator + pathParts[c];
+			path = path + File.separator + page.getDecoedeUrl(pathParts[c]);
 		}
 		
 		Bean notes = new Bean(pandoc, path);

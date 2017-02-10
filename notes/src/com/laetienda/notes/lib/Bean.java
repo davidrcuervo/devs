@@ -25,8 +25,16 @@ public class Bean {
 		
 		try{
 			String command = pandoc + " -f markdown --wrap=preserve --table-of-contents -t html5 " + file.getAbsolutePath();
+			/*String temp = "\"" + file.getAbsolutePath() + "\"";
+			String[] command = {pandoc, "-f", "markdown", "--wrap=preserve", "--table-of-contents", "-t", "html5", temp};
 			Process p = Runtime.getRuntime().exec(command);
-			System.out.println(command);
+			
+			for(int c=0; c < command.length; c++)
+				System.out.print(command[c] + " ");
+				
+			System.out.println();
+			*/
+			Process p = new ProcessBuilder(pandoc, "-f", "markdown", "--wrap=preserve", "--table-of-contents", "-t", "html5",file.getAbsolutePath()).start();
 			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream(), "UTF-8"));
 			//BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 			
@@ -39,7 +47,7 @@ public class Bean {
 			System.err.println(ex.getMessage());
 			System.err.println(ex.getClass().getName());
 		}
-		
+		System.out.println(result);
 		return result;
 	}
 	
@@ -88,6 +96,7 @@ public class Bean {
 	}
 
 	public void setDirectory(String directory) {
+		System.out.println(directory);
 		file = new File(directory);
 		this.directory = directory;
 	}
