@@ -25,7 +25,7 @@ public class Service {
 		String tempPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		directory = new File(tempPath).getParentFile().getAbsolutePath() + File.separator + "..";
 		
-		directory = DIRECTORY + File.separator + ".."; //This line is for testing porpuses
+		//directory = DIRECTORY + File.separator + ".."; //This line is for testing porpuses
 		
 		port = 8080;
 		shutdownPort = 8081;

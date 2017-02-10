@@ -18,7 +18,7 @@ public class Notes{
 		String tempPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		directory = new File(tempPath).getParentFile().getAbsolutePath()  + File.separator + "..";
 		
-		directory = DIRECTORY + File.separator + ".."; //for test proposes, directory will be replaced with the fine windirectory
+		//directory = DIRECTORY + File.separator + ".."; //for test proposes, directory will be replaced with the fine windirectory
 		pathToNotes = directory + File.separator + "var" + File.separator + "notes";
 		pandoc = "pandoc";
 		loadConfFile(directory);
@@ -36,12 +36,10 @@ public class Notes{
 		if(settings.containsKey("pathToNotes")){
 			
 			setPathToNotes(settings.getProperty("pathToNotes"));
-			//System.out.println(settings.getProperty("pathToNotes"));
 		}
 		
 		if(settings.containsKey("pandoc")){
 			pandoc = settings.getProperty("pandoc");
-			//System.out.println(settings.getProperty("pandoc"));
 		}
 		
 		return settings;

@@ -25,8 +25,6 @@ public class Page {
 		
 		String[] result = (String[])request.getAttribute("pathParts");
 		
-		System.out.println(request.getRequestURI());
-		
 		return result;
 	}
 	
@@ -50,8 +48,6 @@ public class Page {
 			for(int c=1; c < pathParts.length; c++){
 				result += "/" + pathParts[c];
 			}
-		
-		System.out.println(result);
 		
 		return result;
 	}

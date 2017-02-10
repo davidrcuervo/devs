@@ -28,8 +28,6 @@ public class Notas extends HttpServlet {
 		Notes notes = (Notes)config.getServletContext().getAttribute("notes");
 		pathToNotes = notes.getPathToNotes();
 		pandoc = notes.getPandoc();
-		//System.out.println("pathToNotes: " + pathToNotes);
-		//System.out.println("pandoc: " + pandoc);
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -38,15 +36,13 @@ public class Notas extends HttpServlet {
 		pathParts = (String[])request.getAttribute("pathParts");
 		path = pathToNotes;
 		
-		System.out.println(page.getUrl());
-		
 		for(int c=2; c < pathParts.length; c++){
 			path = path + File.separator + page.getDecoedeUrl(pathParts[c]);
 		}
 		
 		Bean notes = new Bean(pandoc, path);
 		request.setAttribute("notes", notes);
-		//System.out.println(notes.getFile().getAbsolutePath());
+		
 		if(notes.getFile().exists()){
 			request.getRequestDispatcher("/WEB-INF/jsp/pages/notes.jsp").forward(request, response);
 		}else{
