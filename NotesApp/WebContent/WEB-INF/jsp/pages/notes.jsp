@@ -3,6 +3,8 @@
 ${page.addStyle('<link rel="stylesheet" href="/assets/styles/notes.css">')}
 ${page.addScript('<script src="/assets/scripts/notes.js"></script>')}
 
+<c:set scope="request" var="title" value="${notes.file.name}" />
+
 <c:set scope="request" var="content">
 	<div>
 		<a href="${page.rootUrl}"><span class="glyphicon glyphicon-home"></span>&nbsp; Home</a> &nbsp; | &nbsp;
