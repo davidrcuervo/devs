@@ -1,7 +1,15 @@
-h2{
-	
+.tab {
+    margin-left: 40px;
 }
- 
+
+.tab2 {
+    margin-left: 80px;
+}
+
+.tab3 {
+    margin-left: 120px;
+}
+
  span.editable {
     color: #f00;
     border: 1px solid #DDC9C9;
