@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.laetienda</groupId>
   <artifactId>tomcat-embed</artifactId>
-  <version>0.0.1</version>
+  <version>0.2.1</version>
   <description>My way to embed tomcat as service</description>
   <build>
     <sourceDirectory>src</sourceDirectory>
