@@ -17,8 +17,9 @@ public class Logger extends Father {
 	private Log entity;
 	private String message;
 	
-	public Logger(){
-		super();
+	public Logger(File directory) throws Exception{
+		super(directory);
+		setFile(getSetting("file"));
 		entity = new Log();
 	}
 	
@@ -168,6 +169,7 @@ public class Logger extends Father {
 		}catch (IOException ex){
 			message += "LOG ERROR: Not possible to log on file. -> EXCEPTION MESSAGE: " + ex.getMessage();
 			System.err.println(getLogLine());
+			ex.printStackTrace();
 		}
 	}
 	

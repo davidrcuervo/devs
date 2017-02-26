@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+	<display-name>Web</display-name>
+	<servlet>
+	  <servlet-name>raiz</servlet-name>
+	  <servlet-class>com.laetienda.web.servlets.Root</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	  <servlet-name>raiz</servlet-name>
+	  <url-pattern></url-pattern>
+	  <url-pattern>/home</url-pattern>
+	</servlet-mapping>
+	<listener>
+		<listener-class>
+  			com.laetienda.web.listeners.Load
+		</listener-class>
+	</listener>
+	<filter>
+		<filter-name>pathParts</filter-name>
+		<filter-class>com.laetienda.tomcat.filters.PathParts</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>pathParts</filter-name>
+		<url-pattern>/web/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<filter-name>page</filter-name>
+		<filter-class>com.laetienda.tomcat.filters.Page</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>page</filter-name>
+		<url-pattern>/</url-pattern>
+		<url-pattern>/home</url-pattern>
+		<url-pattern>/web/*</url-pattern>
+	</filter-mapping>
+</web-app>

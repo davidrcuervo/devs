@@ -15,9 +15,12 @@ public class Father {
 	private Properties settings;
 	private Options options;
 	
-	public Father(){
+	public Father(File directory) throws IOException {
+		this.directory = directory;
+		
 		options = setOptions();
 		settings = setDefaultSettings();
+		loadConfFile();
 	}
 	
 	private Options setOptions(){
@@ -45,7 +48,8 @@ public class Father {
 		
 		Properties settings = new Properties();
 		
-		settings.setProperty("level", "debug");
+		settings.setProperty("file", directory.getAbsolutePath() + File.separator + "logger.log");
+		settings.setProperty("level", "error");
 		settings.setProperty("user", "null");
 		settings.setProperty("program", "null");
 		settings.setProperty("exceptions", "true");
@@ -56,17 +60,20 @@ public class Father {
 		return new Properties(settings);
 	}
 	
-	public Properties loadConfFile(String directory) throws IOException{
+	public Properties loadConfFile() throws IOException{
 		
 		FileInputStream conf;
 		
-		this.directory = new File(directory);
-		
-		if(this.directory.exists() && this.directory.isDirectory()){
+		if(directory.exists() && directory.isDirectory()){
 			
 			try{
-				conf = new FileInputStream(new File(this.directory.getAbsolutePath() + "/etc/logger/conf.xml"));
-				getSettings().loadFromXML(conf);
+				conf = new FileInputStream(new File(directory.getAbsolutePath() + 
+						File.separator + "etc" +
+						File.separator + "logger" + 
+						File.separator + "conf.xml"));
+				
+				settings.loadFromXML(conf);
+				
 			}catch(Exception ex){
 				throw new IOException("Exception: " + ex.getClass().getName() + "\n"
 						+ "Exception message: " + ex.getMessage() + "\n"

@@ -5,6 +5,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 
 import java.io.IOException;
+import java.io.File;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -16,20 +17,23 @@ import com.laetienda.db.Connection;
 
 public class Command {
 	
-	Logger logger;
-	CommandLineParser parser;
-	CommandLine line;
+	public static final String DIRECTORY = "/home/myself/git/eclipse/Web.opt";
 	
-	public Command(){
-		logger = new Logger();
+	private Logger logger;
+	private CommandLineParser parser;
+	private CommandLine line;
+	private File directory;
+	
+	public Command() throws Exception{
+		directory = findDirectory();
+		logger = new Logger(directory);
 		parser = new DefaultParser();
 	}
 
 	public static void main(String[] args) {
 		
-		Command cmd = new Command();
-		
 		try{
+			Command cmd = new Command();
 			cmd.parseArguments(args);
 			cmd.run();
 		}catch (Exception ex){
@@ -52,7 +56,7 @@ public class Command {
 		
 		}else if(line.hasOption("directory")){
 			
-			logger.loadConfFile(line.getOptionValue("directory"));
+			//logger.loadConfFile(line.getOptionValue("directory"));
 			
 			for(Option opt : line.getOptions()){
 				
@@ -64,6 +68,27 @@ public class Command {
 		}else{
 			throw new IOException("FATAL: directory of application has not been detected");
 		}
+	}
+	
+	private File findDirectory(){
+		
+		File result;
+		
+		String tempPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		String temp = new File(tempPath).getParentFile().getAbsolutePath() + File.separator + "..";
+		
+		File confFile = new File(temp + 
+				File.separator + "etc" +
+				File.separator + "database" +
+				File.separator + "conf.xml");
+		
+		if(confFile.exists() && !confFile.isDirectory()){
+			result = new File(temp);
+		}else{
+			result = new File(DIRECTORY);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -100,10 +125,8 @@ public class Command {
 	
 	private EntityManager setDbConnection() throws Exception{
 		
-		Connection dbConnection = new Connection();
-		dbConnection.loadConfFile(logger.getSetting("directory"));
-		dbConnection.open();
-		
+		Connection dbConnection = new Connection(directory);
+				
 		return dbConnection.getEm();
 	}
 }

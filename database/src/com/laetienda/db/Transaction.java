@@ -37,6 +37,33 @@ public class Transaction {
 		return result;
 	}
 	
+	public boolean save(EntityManager em) throws Exception {
+		boolean result = false;
+		
+		try{
+			
+			em.getTransaction().commit();
+			result = true;
+		}catch(IllegalStateException ex){
+			throw ex;
+		}catch(RollbackException ex){
+			
+			try{
+				em.getTransaction().rollback();
+			}catch(IllegalStateException e){
+				throw e;
+			}finally{
+				
+			}
+			throw ex;
+			
+		}finally{
+			em.clear();
+		}
+		
+		return result;
+	}
+	
 	public boolean save(EntityManager em, Object entity) throws Exception {
 		boolean result = false;
 		

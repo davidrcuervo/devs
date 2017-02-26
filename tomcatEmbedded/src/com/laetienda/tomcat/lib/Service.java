@@ -11,49 +11,42 @@ import java.net.Socket;
 
 public class Service {
 	
-	//private final String DIRECTORY = "C:\\Users\\i849921\\git\\devs\\NotesApp\\bin";
-	private final String DIRECTORY = "/home/myself/git/eclipse/NotesApp/bin";
-	
 	private Tomcat tomcat = new Tomcat();
-	private String directory;
+	private File directory;
 	private Integer port;
 	private Integer shutdownPort;
 	private String shutdown;
 	
-	public Service() throws Exception{
+	public Service(File directory) throws Exception{
 		
-		String tempPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		directory = new File(tempPath).getParentFile().getAbsolutePath() + File.separator + "..";
-		
-		//directory = DIRECTORY + File.separator + ".."; //This line is for testing porpuses
-		
+		this.directory = directory; 
 		port = 8080;
 		shutdownPort = 8081;
 		shutdown = "shutdown";
-		loadConfFile(directory);
+		loadConfFile();
 		tomcat = new Tomcat();
 	}
 	
 	public void start() throws Exception{
 		tomcat.setPort(port);
-		tomcat.setBaseDir(directory);
-		tomcat.getHost().setAppBase(directory);
+		tomcat.setBaseDir(directory.getAbsolutePath());
+		tomcat.getHost().setAppBase(directory.getAbsolutePath());
 		tomcat.getHost().setAutoDeploy(true);
 		tomcat.getHost().setDeployOnStartup(true);
-		tomcat.getHost().setAppBase(directory + File.separator + "WebContent");
-		Context context = tomcat.addWebapp("", directory + File.separator + "WebContent");
-		context.addParameter("directory", directory);
+		tomcat.getHost().setAppBase(directory.getAbsolutePath() + File.separator + "WebContent");
+		Context context = tomcat.addWebapp("", directory.getAbsolutePath() + File.separator + "WebContent");
+		context.addParameter("directory", directory.getAbsolutePath());
 		tomcat.getServer().setPort(shutdownPort);
 		tomcat.getServer().setShutdown(shutdown);
 		tomcat.start();
 	}
 	
-	public Properties loadConfFile(String dirPath) throws Exception{
+	public Properties loadConfFile() throws Exception{
 		
 		FileInputStream conf;
 		Properties settings = new Properties();
 		
-		File confFile = new File(dirPath + File.separator + "etc" + File.separator + "tomcat" + File.separator + "conf.xml");
+		File confFile = new File(directory.getAbsolutePath() + File.separator + "etc" + File.separator + "tomcat" + File.separator + "conf.xml");
 		conf = new FileInputStream(new File(confFile.getAbsolutePath()));
 		settings.loadFromXML(conf);
 		
@@ -72,6 +65,10 @@ public class Service {
 		tomcat.getServer().await();
 	}
 	
+	public void stop() throws Exception{
+		tomcat.getServer().stop();
+	}
+	
 	public void shutdown() throws Exception{
 		Socket socket = new Socket("localhost", shutdownPort);
 		
@@ -86,15 +83,8 @@ public class Service {
 	/**
 	 * @return the directory
 	 */
-	public String getDirectory() {
+	public File getDirectory() {
 		return directory;
-	}
-
-	/**
-	 * @param directory the directory to set
-	 */
-	public void setDirectory(String directory) {
-		this.directory = directory;
 	}
 
 	/**

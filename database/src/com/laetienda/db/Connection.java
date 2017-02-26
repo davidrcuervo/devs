@@ -18,28 +18,45 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.*;
 
 public class Connection {
 	
-	//private final String[] SETTINGS = {"SERVER", "DATABASE", "PORT", "USER", "PASSWORD", 
-	//		"PLATFORM", "SCRIPT", "CREATE-SOURCE", "PERSISTENCE_UNIT_NAME"};
-	
 	private ArrayList<EntityManager> ems;
 	private EntityManagerFactory emfactory;
+	private Properties defaults;
 	private Map<String, String > settings;
 	
-	public Connection() throws IOException{
-	    
-		settings = new HashMap<String, String>();
-    	ems = new ArrayList<EntityManager>();
-    }
+	public static void main (String args[]) throws IOException{
+		
+		File file = new File("/home/myself/git/eclipse/Web.opt");
+		Connection test = new Connection(file);
+		test.close();
+	}
 	
+	public Connection(File directory) throws IOException{
+	    
+		defaults = setDefaultSettings();
+		settings = loadConfFile(directory);
+    	ems = new ArrayList<EntityManager>();
+    	open();
+    }
+		
 	 public synchronized void open() throws IOException{
 	    
-	   	try{
+	   	try{ 
+	   		
+	   		/*
+	   		 * ENABLE FOR DEBUGGING ONLY
+	   		 * -------------------------
+	   		 * 
+	   		for(Map.Entry<String, String> temp : settings.entrySet()){
+	   			System.out.println(temp.getKey() + ": " + temp.getValue());
+	   		}
+	   		*/
+	   		
     		emfactory = Persistence.createEntityManagerFactory(
-    				settings.getProperty("PERSISTENCE_UNIT_NAME"),
-    				map
+    				settings.get("PERSISTENCE_UNIT_NAME"),
+    				settings
     				);
     	}catch (IllegalStateException ex){
-	    		
+	    	ex.printStackTrace();	
     		throw new IOException(ex);
     	}catch(PersistenceException ex){
     		
@@ -52,76 +69,56 @@ public class Connection {
 		Properties defaults = new Properties();
 		
 		defaults.setProperty(TRANSACTION_TYPE, PersistenceUnitTransactionType.RESOURCE_LOCAL.name());
-		defaults.setProperty("PERSISTENCE_UNIT_NAME", "db");
+		defaults.setProperty("PERSISTENCE_UNIT_NAME", "com.laetienda.db");
 		defaults.setProperty(JDBC_DRIVER, "org.postgresql.Driver");
-		defaults.setProperty(JDBC_URL, "jdbc:postgresql://db.la-etienda.lan:5432/logger");
-		defaults.setProperty(JDBC_USER, "logger");
-		defaults.setProperty(JDBC_PASSWORD, "1234");
-		defaults.setProperty(TARGET_SERVER, "false");
-		defaults.setProperty("javax.persistence.schema-generation.database.action", "create");
-		defaults.setProperty("javax.persistence.schema-generation.create-source", "metadata");
-		//defaults.setProperty("javax.persistence.schema-generation.create-script-source", "META-INF/postgres/create.sql");
-		
+		defaults.setProperty(JDBC_URL, "jdbc:postgresql://db.la-etienda.lan:5432/db");
+		defaults.setProperty(JDBC_USER, "db");
+		defaults.setProperty(JDBC_PASSWORD, "www.myself.com");
+						
 		return new Properties(defaults);
 	}
 	
-	public synchronized void loadConfFile(String path) throws IOException{
+	private synchronized Map<String, String> loadConfFile(File directory) throws IOException{
 		
 		FileInputStream conf;
-		File directory = new File(path);
-		
+		Map<String, String> result = new HashMap<String, String>();
+		Properties settings = new Properties(defaults);
+		String path = directory.getAbsolutePath() 
+				+ File.separator + "etc"
+				+ File.separator + "database"
+				+ File.separator + "conf.xml";
+				
 		if(directory.exists() && directory.isDirectory()){
 			
 			try{
-				conf = new FileInputStream(new File(directory.getAbsolutePath() + "/etc/database/conf.xml"));
+				conf = new FileInputStream(new File(path));
 				settings.loadFromXML(conf);
 				
-				String db_host = settings.getProperty("db_host");
-				String db_port = settings.getProperty("db_port");
-				String database = settings.getProperty("database");
-				String db_username = settings.getProperty("db_username");
-				String db_password = settings.getProperty("db_password");
+				for(String key : settings.stringPropertyNames()){
+					result.put(key, settings.getProperty(key));
+				}
 				
-				settings.setProperty(JDBC_URL, "jdbc:postgresql://" + db_host + ":" + db_port + "/" + database);
-				settings.setProperty(JDBC_USER, db_username);
-				settings.setProperty(JDBC_PASSWORD, db_password);
-				
+				result.put(JDBC_URL, "jdbc:postgresql://" + result.get("db_host") + ":" + result.get("db_port") + "/" + result.get("database"));
+				/*
+				if(result.get("javax.persistence.schema-generation.scripts.create-target") != null){
+					File temp = new File(result.get("javax.persistence.schema-generation.scripts.create-target"));
+					result.put("javax.persistence.schema-generation.scripts.create-target", temp.toURI().toURL().toString());
+				}
+				*/
 			}catch(Exception ex){
 				throw new IOException("Exception: " + ex.getClass().getName() + "\n"
 						+ "Exception message: " + ex.getMessage() + "\n"
-						+ "Failed to load conf file. $file: " + path + "/etc/database/conf.xml" );
+						+ "Failed to load database conf file. $file: " + path);
 			}finally{
 				
 			}
 		}else{
 			throw new IOException("No valid application path. $path: " + path);
 		}
+		
+		return result;
 	}
 	
-	public synchronized Connection setSetting(String key, String value) throws IOException{
-		
-		//boolean flag = false;
-		//key = key.toUpperCase();
-		
-		//for(String temp : SETTINGS){
-		//	if(temp.equals(key)){
-				settings.setProperty(key, value);
-		//		flag =true;
-			//	break;
-		//	}
-		//}
-		
-		//if(!flag){
-		//	throw new IOException("The setting is not valid. $key: " + key);
-		//}
-		
-		return this;
-	}
-	
-	public String getSetting(String key){
-		return settings.getProperty(key);
-	}
-   
     public synchronized EntityManager getEm(){
     	
     	EntityManager em = getEmfactory().createEntityManager();

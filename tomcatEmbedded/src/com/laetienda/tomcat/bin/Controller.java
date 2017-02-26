@@ -1,6 +1,7 @@
 package com.laetienda.tomcat.bin;
 
 import java.io.IOException;
+import java.io.File;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.CommandLine;
@@ -17,26 +18,12 @@ public class Controller {
 	private CommandLine line;
 	private Service daemon;
 	
-	public Controller() throws Exception{
+	public Controller(File directory) throws Exception{
 		options = setOptions();
 		parser = new DefaultParser();
-		daemon = new Service();
+		daemon = new Service(directory);
 	}
 
-	public static void main(String[] args) {
-		
-		try{
-			Controller controller = new Controller();
-			controller.parseArguments(args);
-		}catch(Exception ex){
-			System.err.println(ex.getMessage());
-			System.err.println(ex.getClass().getName());
-		}finally{
-			System.out.println("Thank you.");
-			System.out.println("GOOD BYE!!!");
-		}
-	}
-	
 	private Options setOptions(){
 		return new Options()
 			.addOption(new Option("h", "help", false, "Show help."))
@@ -58,6 +45,7 @@ public class Controller {
 		}else if(line.hasOption("start")){
 			daemon.start();
 			daemon.await();
+			daemon.stop();
 		}else{
 			throw new IOException("You have chose wrong option");
 		}

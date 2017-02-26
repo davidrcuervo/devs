@@ -1,0 +1,8 @@
+COUNTER	DATE	USER	LEVEL	PROGRAM	METHOD	LINE		MESSAGE
+0	2017-02-14 00:58:20	Logger	DEBUG	com.laetienda.log.bin.JavaLogger	setClassDetails	33	Framework has loaded succesfully	
+0	2017-02-14 01:00:28	Logger	DEBUG	com.laetienda.web.listeners.Load	contextInitialized	28	Framework has loaded succesfully	
+0	2017-02-24 15:42:38	Logger	DEBUG	com.laetienda.web.listeners.Load	contextInitialized	32	Framework has loaded succesfully	
+0	2017-02-24 15:52:00	Logger	DEBUG	com.laetienda.web.listeners.Load	contextInitialized	36	Framework has loaded succesfully	
+0	2017-02-24 15:52:41	Logger	DEBUG	com.laetienda.web.listeners.Load	contextInitialized	36	Framework has loaded succesfully	
+0	2017-02-24 15:57:56	Logger	DEBUG	com.laetienda.web.listeners.Load	contextInitialized	36	Framework has loaded succesfully	
+1	2017-02-24 15:57:57	Logger	INFO	com.laetienda.web.listeners.Load	contextDestroyed	21	Closing webapp	
