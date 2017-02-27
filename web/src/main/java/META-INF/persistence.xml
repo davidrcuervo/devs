@@ -4,6 +4,7 @@
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		
 		<class>com.laetienda.web.entities.Tabla</class>
+		<class>com.laetienda.lang.entities.Language</class>
 		
 	</persistence-unit>
 </persistence>

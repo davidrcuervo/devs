@@ -36,5 +36,10 @@
     	<artifactId>database</artifactId>
     	<version>0.0.1</version>
     </dependency>
+    <dependency>
+    	<groupId>com.laetienda</groupId>
+    	<artifactId>lang</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>

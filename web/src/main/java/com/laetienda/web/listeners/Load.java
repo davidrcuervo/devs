@@ -5,68 +5,70 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import javax.persistence.EntityManager;
-
 import com.laetienda.tomcat.lib.Service;
 import com.laetienda.log.bin.JavaLogger;
 import com.laetienda.db.Connection;
-import com.laetienda.db.Transaction;
-import com.laetienda.web.entities.Tabla;
+import com.laetienda.db.exceptions.*;
+
+import com.laetienda.lang.Lang;
 
 public class Load implements ServletContextListener {
 	
 	private File directory;
 	private JavaLogger log;
-	private Connection db;
+	private Connection dbManager;
+	private Lang lang;
 	
-	@Override
 	public void contextDestroyed(ServletContextEvent arg0){
-		log.info("Closing webapp");
 		
-		db.close();
-	}
-	
-	@Override
-	public void contextInitialized(ServletContextEvent arg0) {
+		log.info("Closing webapp");
+		dbManager.close();
 		
 		try{
-			ServletContext sc = arg0.getServletContext();
+			lang.exportLang();
+			
+		}catch (SqlException ex){
+			log.critical("Failed to close webapp objects");
+			log.exception(ex);
+		}finally{
+			
+		}
+	}
+	
+	public void contextInitialized(ServletContextEvent arg0) {
+		
+		ServletContext sc = arg0.getServletContext();
+		
+		try{
+			
 			directory = new File(sc.getInitParameter("directory"));
 
 			log = new JavaLogger(directory);
-			db = new Connection(directory);
+			dbManager = new Connection(directory);
 			
-			
-			Transaction tran = new Transaction(db.getEm());
-			
-			Tabla tabla = new Tabla();
-			tabla.setName("test");
-			tabla.setDescription("test description");
-						
-			try{
-				tran.begin(tran.getEm());
-				tran.getEm().persist(tabla);
-				tran.save(tran.getEm());
-			}catch (Exception ex){
-				log.error("Error while saving into db");
-				ex.printStackTrace();
-			}finally{
-				tran.getEm().clear();
-			}
+			lang = new Lang(directory, dbManager.createTransaction(), log);
+			lang.importLang();
 			
 			log.debug("Framework has loaded succesfully");
+		
+		}catch (SqlException ex){
+			log.exception(ex);
 			
 		}catch (Exception ex){
 			
 			ex.printStackTrace();
-			try{
-				Service daemon = new Service(directory);
-				daemon.shutdown();
-			}catch(Exception ex1){
-				
-				ex1.printStackTrace();
-				System.exit(-1);
-			}
+			this.exit();
+		}
+	}
+	
+	private void exit(){
+		try{
+			Service daemon = new Service(directory);
+			daemon.shutdown();
+		}catch(Exception ex1){
+			
+			ex1.printStackTrace();
+			System.exit(-1);
 		}
 	}
 }

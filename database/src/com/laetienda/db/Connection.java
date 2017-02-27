@@ -22,6 +22,7 @@ public class Connection {
 	private EntityManagerFactory emfactory;
 	private Properties defaults;
 	private Map<String, String > settings;
+	private File directory;
 	
 	public static void main (String args[]) throws IOException{
 		
@@ -32,6 +33,7 @@ public class Connection {
 	
 	public Connection(File directory) throws IOException{
 	    
+		this.directory = directory;
 		defaults = setDefaultSettings();
 		settings = loadConfFile(directory);
     	ems = new ArrayList<EntityManager>();
@@ -45,11 +47,12 @@ public class Connection {
 	   		/*
 	   		 * ENABLE FOR DEBUGGING ONLY
 	   		 * -------------------------
-	   		 * 
+	   		 */
+	   		
 	   		for(Map.Entry<String, String> temp : settings.entrySet()){
 	   			System.out.println(temp.getKey() + ": " + temp.getValue());
 	   		}
-	   		*/
+	   		
 	   		
     		emfactory = Persistence.createEntityManagerFactory(
     				settings.get("PERSISTENCE_UNIT_NAME"),
@@ -145,6 +148,11 @@ public class Connection {
     	return result;
     }
     
+    public synchronized Transaction createTransaction(){
+    	    	
+    	return new Transaction(getEm()); 
+    }
+    
     public void close(){
     	
     	for(EntityManager em : ems){
@@ -159,4 +167,18 @@ public class Connection {
     private EntityManagerFactory getEmfactory(){
     	return this.emfactory;
     }
+
+	/**
+	 * @return the directory
+	 */
+	public File getDirectory() {
+		return directory;
+	}
+
+	/**
+	 * @param directory the directory to set
+	 */
+	public void setDirectory(File directory) {
+		this.directory = directory;
+	}
 }

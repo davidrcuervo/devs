@@ -2,6 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 	<comment>Configuration properties to connect to the database</comment>
+	<entry key="db_provider">postgres</entry>
 	<entry key="PERSISTENCE_UNIT_NAME">com.laetienda.web</entry>
 	<entry key="database">web</entry>
 	<entry key="db_host">db.la-etienda.lan</entry>

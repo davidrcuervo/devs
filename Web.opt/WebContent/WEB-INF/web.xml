@@ -10,6 +10,14 @@
 	  <url-pattern></url-pattern>
 	  <url-pattern>/home</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>lang</servlet-name>
+		<servlet-class>com.laetienda.lang.Servlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>lang</servlet-name>
+		<url-pattern>/lang/*</url-pattern>
+	</servlet-mapping>
 	<listener>
 		<listener-class>
   			com.laetienda.web.listeners.Load
@@ -22,6 +30,7 @@
 	<filter-mapping>
 		<filter-name>pathParts</filter-name>
 		<url-pattern>/web/*</url-pattern>
+		<url-pattern>/lang/*</url-pattern>
 	</filter-mapping>
 	<filter>
 		<filter-name>page</filter-name>

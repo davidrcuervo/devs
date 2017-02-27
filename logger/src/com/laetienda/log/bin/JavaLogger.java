@@ -8,8 +8,6 @@ public class JavaLogger extends Logger{
 	
 	public JavaLogger(File directory) throws Exception{
 		super(directory);
-		
-		
 	}
 	
 	private void run(String message, String level){
@@ -41,6 +39,17 @@ public class JavaLogger extends Logger{
 				getEntity().setLine(stackTraceElements[c].getLineNumber());
 				break;
 			}
+		}
+	}
+	
+	public void exception(Exception ex){
+		
+		if(ex instanceof com.laetienda.db.exceptions.SqlException){
+			System.out.println(ex.getMessage());
+			System.out.println(((com.laetienda.db.exceptions.SqlException) ex).getQuery());
+			((com.laetienda.db.exceptions.SqlException) ex).getParent().printStackTrace();
+		}else{
+			ex.printStackTrace();
 		}
 	}
 	

@@ -12,7 +12,7 @@ public class Tabla implements Serializable {
 	
 	@Id
 	@SequenceGenerator(name = "tabla_id_seq", sequenceName = "tabla_id_seq", allocationSize=1)
-	@GeneratedValue(generator = "tabla_id_seq", strategy = GenerationType.IDENTITY)
+	@GeneratedValue(generator = "tabla_id_seq", strategy = GenerationType.SEQUENCE)
 	@Column(name="\"id\"", updatable=false, nullable=false, unique=true)
 	private Integer id;
 	
