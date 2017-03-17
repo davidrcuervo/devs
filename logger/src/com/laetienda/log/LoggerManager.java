@@ -2,31 +2,39 @@ package com.laetienda.log;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-/**
- * @deprecated
- * Should use LoggerManager that is more adequate for Tomcat framework
- */
-@Deprecated 
-public class Father {
-	
+public class LoggerManager {
 	private static final String[] LEVELS = {"DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "CRITICAL", "ALERT", "EMERGENCY"};
 	private File directory;
 	private Properties settings;
 	private Options options;
 	
-	public Father(File directory) throws IOException {
+	public LoggerManager(File directory) throws LoggerException{
 		this.directory = directory;
 		
 		options = setOptions();
 		settings = setDefaultSettings();
 		loadConfFile();
 	}
+	
+	public Logger createLogger(){
+		return new Logger(this);
+	}
+	
+	public JavaLogger createJavaLogger(){
+		return new JavaLogger(this);
+	}
+	
+	public void closeJavaLogger(JavaLogger log){
+		
+	};
 	
 	private Options setOptions(){
 		Options options = new Options();
@@ -45,7 +53,7 @@ public class Father {
 		return options;
 	}
 	
-	public Options getOptions(){
+	protected Options getOptions(){
 		return options;
 	}
 	
@@ -65,7 +73,7 @@ public class Father {
 		return new Properties(settings);
 	}
 	
-	public Properties loadConfFile() throws IOException{
+	private Properties loadConfFile() throws LoggerException{
 		
 		FileInputStream conf;
 		
@@ -78,30 +86,34 @@ public class Father {
 						File.separator + "conf.xml"));
 				
 				settings.loadFromXML(conf);
-				
-			}catch(Exception ex){
-				throw new IOException("Exception: " + ex.getClass().getName() + "\n"
-						+ "Exception message: " + ex.getMessage() + "\n"
-						+ "Failed to load conf file. $file: " + directory + "/etc/database/conf.xml" );
+			
+			}catch(FileNotFoundException ex){
+				throw new LoggerException("the file (" + directory + "/etc/database/conf.xml) does not exist, is a directory rather than a regular file, or for some other reason cannot be opened for reading.", ex);
+			}catch(SecurityException ex){
+				throw new LoggerException("checkRead method denies read access to the file (" +  directory + "/etc/database/conf.xml)", ex);
+			}catch(InvalidPropertiesFormatException ex){
+				throw new LoggerException("Error while loading conf.xml file for Logger. /n " + ex.getMessage(), ex);
+			}catch(IOException ex){
+				throw new LoggerException("Error while loading conf.xml file /n " + ex.getMessage(), ex);
 			}finally{
 				
 			}
 		}else{
-			throw new IOException("No valid application directory");
+			throw new LoggerException("No valid application directory");
 		}
 		
 		return settings;
 	}
 	
-	public Properties getSettings(){
+	protected Properties getSettings(){
 		return settings;
 	}
 	
-	public String getSetting(String setting){
+	protected String getSetting(String setting){
 		return getSettings().getProperty(setting);
 	}
 	
-	public void setSetting(String key, String value){
+	protected void setSetting(String key, String value){
 		getSettings().setProperty(key, value);
 	}
 	

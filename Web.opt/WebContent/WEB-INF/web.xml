@@ -24,11 +24,20 @@
 		</listener-class>
 	</listener>
 	<filter>
+		<filter-name>logger</filter-name>
+		<filter-class>com.laetienda.log.LogFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>logger</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
 		<filter-name>pathParts</filter-name>
 		<filter-class>com.laetienda.tomcat.filters.PathParts</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>pathParts</filter-name>
+		<url-pattern>/</url-pattern>
 		<url-pattern>/web/*</url-pattern>
 		<url-pattern>/lang/*</url-pattern>
 	</filter-mapping>
@@ -41,5 +50,6 @@
 		<url-pattern>/</url-pattern>
 		<url-pattern>/home</url-pattern>
 		<url-pattern>/web/*</url-pattern>
+		<url-pattern>/lang/*</url-pattern>
 	</filter-mapping>
 </web-app>

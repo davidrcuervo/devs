@@ -48,11 +48,11 @@ public class Connection {
 	   		 * ENABLE FOR DEBUGGING ONLY
 	   		 * -------------------------
 	   		 */
-	   		
+	   		/*
 	   		for(Map.Entry<String, String> temp : settings.entrySet()){
 	   			System.out.println(temp.getKey() + ": " + temp.getValue());
 	   		}
-	   		
+	   		*/
 	   		
     		emfactory = Persistence.createEntityManagerFactory(
     				settings.get("PERSISTENCE_UNIT_NAME"),
@@ -151,6 +151,13 @@ public class Connection {
     public synchronized Transaction createTransaction(){
     	    	
     	return new Transaction(getEm()); 
+    }
+    
+    public void closeTransaction(Transaction db){
+    	
+    	db.getEm().clear();
+    	closeEm(db.getEm());
+    	db = null;
     }
     
     public void close(){

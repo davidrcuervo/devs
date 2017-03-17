@@ -11,7 +11,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
-import com.laetienda.log.Logger;
+import com.laetienda.log.LoggerOld;
 import com.laetienda.log.entities.Log;
 import com.laetienda.db.Connection;
 
@@ -19,14 +19,14 @@ public class Command {
 	
 	public static final String DIRECTORY = "/home/myself/git/eclipse/Web.opt";
 	
-	private Logger logger;
+	private LoggerOld logger;
 	private CommandLineParser parser;
 	private CommandLine line;
 	private File directory;
 	
 	public Command() throws Exception{
 		directory = findDirectory();
-		logger = new Logger(directory);
+		logger = new LoggerOld(directory);
 		parser = new DefaultParser();
 	}
 

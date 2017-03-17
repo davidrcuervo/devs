@@ -5,8 +5,8 @@ import java.lang.Integer;
 import java.util.Calendar;
 import java.io.IOException;
 import javax.persistence.*;
-import com.laetienda.log.Logger;
-import com.laetienda.db.GrandEntity;
+import com.laetienda.log.*;
+import com.laetienda.db.entities.EntityObject;
 
 /**
  * Entity implementation class for Entity: Log
@@ -15,7 +15,7 @@ import com.laetienda.db.GrandEntity;
 @Entity
 @Table(name="logs@logger")
 
-public class Log extends GrandEntity implements Serializable {
+public class Log extends EntityObject implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -71,8 +71,9 @@ public class Log extends GrandEntity implements Serializable {
 		return this.created;
 	}
 	
+	
 	public String getCreatedDateInString(){
-		return getDate(getCreated());
+		return super.getDate(getCreated());
 	}
 	
 	public Calendar getModified() {
@@ -80,9 +81,9 @@ public class Log extends GrandEntity implements Serializable {
 	}
 	
 	public String getModifiedDateInString(){
-		return getDate(getModified());
+		return super.getDate(getModified());
 	}
-
+	
 	/**
 	 * @return name of user who is sending the log.
 	 */
@@ -93,12 +94,12 @@ public class Log extends GrandEntity implements Serializable {
 	 * @param name of user who is sending the log. length = 254
 	 * @throws IOException when is null, or it is empty or it contains more than 254 characters.
 	 */
-	public void setUser(String username) throws IOException {
+	public void setUser(String username) throws LoggerException {
 		
 		if(username != null && !username.isEmpty() && username.length() < 254){
 			this.user = username;
 		}else{
-			throw new IOException("Name of user is null or empty or it contains more than 254 characters");
+			throw new LoggerException("Name of user is null or empty or it contains more than 254 characters");
 		}
 	}
 	/**
@@ -112,12 +113,12 @@ public class Log extends GrandEntity implements Serializable {
 	 * @param Name of program/script that is adding the log
 	 * @throws IOException when is null, or it is empty or it contains more than 254 characters.
 	 */
-	public void setProgram(String program) throws IOException {
+	public void setProgram(String program) throws LoggerException {
 		
 		if(program != null && !program.isEmpty() && program.length() < 254){
 			this.program = program;
 		}else{
-			throw new IOException("Name of program is null or empty or it contains more than 254 characters");
+			throw new LoggerException("Name of program is null or empty or it contains more than 254 characters");
 		}
 	}
 	/**
@@ -167,10 +168,10 @@ public class Log extends GrandEntity implements Serializable {
 	/**
 	 * @param level the level to set
 	 */
-	public void setLevel(String level) throws IOException{
+	public void setLevel(String level) throws LoggerException{
 		boolean flag = false;
 		
-		for(String temp : Logger.getLevels()){
+		for(String temp : LoggerManager.getLevels()){
 			//System.out.println("level: " + temp);
 			if(temp.toUpperCase().equals(level.toUpperCase())){
 				flag = true;
@@ -181,7 +182,7 @@ public class Log extends GrandEntity implements Serializable {
 		if(flag){
 			this.level = level;
 		}else{
-			throw new IOException("The log level does not exist. $level: " + level);
+			throw new LoggerException("The log level does not exist. $level: " + level);
 		}
 	}
 	/**

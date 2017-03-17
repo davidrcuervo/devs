@@ -1,32 +1,32 @@
-package com.laetienda.log.bin;
+package com.laetienda.log;
 
-import com.laetienda.log.*;
-import java.io.IOException;
-import java.io.File;
-
-public class JavaLogger extends LoggerOld{
+public class JavaLogger {
 	
-	public JavaLogger(File directory) throws Exception{
-		super(directory);
+	private Logger logger;
+	private LoggerManager logManager;
+	
+	protected JavaLogger(LoggerManager logManager){
+		this.logManager = logManager;
+		this.logger = logManager.createLogger();
 	}
 	
 	private void run(String message, String level){
 		
 		try{
 			setClassDetails();
-			getEntity().setLevel(level);
-			setMessage(message);
-			getEntity().setUser(getSetting("user"));
-			print();
+			logger.getEntity().setLevel(level);
+			logger.setMessage(message);
+			logger.getEntity().setUser(logManager.getSetting("user"));
+			logger.print();
 			
-		}catch (Exception ex){
+		}catch (LoggerException ex){
 			ex.printStackTrace();
 		}finally{
 			
 		}
 	}
 	
-	private void setClassDetails() throws LoggerException {
+	private void setClassDetails() throws LoggerException{
 		
 		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 		
@@ -34,9 +34,9 @@ public class JavaLogger extends LoggerOld{
 			if(stackTraceElements[c].getClassName().equals(JavaLogger.class.getName()) && stackTraceElements[c].getClassName().indexOf("java.lang.Thread") != 0){	
 			
 			} else{
-				getEntity().setProgram(stackTraceElements[c].getClassName());
-				getEntity().setMethod(stackTraceElements[c].getMethodName());
-				getEntity().setLine(stackTraceElements[c].getLineNumber());
+				logger.getEntity().setProgram(stackTraceElements[c].getClassName());
+				logger.getEntity().setMethod(stackTraceElements[c].getMethodName());
+				logger.getEntity().setLine(stackTraceElements[c].getLineNumber());
 				break;
 			}
 		}
@@ -48,10 +48,16 @@ public class JavaLogger extends LoggerOld{
 			System.out.println(ex.getMessage());
 			System.out.println(((com.laetienda.db.exceptions.SqlException) ex).getQuery());
 			((com.laetienda.db.exceptions.SqlException) ex).getParent().printStackTrace();
+		
+		}else if(ex instanceof com.laetienda.db.exceptions.DbException){
+			System.out.println(ex.getMessage());
+			((com.laetienda.db.exceptions.DbException) ex).getParent().printStackTrace();
+			
 		}else{
 			ex.printStackTrace();
 		}
 	}
+		
 	
 	public void debug(String message){
 		run(message, Thread.currentThread().getStackTrace()[1].getMethodName().toUpperCase());

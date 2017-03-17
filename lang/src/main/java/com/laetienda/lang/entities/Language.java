@@ -2,17 +2,23 @@ package com.laetienda.lang.entities;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import com.laetienda.db.Transaction;
+import com.laetienda.db.entities.EntityObject;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name="lang_languages")
 @NamedQueries({
-	@NamedQuery(name="Language.findAll", query="SELECT l FROM Language l"),
+	@NamedQuery(name="Language.findAll", query="SELECT l FROM Language l ORDER BY l.id"),
+	@NamedQuery(name="Language.findAllCount", query = "SELECT COUNT(l) FROM Language l"),
 	@NamedQuery(name="Language.findByIdentifier", query="SELECT l FROM Language l WHERE l.identifier = :identifier"),
 })
 
-public class Language implements Serializable{
+public class Language extends EntityObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -21,25 +27,42 @@ public class Language implements Serializable{
 	@Column(name="\"id\"", updatable=false, nullable=false, unique=true)
 	private Integer id;
 	
-	@Column(name="\"created\"", insertable = false, updatable = false, nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
+	@Column(name="\"created\"", nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar created;
 	
-	@Column(name="\"modified\"", insertable = false, updatable = false, nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
+	@Column(name="\"modified\"", nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar modified;
 	
-	@Column(name="\"identifier\"", unique = true, length=254)
+	@Column(name="\"identifier\"", nullable= false, unique = true, length=254)
 	private String identifier;
 	
-	@Column(name="\"english\"", nullable=false, unique=false, length=254)
+	@Column(name="\"english\"", nullable=true, unique=false, length=254)
 	private String english;
 
-	@Column(name="\"french\"", nullable=false, unique=false, length=254)
+	@Column(name="\"french\"", nullable=true, unique=false, length=254)
 	private String french;
 	
-	@Column(name="\"spanish\"", nullable=false, unique=false, length=254)
+	@Column(name="\"spanish\"", nullable=true, unique=false, length=254)
 	private String spanish;
+	
+	public Language(){
+		super();
+	}
+	
+	@PreUpdate
+	@PrePersist
+	public void updateTimeStamps(){
+		Date date = new Date();
+		modified = Calendar.getInstance();
+		modified.setTime(date);
+		
+		if(created == null){
+			created = Calendar.getInstance();
+			created.setTime(date);
+		}
+	}
 
 	/**
 	 * @return the id
@@ -63,24 +86,10 @@ public class Language implements Serializable{
 	}
 
 	/**
-	 * @param created the created to set
-	 */
-	public void setCreated(Calendar created) {
-		this.created = created;
-	}
-
-	/**
 	 * @return the modified
 	 */
 	public Calendar getModified() {
 		return modified;
-	}
-
-	/**
-	 * @param modified the modified to set
-	 */
-	public void setModified(Calendar modified) {
-		this.modified = modified;
 	}
 
 	/**
@@ -93,22 +102,45 @@ public class Language implements Serializable{
 	/**
 	 * @param identifier the identifier to set
 	 */
-	public void setIdentifier(String identifier) {
+	public Language setIdentifier(String identifier, Transaction db) {
+		
 		this.identifier = identifier;
+		
+		if(identifier == null || identifier.isEmpty()){
+			super.addError("identifier", "language entiry error : identifier is empty");
+		}else{
+			if(identifier.length() > 254)
+				super.addError("identifier", "language entity error: identifier max lenghth is 254 characters");
+			
+			List<Language> temp = db.getEm().createNamedQuery("Language.findByIdentifier", Language.class).setParameter("identifier", identifier).getResultList();
+			System.out.println("id: " + id);
+			if(temp.size() > 0 && temp.get(0).getId() != id)
+				super.addError("identifier", "language entity error: identifier already exists");
+		}
+		
+		return this;
 	}
 
 	/**
-	 * @return the english
+	 * @return the English
 	 */
 	public String getEnglish() {
 		return english;
 	}
 
 	/**
-	 * @param english the english to set
+	 * @param english the English to set
 	 */
-	public void setEnglish(String english) {
+	public Language setEnglish(String english) {
 		this.english = english;
+		
+		if(english != null){
+			
+			if(english.length() > 254)
+				super.addError("english", "language entity error: English max lenght is 254 characters");
+		}
+		
+		return this;
 	}
 
 	/**
@@ -121,23 +153,37 @@ public class Language implements Serializable{
 	/**
 	 * @param french the french to set
 	 */
-	public void setFrench(String french) {
+	public Language setFrench(String french) {
 		this.french = french;
+		
+		if(english != null){
+			
+			if(english.length() > 254)
+				super.addError("french", "language entity error: French max lenght is 254 characters");
+		}
+		
+		return this;
 	}
 
 	/**
-	 * @return the spanish
+	 * @return the Spanish
 	 */
 	public String getSpanish() {
 		return spanish;
 	}
 
 	/**
-	 * @param spanish the spanish to set
+	 * @param spanish the Spanish to set
 	 */
-	public void setSpanish(String spanish) {
+	public Language setSpanish(String spanish) {
 		this.spanish = spanish;
+		
+		if(english != null){
+			
+			if(english.length() > 254)
+				super.addError("spanish", "language entity error: English max lenght is 254 characters");
+		}
+		
+		return this;
 	}
-	
-	
 }

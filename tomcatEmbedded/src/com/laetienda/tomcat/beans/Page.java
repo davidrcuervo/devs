@@ -11,6 +11,7 @@ public class Page {
 	
 	private String url;
 	private String rootUrl;
+	private String urlWithPattern;
 	private String[] pathParts;
 	private List<String> styles;
 	private List<String> scripts;
@@ -19,6 +20,7 @@ public class Page {
 		pathParts = findPathParts(request);
 		rootUrl = buildRootUrl(request);
 		url = buildUrl(request);
+		urlWithPattern = buildUrlWithPatter(request);
 	}
 	
 	private String[] findPathParts(HttpServletRequest request){
@@ -50,6 +52,11 @@ public class Page {
 			}
 		
 		return result;
+	}
+	
+	private String buildUrlWithPatter(HttpServletRequest request){
+		
+		return rootUrl + request.getServletPath();
 	}
 	
 	public void addStyle(String style){
@@ -92,6 +99,10 @@ public class Page {
 	 */
 	public String getRootUrl() {
 		return rootUrl;
+	}
+	
+	public String getUrlWithPattern(){
+		return urlWithPattern;
 	}
 	
 	/**
