@@ -35,7 +35,6 @@ public class Servlet extends HttpServlet {
 	private void build(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		pathParts = (String[])request.getAttribute("pathParts");
 		log = (JavaLogger)request.getAttribute("logger");
-		
 	}
 	
 	public void destroy(){

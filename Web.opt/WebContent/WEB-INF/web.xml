@@ -18,6 +18,14 @@
 		<servlet-name>lang</servlet-name>
 		<url-pattern>/lang/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>multimedia</servlet-name>
+		<servlet-class>com.laetienda.multimedia.Servlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>multimedia</servlet-name>
+		<url-pattern>/media/*</url-pattern>
+	</servlet-mapping>
 	<listener>
 		<listener-class>
   			com.laetienda.web.listeners.Load
@@ -40,6 +48,7 @@
 		<url-pattern>/</url-pattern>
 		<url-pattern>/web/*</url-pattern>
 		<url-pattern>/lang/*</url-pattern>
+		<url-pattern>/media/*</url-pattern>
 	</filter-mapping>
 	<filter>
 		<filter-name>page</filter-name>

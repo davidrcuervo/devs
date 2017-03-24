@@ -1,27 +1,27 @@
-package com.laetienda.lang;
+package com.laetienda.multimedia;
 
-public class LangException extends Exception {
+public class MultimediaException extends Exception {
 	private static final long serialVersionUID = 1L;
 	
 	private Exception parent;
 	
-	public LangException() { 
+	public MultimediaException() { 
 		super(); 
 	}
 
-	public LangException(String message) { 
+	public MultimediaException(String message) { 
 		super(message); 
 	}
 	
-	public LangException(String message, Throwable cause) { 
+	public MultimediaException(String message, Throwable cause) { 
 		super(message, cause); 
 	}
 	
-	public LangException(Throwable cause) { 
+	public MultimediaException(Throwable cause) { 
 		super(cause); 
 	}
 	
-	public LangException(String message, Exception parent){
+	public MultimediaException(String message, Exception parent){
 		super(message);
 		this.parent = parent;
 	}
