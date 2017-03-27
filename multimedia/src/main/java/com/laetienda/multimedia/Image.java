@@ -14,11 +14,11 @@ public class Image {
 	private int height;
 	private int width;
 	
-	protected Image(MediaManager manager, String[] args) throws MultimediaException {
+	protected Image(File file) throws MultimediaException {
 		
 		height = -1;
 		width = -1;
-		file = getImageFile(manager, args);
+		this.file = file;
 		type = getImageType(file);
 		img = createImg(type);
 	}
@@ -76,17 +76,6 @@ public class Image {
 		this.width = width;
 	}
 	
-	private File getImageFile(MediaManager manager, String[] args){
-		
-		String path = manager.getSetting("images_folder");
-		
-		for(int c=1; c < args.length; c++){
-			path += File.separator + args[c];
-		}
-		
-		return new File(path);
-	}
-	
 	private int getImageType(File file) throws MultimediaException {
 		
 		String name = file.getName();
@@ -102,16 +91,25 @@ public class Image {
 	private Img createImg(int type) throws MultimediaException{
 		
 		Img result = null;
-		String imgType = TYPES[type];
 		
-		switch (imgType){
-			
-			case "svg":
-				result = new Svg(file);
-				break;
+		try{
+			String imgType = TYPES[type];
+		
+			switch (imgType){
 				
-			default:
-				throw new MultimediaException("The image extension is not supported by this application");
+				case "svg":
+					result = new Svg(file);
+					break;
+					
+				case "png":
+					result = new Png(file);
+					break;
+					
+				default:
+					throw new MultimediaException("The image extension is not supported by this application");
+			}
+		}catch(ArrayIndexOutOfBoundsException ex){
+			throw new MultimediaException("The index " + type + " is out of range of the TYPES array.", ex);
 		}
 		
 		return result;

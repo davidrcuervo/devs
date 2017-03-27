@@ -19,7 +19,19 @@ public class MediaManager {
 	}
 	
 	public synchronized Image createImage(String[] args) throws MultimediaException {
-		return new Image(this, args);
+		
+		String path = getSetting("images_folder");
+		File file = getMediaFile(path, args);
+		
+		return new Image(file);
+	}
+	
+	public synchronized Video createVideo(String[] args) throws MultimediaException{
+		
+		String path = getSetting("videos_folder");
+		File file = getMediaFile(path, args);
+		
+		return new Video(file);
 	}
 	
 	protected String getSetting(String key){
@@ -30,6 +42,28 @@ public class MediaManager {
 		return directory;
 	}
 	
+	private File getMediaFile(String path, String[] args){
+		
+		for(int c=1; c < args.length; c++){
+			path += File.separator + args[c];
+		}
+		
+		return new File(path);
+	}
+	
+	/*
+	private String getMediaExtension(File file) throws MultimediaException {
+		
+		String name = file.getName();
+		int dot = name.lastIndexOf('.');
+		
+		if(dot == -1){
+			throw new MultimediaException(name + " is not a valid image file name");
+		}
+		
+		return name.substring(dot + 1);
+	}
+	*/
 	private Properties loadSettings(File directory) throws MultimediaException {
 		Properties settings = null;
 		String path = "";
