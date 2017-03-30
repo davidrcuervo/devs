@@ -11,6 +11,16 @@ import java.util.regex.Pattern;
 import static java.nio.file.StandardOpenOption.READ;
 import java.nio.channels.SeekableByteChannel;
 
+
+/**
+ * 
+ * @author myself
+ * Taken from the blog on internet: <br />
+ * <a href="http://www.adrianwalker.org/2012/06/html5-video-pseudosteaming-with-java-7.html">link 1</a> <br />
+ * <br />
+ * The follow link explains it better: <br /> 
+ * <a href="http://www.avajava.com/tutorials/lessons/how-do-i-monitor-the-progress-of-a-file-upload-to-a-servlet.html">link 2</a>
+ */
 public class Video {
 	
 	private static final Pattern RANGE_PATTERN = Pattern.compile("bytes=(?<start>\\d*)-(?<end>\\d*)");
@@ -138,5 +148,4 @@ public class Video {
 	public Path getPath() {
 		return path;
 	}
-	
 }

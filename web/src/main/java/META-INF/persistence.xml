@@ -5,6 +5,9 @@
 		
 		<class>com.laetienda.web.entities.Tabla</class>
 		<class>com.laetienda.lang.entities.Language</class>
+		<class>com.laetienda.multimedia.entities.Video</class>
+		<class>com.laetienda.multimedia.entities.Image</class>
+		<class>com.laetienda.db.entities.App</class>
 		
 	</persistence-unit>
 </persistence>

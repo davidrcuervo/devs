@@ -3,7 +3,8 @@
 <properties>
 	<comment>Configuration properties to run Logger on web app</comment>
 	<entry key="file">/home/myself/git/eclipse/Web.opt/var/log/logs.log</entry>
-	<entry key="saveTO">console</entry>
+	<entry key="saveTO">file</entry>
 	<entry key="level">debug</entry>
+	<entry key="min-level">error</entry>
 	<entry key="user">Logger</entry>
 </properties>

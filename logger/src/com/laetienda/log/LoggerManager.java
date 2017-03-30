@@ -13,6 +13,7 @@ import org.apache.commons.cli.Options;
 public class LoggerManager {
 	private static final String[] LEVELS = {"DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "CRITICAL", "ALERT", "EMERGENCY"};
 	private File directory;
+	private File file;
 	private Properties settings;
 	private Options options;
 	
@@ -22,6 +23,7 @@ public class LoggerManager {
 		options = setOptions();
 		settings = setDefaultSettings();
 		loadConfFile();
+		validateProperties();
 	}
 	
 	public Logger createLogger(){
@@ -103,6 +105,20 @@ public class LoggerManager {
 		}
 		
 		return settings;
+	}
+	
+	private void validateProperties() throws LoggerException{
+		if(getSetting("saveTO").equals("file")){
+			if(new File(getSetting("file")).canWrite()){
+				file = new File(getSetting("file"));
+			}else{
+				throw new LoggerException("Logs are configured to write file but file is not writable. file: " + file.getAbsolutePath() );
+			}
+		}
+	}
+	
+	protected File getFile(){
+		return file;
 	}
 	
 	protected Properties getSettings(){

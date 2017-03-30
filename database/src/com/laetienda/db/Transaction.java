@@ -86,6 +86,10 @@ public class Transaction {
 		return result;
 	}
 	
+	public void insert(EntityObject entity) throws DbException {
+		insert(getEm(), entity);
+	}
+	
 	public void insert(EntityManager em, EntityObject entity) throws DbException {
 				
 		try{

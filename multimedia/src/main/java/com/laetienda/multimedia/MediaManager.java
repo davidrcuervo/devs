@@ -34,6 +34,7 @@ public class MediaManager {
 		return new Video(file);
 	}
 	
+
 	protected String getSetting(String key){
 		return settings.getProperty(key);
 	}
