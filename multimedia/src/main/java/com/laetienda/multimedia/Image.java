@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class Image {
 	
-	private static final String[] TYPES = {"png", "jpeg", "svg"};
+	private static final String[] TYPES = {"png", "jpg", "svg"};
 	
 	private File file;				//Image file
 	private int type;
@@ -100,9 +100,11 @@ public class Image {
 				case "svg":
 					result = new Svg(file);
 					break;
-					
+				
+				case "jpg":	
 				case "png":
 					result = new Png(file);
+					result.setExtension(imgType);
 					break;
 					
 				default:

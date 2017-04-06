@@ -12,28 +12,30 @@ public class Page {
 	private String url;
 	private String rootUrl;
 	private String urlWithPattern;
-	private String[] pathParts;
+	private String[] allpathParts;
 	private List<String> styles;
 	private List<String> scripts;
+	private String variables;
 	
 	public Page(HttpServletRequest request){
-		pathParts = findPathParts(request);
+		allpathParts = (String[])request.getAttribute("allpathParts");
 		rootUrl = buildRootUrl(request);
 		url = buildUrl(request);
 		urlWithPattern = buildUrlWithPatter(request);
-	}
-	
-	private String[] findPathParts(HttpServletRequest request){
-		
-		String[] result = (String[])request.getAttribute("pathParts");
-		
-		return result;
+		variables = new String();
 	}
 	
 	private String buildRootUrl(HttpServletRequest request){
 		
 		int port = request.getServerPort();
-		String result = request.getScheme() + "://" + request.getServerName();
+		
+		String result = request.getHeader("x-forwarded-proto");
+		
+		if(result == null){
+			result = request.getScheme();
+		}
+		
+		result += "://" + request.getServerName();
 		
 		if(!(port == 80 || port == 443)){
 			result += ":" + Integer.toString(port);
@@ -46,9 +48,9 @@ public class Page {
 		
 		String result = rootUrl;
 		
-		if(pathParts != null)
-			for(int c=1; c < pathParts.length; c++){
-				result += "/" + pathParts[c];
+		if(allpathParts != null)
+			for(int c=0; c < allpathParts.length; c++){
+				result += "/" + allpathParts[c];
 			}
 		
 		return result;
@@ -133,6 +135,18 @@ public class Page {
 		}
 		
 		return URLDecoder.decode(encodedUrl, "utf-8");
+	}
+	
+	public String addVar(String key, String value){
+		String result = "?";
+		
+		if(variables.indexOf('?') > -1){
+			result = "&";
+		}
+		
+		result += key + "=" + value;
+		
+		return result;
 	}
 	
 }

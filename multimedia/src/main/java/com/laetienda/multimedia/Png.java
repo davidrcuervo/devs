@@ -13,6 +13,7 @@ public class Png extends Img {
 	private BufferedImage image;
 	private int width;
 	private int height;
+	private String extension;
 	
 	public static void main(String[] args) {
 
@@ -36,11 +37,15 @@ public class Png extends Img {
 	 */
 	protected BufferedImage get(int width, int height) throws MultimediaException {
 		
-		if(width <= 0)
-			width = this.width;
+		if(width <= 0){
+			width = (int)height * this.width / this.height;
+			width = width == 0 ? this.width : width;
+		}
 		
-		if(height <= 0)
-			height = this.height;
+		if(height <= 0){
+			height = (int)width * this.height / this.width;
+			height = height == 0 ? this.height : height;
+		}
 		
 		BufferedImage result = new BufferedImage(width, height, image.getType());
 		Graphics2D g2d = result.createGraphics();
@@ -51,11 +56,11 @@ public class Png extends Img {
 	}
 	
 	protected String getMimeType(){
-		return "image/png";
+		return "image/" + extension;
 	}
 	
 	protected String getExtension(){
-		return "png";
+		return extension;
 	}
 	
 	
@@ -65,6 +70,13 @@ public class Png extends Img {
 	
 	protected int getHeight(){
 		return height;
+	}
+
+	/**
+	 * @param extension the extension to set
+	 */
+	protected void setExtension(String extension) {
+		this.extension = extension;
 	}
 
 }

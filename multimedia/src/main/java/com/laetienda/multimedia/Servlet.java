@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.ProgressListener;
@@ -44,7 +45,7 @@ public class Servlet extends HttpServlet{
 	private MediaManager mediaManager;
 	private Connection dbManager;
 	private Transaction db;
-	private Map<String, String> uploadProgress;
+	//private Map<String, String> uploadProgress;
 	
 	public Servlet(){
 		super();
@@ -62,8 +63,6 @@ public class Servlet extends HttpServlet{
 		db = dbManager.createTransaction();
 		pathParts = (String[])request.getAttribute("pathParts");
 		log = (JavaLogger)request.getAttribute("logger");
-		
-		log.debug("video_folder: " + mediaManager.getSetting("videos_folder"));
 	}
 	
 	public void destroy(){
@@ -72,7 +71,7 @@ public class Servlet extends HttpServlet{
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		build(request, response);
-		log.info("running com.laetienda.multimedia servlet. doGet method");
+		//log.info("running com.laetienda.multimedia servlet. doGet method");
 		
 		Bean bean = new Bean(db);
 		request.setAttribute("multimedia", bean);
@@ -105,8 +104,12 @@ public class Servlet extends HttpServlet{
 		}else if(pathParts[0].equals("image")){
 				
 			try{
+				Image image;
 				
-				Image image = mediaManager.createImage(pathParts);
+				synchronized(this){
+					image = mediaManager.createImage(pathParts);
+				}
+				
 				response.setContentType(image.getMimeType());
 				
 				ImageIO.write(	image.get(request.getParameter("width"), request.getParameter("height")), 
@@ -124,7 +127,12 @@ public class Servlet extends HttpServlet{
 		}else if(pathParts[0].equals("src") && pathParts.length == 2){
 			
 			try{
-				Video video = mediaManager.createVideo(pathParts);
+				Video video;
+				
+				synchronized(this){
+					video = mediaManager.createVideo(pathParts);
+				}
+				
 				video.setRange(request.getHeader("Range"));
 				
 				response.reset();
@@ -155,27 +163,49 @@ public class Servlet extends HttpServlet{
 			}catch(MultimediaException ex){
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			}
-		
+			
+		//http://<server_name>/<context_path>/ajax/1234
 		/** 
 		 * Idea taken from the web below:
 		 * 	http://stackoverflow.com/questions/4112686/how-to-use-servlets-and-ajax
 		 */
-		//http://<server_name>/<context_path>/ajax/1234
+		//http://<server_name>/<context_path>/ajax/$stage
 		}else if(pathParts.length == 2 && pathParts[0].equals("ajax")){
-			log.debug("ajax requested. progressId: " + pathParts[1]);
+			
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			
 			@SuppressWarnings("unchecked")
-			Map<String, String> progress = (Map<String, String>)request.getSession().getAttribute(pathParts[1]);
+			Map<String, String> json = (Map<String, String>)request.getSession().getAttribute("json");
 			
-			if(progress == null){
-				progress = new HashMap<String, String>();
-				progress.put("porcentage", "0");
+			if(json == null){
+				json = new HashMap<String, String>();
 			}
 			
-			String json = new Gson().toJson(progress);
-			response.getWriter().write(json);
+			switch (pathParts[1]){
+			
+				case "get":
+					String strJson = new Gson().toJson(json);
+					response.getWriter().write(strJson);
+					
+					break;
+					
+				case "reload":
+					log.debug("ajax requested. $stage: " + pathParts[1]);
+					json.put("reload", "true");
+					break;
+				
+				case "close":
+					log.debug("ajax requested. $stage: " + pathParts[1]);
+					request.getSession().removeAttribute("json");
+					response.setStatus(HttpServletResponse.SC_OK);
+					
+					break;
+				default:
+					response.sendError(HttpServletResponse.SC_NOT_FOUND);
+					break;
+			}
+			
 		}else{
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}		
@@ -199,7 +229,7 @@ public class Servlet extends HttpServlet{
 			factory.setRepository(new File(mediaManager.getSetting("temp_folder")));
 			
 			ServletFileUpload upload = new ServletFileUpload(factory);
-			//	upload.setFileSizeMax(MAX_FILE_SIZE);
+			// upload.setFileSizeMax(MAX_FILE_SIZE);
 			// upload.setSizeMax(MAX_REQUEST_SIZE);
 			
 			ProgressListener fileUploadProgress = new ProgressListener(){
@@ -208,20 +238,22 @@ public class Servlet extends HttpServlet{
 					
 					int porcentage = (int)(100.00 * pBytesRead / pContentLength);
 					
+					/*
 					log.debug("pBytesRead: " + Long.toString(pBytesRead));
 					log.debug("pContentLength: " + Long.toString(pContentLength));
 					log.debug("pItems: " + Integer.toString(pItems));
 					log.debug("porcentage: " + Integer.toString(porcentage));
+					*/
 					
 					@SuppressWarnings("unchecked")
-					Map<String, String> uploadFileProgress = (Map<String, String>)request.getSession().getAttribute("uploadFileProgress");
+					Map<String, String> json = (Map<String, String>)request.getSession().getAttribute("json");
 					
-					if(uploadFileProgress == null){
-						uploadFileProgress = new HashMap<String, String>();
-						request.getSession().setAttribute("uploadFileProgress", uploadFileProgress);
+					if(json == null){
+						json = new HashMap<String, String>();
+						request.getSession().setAttribute("json", json);
 					}
 					
-					uploadFileProgress.put("porcentage", Integer.toString(porcentage));
+					json.put("upload", Integer.toString(porcentage));
 				}				
 			};
 			
@@ -237,6 +269,7 @@ public class Servlet extends HttpServlet{
 					FileItem item = iter.next();
 					
 					if(item.isFormField()){
+						log.debug("fieldName: " + item.getFieldName() + " -> fieldValue: " + item.getString());
 						inputs.put(item.getFieldName(), item.getString());
 					
 					}else{
@@ -279,95 +312,132 @@ public class Servlet extends HttpServlet{
 		com.laetienda.multimedia.entities.Video video = new com.laetienda.multimedia.entities.Video();
 		File originalVideo = null;
 		String fileName;
-		//log.debug("videos_folder: " + mediaManager.getSetting("videos_folder"));
 		
-		try{
-			File videoPath = new File(mediaManager.getSetting("videos_folder"));
+		File videoPath = new File(mediaManager.getSetting("videos_folder"));
+		
+		if(inputs.get("filePath") == null || inputs.get("filePath").isEmpty()){
+			video.addError("video", "Make sure that you have selected a valid video file");
+		}
+		
+		if(inputs.containsKey("error")){
+			video.addError("video", inputs.get("error"));
+		}
+		
+		if(video.getErrors().size() <= 0){
 			
-			if(inputs.get("filePath") == null || inputs.get("filePath").isEmpty()){
-				video.addError("video", "Make sure that you have selected a valid video file");
+			originalVideo = new File(inputs.get("filePath"));
+			
+			int extIndex = originalVideo.getName().lastIndexOf('.');
+			
+			if(extIndex == -1){
+				fileName = originalVideo.getName();
+			}else{
+				fileName = originalVideo.getName().substring(0, extIndex);
 			}
 			
-			if(inputs.containsKey("error")){
-				video.addError("video", inputs.get("error"));
-			}
+			video.setUrl(fileName, db);
+			video.setName(inputs.get("name"));
+			video.setDescription(inputs.get("description"));
+		
+			String mp4 = videoPath.getAbsolutePath() + File.separator + video.getUrl() + ".mp4";
+			String webm = videoPath.getAbsolutePath() + File.separator + video.getUrl() + ".webm";
+			video.setMp4(mp4);
+			video.setWebm(webm);
+			
+			log.debug("videoPath: " + videoPath.getAbsolutePath());	
+			log.debug("fileName: " + fileName);
+			log.debug("mp4: " + mp4);
+			log.debug("webm: " + webm);
 			
 			if(video.getErrors().size() <= 0){
-				uploadProgress = new HashMap<String,String>();
-				uploadProgress.put("porcentage", "0");
-				request.getSession().setAttribute(inputs.get("progressId"), uploadProgress);
 				
-				originalVideo = new File(inputs.get("filePath"));
+				new Thread( new Runnable(){
+					
+					HttpSession session = request.getSession();
+					
+					public void run(){
+						
+						@SuppressWarnings("unchecked")
+						Map<String, String> json = (HashMap<String,String>)session.getAttribute("json");
+						
+						if(json == null){
+							json = new HashMap<String, String>();
+						}
+						
+						try{
+							if(encode(inputs.get("filePath") , mp4, webm, session)){
+								
+								db.insert(video);
+								json.put("success", "the video is ready to stream");
+								
+							}else{
+								new File(mp4).delete();
+								new File(webm).delete();
+							}
+							
+						}catch(DbException ex){
+							log.exception(ex);
+							json.put("error", "Internal error while persisting the database");
+							new File(mp4).delete();
+							new File(webm).delete();
+						}finally{
+							new File(inputs.get("filePath")).delete();
+						}
+					}
+				}).start();
+
+				response.sendRedirect(request.getRequestURI());
 				
-				int extIndex = originalVideo.getName().lastIndexOf('.');
-				
-				if(extIndex == -1){
-					fileName = originalVideo.getName();
-				}else{
-					fileName = originalVideo.getName().substring(0, extIndex);
-				}
-				
-				video.setUrl(fileName, db);
-				video.setName(inputs.get("name"));
-				video.setDescription(inputs.get("description"));
-			
-				String mp4 = videoPath.getAbsolutePath() + File.separator + video.getUrl() + ".mp4";
-				String webm = videoPath.getAbsolutePath() + File.separator + video.getUrl() + ".webm";
-				video.setMp4(mp4);
-				video.setWebm(webm);
-				
-				/*
-				log.debug("videoPath: " + videoPath.getAbsolutePath());	
-				log.debug("fileName: " + fileName);
-				log.debug("mp4: " + mp4);
-				log.debug("webm: " + webm);
-				*/ 
-				
-				List<String> encodeToMp4 = Arrays.asList("ffmpeg", 
-						"-i", originalVideo.getAbsolutePath(),
-						"-vcodec", "libx264",
-						"-acodec", "aac",
-						"-strict", "-2",
-						mp4);
-			
-				List<String> encodeToWebm = Arrays.asList("ffmpeg",
-						"-i", originalVideo.getAbsolutePath(),
-						"-vcodec", "libvpx",
-						"-qmin", "0",
-						"-qmax", "50",
-						"-crf", "10",
-						"-b:v", "1M",
-						"-acodec", "libvorbis",
-						webm);
-			
-				if(video.getErrors().size() <= 0 && encode(encodeToMp4) == 0 && encode(encodeToWebm) == 0 ){
-					db.insert(video);
-				}else{
-					video.addError("video", "The uploaded file is not soported by the media server");
-				}
-			}
-		}catch(MultimediaException ex){
-			video.addError("video", "The file is not supported for the application encoder");
-			log.exception(ex);
-		}catch(DbException ex){
-			video.addError("video", "Ther was an internal error while persisting info in the database");
-			log.exception(ex);
-		}finally{
-			
-			request.getSession().removeAttribute(inputs.get("progressId"));
-			
-			if(originalVideo !=  null){
-				originalVideo.delete();
-			}
-			
-			if(video.getErrors().size() > 0){
+			}else{
 				request.setAttribute("video", video);
 				doGet(request, response);
-			}else{
-				request.getSession().setAttribute("successMessage", "The video has been uploaded successfully!!");
-				response.sendRedirect(request.getRequestURI());
 			}
 		}
+	}
+	
+	private boolean encode(String videoPath, String mp4, String webm, HttpSession session){
+		
+		File video = new File(videoPath);
+		
+		@SuppressWarnings("unchecked")
+		Map<String, String> json = (HashMap<String,String>)session.getAttribute("json");
+		
+		if(json == null){
+			json = new HashMap<String, String>();
+		}
+		
+		boolean result = false;
+		
+		List<String> encodeToMp4 = Arrays.asList("ffmpeg", 
+				"-i", video.getAbsolutePath(),
+				"-vcodec", "libx264",
+				"-acodec", "aac",
+				"-strict", "-2",
+				mp4);
+	
+		List<String> encodeToWebm = Arrays.asList("ffmpeg",
+				"-i", video.getAbsolutePath(),
+				"-vcodec", "libvpx",
+				"-qmin", "0",
+				"-qmax", "50",
+				"-crf", "10",
+				"-b:v", "1M",
+				"-acodec", "libvorbis",
+				webm);
+		try{
+			if(encode(encodeToMp4, session, 1, 2) == 0 && encode(encodeToWebm, session, 2, 2) == 0){
+				result = true;
+			}else{
+				json.put("error", "The uploaded file is not soported");
+				
+			}
+			
+		}catch(MultimediaException ex){
+			json.put("error", "Internal error while encoding the media file");
+			
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -379,8 +449,10 @@ public class Servlet extends HttpServlet{
 	 * @throws MultimediaException
 	 */
 	
-	private int encode(List<String> cmd) throws MultimediaException{
+	private int encode(List<String> cmd, HttpSession session, int counter, int total) throws MultimediaException{
 		int result = -1;
+		int partRatio = (int)(1 - counter)/total;
+		int part = partRatio * 100/total;
 		
 		ProcessBuilder pb = new ProcessBuilder(cmd);
 		
@@ -392,6 +464,13 @@ public class Servlet extends HttpServlet{
 			new Thread(new Runnable(){
 				
 				public void run(){
+					
+					@SuppressWarnings("unchecked")
+					Map<String, String> json = (HashMap<String,String>)session.getAttribute("json");
+					
+					if(json == null){
+						json = new HashMap<String, String>();
+					}
 				
 					InputStreamReader reader = new InputStreamReader(status);
 					Scanner scan = new Scanner(reader);
@@ -417,8 +496,8 @@ public class Servlet extends HttpServlet{
 						hms = match.split(":");
 						processedSecs = Integer.parseInt(hms[0])*3600 + Integer.parseInt(hms[1])*60 + Integer.parseInt(hms[2]);
 						progress = processedSecs / totalSecs;
-						uploadProgress.put("porcentage", Integer.toString((int)(progress * 100)));
-						log.debug(String.format("Progress: %.2f%%%n", progress * 100));
+						json.put("encode", Integer.toString((int)(part + progress * counter/total * 100)));
+						//log.debug(String.format("Progress: %.2f%%%n", progress * 100));
 					}
 
 					scan.close();
@@ -428,10 +507,10 @@ public class Servlet extends HttpServlet{
 			
 		}catch(IOException ex){
 			ex.printStackTrace();
-			throw new MultimediaException("" ,ex);
+			throw new MultimediaException(ex.getMessage() ,ex);
 		}catch(InterruptedException ex){
 			ex.printStackTrace();
-			throw new MultimediaException("", ex);
+			throw new MultimediaException(ex.getMessage(), ex);
 		}
 			
 		return result;

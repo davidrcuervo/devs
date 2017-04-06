@@ -46,5 +46,10 @@
     	<artifactId>multimedia</artifactId>
     	<version>0.0.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+    	<groupId>com.laetienda</groupId>
+    	<artifactId>library</artifactId>
+    	<version>0.1.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>

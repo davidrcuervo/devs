@@ -1,6 +1,7 @@
 package com.laetienda.tomcat.filters;
 
 import java.io.IOException;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -24,15 +25,23 @@ public class PathParts implements Filter{
 		
 		String path = new String();
 		
+		int index = uri.indexOf('&');
+		
+		if(index < 0){
+			index = uri.length();
+		}
+		
 		try{
-			path = uri.substring(urlPattern.length() + 1);
+			path = uri.substring(urlPattern.length() + 1, index);
 		}catch (IndexOutOfBoundsException ex){
 			
 		}
 		
 		String[] pathParts = path.split("/");
+		String[] allpathParts = uri.substring(1, index).split("/");
 		
 		httpReq.setAttribute("pathParts", pathParts);
+		httpReq.setAttribute("allpathParts", allpathParts);
 		chain.doFilter(request, response);
 		
 		/*
@@ -45,6 +54,13 @@ public class PathParts implements Filter{
 		
 		for(int c=0; c < pathParts.length; c++){
 			System.out.println("pathParts[" + c + "]: " + pathParts[c]);
+		}
+		
+		System.out.println("allpathParts.length: " + allpathParts.length);
+		System.out.println("allpathParts[0].length: " + allpathParts[0].length());
+		
+		for(int c=0; c < allpathParts.length; c++){
+			System.out.println("allpathParts[" + c + "]: " + allpathParts[c]);
 		}
 		*/
 	}

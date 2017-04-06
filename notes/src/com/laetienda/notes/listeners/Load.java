@@ -1,5 +1,7 @@
 package com.laetienda.notes.listeners;
 
+import java.io.File;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -29,9 +31,9 @@ public class Load implements ServletContextListener {
 			
 			System.err.println("Error while starting notes application");
 			System.err.println("Closing application...");
-			try{
-				
-				Service daemon = new Service();
+	
+			try{	
+				Service daemon = new Service(new File(directory));
 				daemon.shutdown();
 			}catch(Exception ex1){
 				System.err.println(ex.getMessage());

@@ -19,7 +19,7 @@ public class LoggerManager {
 	
 	public LoggerManager(File directory) throws LoggerException{
 		this.directory = directory;
-		
+				
 		options = setOptions();
 		settings = setDefaultSettings();
 		loadConfFile();
@@ -63,7 +63,7 @@ public class LoggerManager {
 		
 		Properties settings = new Properties();
 		
-		settings.setProperty("file", directory.getAbsolutePath() + File.separator + "logger.log");
+		settings.setProperty("file", directory.getAbsolutePath() + File.separator + "var" + File.separator + "log" + File.separator + "logger.log");
 		settings.setProperty("level", "error");
 		settings.setProperty("user", "null");
 		settings.setProperty("program", "null");
@@ -108,11 +108,16 @@ public class LoggerManager {
 	}
 	
 	private void validateProperties() throws LoggerException{
+		
 		if(getSetting("saveTO").equals("file")){
-			if(new File(getSetting("file")).canWrite()){
-				file = new File(getSetting("file"));
-			}else{
-				throw new LoggerException("Logs are configured to write file but file is not writable. file: " + file.getAbsolutePath() );
+			try{
+				if(new File(getSetting("file")).exists() || new File(getSetting("file")).createNewFile()){
+					file = new File(getSetting("file"));
+				}else{
+					throw new LoggerException("Logs are configured to write file but file is not writable. file: " + getSetting("file") );
+				}
+			}catch(IOException ex){
+				throw new LoggerException("Logs are configured to write file but file is not writable. file: " + getSetting("file") );
 			}
 		}
 	}

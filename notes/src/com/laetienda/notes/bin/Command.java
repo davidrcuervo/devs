@@ -1,11 +1,13 @@
 package com.laetienda.notes.bin;
 
+import java.io.File;
 import java.util.Scanner;
 import com.laetienda.printer.Console;
 import com.laetienda.tomcat.lib.Service;
 
 public class Command {
 	
+	public static final String DIRECTORY = "/home/myself/git/eclipse/Web.opt";
 	private final String[] options = {
 			"Stop application",
 			"Status of application"
@@ -23,7 +25,7 @@ public class Command {
 		console = new Console();
 		option = -1;
 		scan = new Scanner(System.in);
-		daemon = new Service();
+		daemon = new Service(new File(DIRECTORY));
 	}
 	
 	public static void main(String[] args) throws Exception {

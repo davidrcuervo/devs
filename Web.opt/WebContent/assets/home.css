@@ -1,0 +1,7 @@
+div.jsLink{
+	cursor: pointer; 
+}
+
+div.jsLink:hover {
+	color: #0000ff;
+}

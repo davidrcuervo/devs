@@ -9,5 +9,6 @@ public abstract class Img {
 	protected abstract BufferedImage get(int width, int height) throws MultimediaException;
 	protected abstract String getMimeType();
 	protected abstract String getExtension();
+	protected abstract void setExtension(String extension);
 	
 }

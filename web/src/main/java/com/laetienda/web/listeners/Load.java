@@ -14,6 +14,8 @@ import com.laetienda.db.exceptions.*;
 import com.laetienda.lang.LangManager;
 import com.laetienda.multimedia.MediaManager;
 import com.laetienda.multimedia.MultimediaException;
+import com.laetienda.notes.NotesException;
+import com.laetienda.notes.NotesManager;
 
 public class Load implements ServletContextListener {
 	
@@ -22,6 +24,7 @@ public class Load implements ServletContextListener {
 	private LangManager langManager;
 	private Connection dbManager;
 	private MediaManager mediaManager;
+	private NotesManager notesManager;
 	
 	public void contextDestroyed(ServletContextEvent arg0){
 		
@@ -60,6 +63,9 @@ public class Load implements ServletContextListener {
 			mediaManager = new MediaManager(directory);
 			sc.setAttribute("mediaManager", mediaManager);
 			
+			notesManager = new NotesManager(directory);
+			sc.setAttribute("notesManager", notesManager);
+			
 			log.debug("Framework has loaded succesfully");
 			
 			try{
@@ -70,9 +76,11 @@ public class Load implements ServletContextListener {
 			}
 			
 		}catch (LoggerException ex){
-			
+			ex.printStackTrace();
 		}catch (MultimediaException ex){
-			
+			ex.printStackTrace();
+		}catch (NotesException ex){
+			ex.printStackTrace();
 		}catch (Exception ex){
 			
 			ex.printStackTrace();

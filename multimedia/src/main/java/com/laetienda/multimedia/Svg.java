@@ -24,6 +24,7 @@ public class Svg extends Img{
 	private File file;
 	private int height;
 	private int width;
+	//private String extension;
 	
 	public static void main(String[] args) {
 		
@@ -101,5 +102,12 @@ public class Svg extends Img{
 	
 	protected int getWidth(){
 		return width;
+	}
+
+	/**
+	 * @param extension the extension to set
+	 */
+	protected void setExtension(String extension) {
+		//this.extension = extension;
 	}
 }

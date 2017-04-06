@@ -3,7 +3,7 @@
 ${page.addScript("<script src='/assets/multimedia.js'></script>") }
 
 <c:set var="video_form" scope="request">
-	<form method="post" enctype="multipart/form-data" onsubmit="return getUploadProgress('${page.urlWithPattern}/ajax/');">
+	<form method="post" enctype="multipart/form-data" onsubmit="return getUploadProgress('${page.urlWithPattern}/ajax');">
 		<div class="from-group">
 			<label for="videoNameForm">Video name:</label>
 			<input type="text" class="form-control" id="videoNameForm" name="name" placeholder="Title of Video" />
@@ -24,8 +24,7 @@ ${page.addScript("<script src='/assets/multimedia.js'></script>") }
 		</c:if>
 		</div>
 		
-		<input type="hidden" name="progressId" value="null" id="progressId" />
-		<button type="submit" value="video" name="submit" class="btn btn-primary btn-block">Submit</button>
+		<button id="video_form_btn_submit" type="submit" value="video" name="submit" class="btn btn-primary btn-block">Submit</button>
 		<c:if test="${video.errors['video'] != null}">
 			<div class="text-danger text-center">
 				<c:forEach var="error" items="${video.errors['video'] }">
@@ -36,7 +35,7 @@ ${page.addScript("<script src='/assets/multimedia.js'></script>") }
 	</form>
 	<div style="visibility: hidden; margin-top: 20px;" id="container_progres_bar">
 		<div style="margin-top: 10px; margin-bottom: 2px;">Upload progress: </div>
-		<div class="progress" >
+		<div class="progress">
 			<div id="upload_progress_bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuein="0" aria-valuemax="100" style="width: 0%;">0%</div>
 		</div>
 		<div style="margin-top: 10px; margin-bottom: 2px;">Encoding progress</div>
@@ -44,5 +43,14 @@ ${page.addScript("<script src='/assets/multimedia.js'></script>") }
 			<div id="encoding_progress_bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuein="0" aria-valuemax="100" style="width: 0%;">0%</div>
 		</div>
 	</div>
+	<c:if test="${sessionScope.json != null}">
+		<script>
+			var upload = {
+					"progress" : true,
+					"reload" : "${sessionScope.json.reload != null ? true : false}",
+					"serverAddress": "${page.urlWithPattern}/ajax",
+			};
+		</script>
+	</c:if>
 	
 </c:set>

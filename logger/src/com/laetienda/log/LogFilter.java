@@ -21,7 +21,10 @@ public class LogFilter implements Filter{
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest httpReq = (HttpServletRequest)request;
 		
-		logger = logManager.createJavaLogger();
+		synchronized(this){
+			logger = logManager.createJavaLogger();
+		}
+		
 		httpReq.setAttribute("logger", logger);
 		
 		chain.doFilter(request, response);

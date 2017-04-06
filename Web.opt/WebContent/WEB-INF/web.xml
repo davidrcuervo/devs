@@ -26,6 +26,14 @@
 		<servlet-name>multimedia</servlet-name>
 		<url-pattern>/media/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>wiki</servlet-name>
+		<servlet-class>com.laetienda.notes.Servlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>wiki</servlet-name>
+		<url-pattern>/wiki/*</url-pattern>
+	</servlet-mapping>
 	<listener>
 		<listener-class>
   			com.laetienda.web.listeners.Load
@@ -49,6 +57,7 @@
 		<url-pattern>/web/*</url-pattern>
 		<url-pattern>/lang/*</url-pattern>
 		<url-pattern>/media/*</url-pattern>
+		<url-pattern>/wiki/*</url-pattern>
 	</filter-mapping>
 	<filter>
 		<filter-name>page</filter-name>
@@ -61,5 +70,6 @@
 		<url-pattern>/web/*</url-pattern>
 		<url-pattern>/lang/*</url-pattern>
 		<url-pattern>/media/*</url-pattern>
+		<url-pattern>/wiki/*</url-pattern>
 	</filter-mapping>
 </web-app>

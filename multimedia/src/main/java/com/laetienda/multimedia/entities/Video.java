@@ -181,7 +181,7 @@ public class Video extends EntityObject implements Serializable{
 	 * @param url the url to set
 	 * @throws DbException 
 	 */
-	public void setUrl(String url, Transaction db) throws DbException {
+	public void setUrl(String url, Transaction db) {
 		
 		int counter = 0;
 		List<Video> query;
@@ -200,7 +200,7 @@ public class Video extends EntityObject implements Serializable{
 			}
 			
 		}catch(UnsupportedEncodingException ex){
-			throw new DbException("Encoding is not supported", ex);
+			addError("video", "Internal error while updating URL in the database");
 		}
 		
 	}

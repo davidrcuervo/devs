@@ -1,0 +1,46 @@
+Mar 30, 2017 1:37:53 AM org.apache.catalina.core.StandardServer await
+INFO: A valid shutdown command was received via the shutdown port. Stopping the Server instance.
+Mar 30, 2017 1:37:53 AM org.apache.coyote.AbstractProtocol pause
+INFO: Pausing ProtocolHandler ["http-nio-8088"]
+Mar 30, 2017 1:37:53 AM org.apache.catalina.core.StandardService stopInternal
+INFO: Stopping service Tomcat
+[EL Info]: connection: 2017-03-30 01:37:53.365--ServerSession(1173015372)--file:/opt/web/0.0.1/lib/web.jar_com.laetienda.web_transactionType=RESOURCE_LOCAL_url=jdbc:postgresql://db.la-etienda.lan:5432/web_user=web logout successful
+Mar 30, 2017 1:37:53 AM org.apache.coyote.AbstractProtocol stop
+INFO: Stopping ProtocolHandler ["http-nio-8088"]
+Mar 30, 2017 1:38:08 AM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-nio-8088"]
+Mar 30, 2017 1:38:08 AM org.apache.tomcat.util.net.NioSelectorPool getSharedSelector
+INFO: Using a shared selector for servlet write/read
+Mar 30, 2017 1:38:08 AM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service Tomcat
+Mar 30, 2017 1:38:08 AM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet Engine: Apache Tomcat/8.5.8
+Mar 30, 2017 1:38:08 AM org.apache.catalina.startup.ContextConfig getDefaultWebXmlFragment
+INFO: No global web.xml found
+[EL Info]: 2017-03-30 01:38:11.577--ServerSession(228179810)--EclipseLink, version: Eclipse Persistence Services - 2.5.2.v20140319-9ad6abd
+[EL Info]: connection: 2017-03-30 01:38:11.748--ServerSession(228179810)--file:/opt/web/0.0.1/lib/web.jar_com.laetienda.web_transactionType=RESOURCE_LOCAL_url=jdbc:postgresql://db.la-etienda.lan:5432/web_user=web login successful
+Failed to execute query
+COPY lang_languages FROM STDIN WITH DELIMITER ',' CSV HEADER
+org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint "lang_languages_pkey"
+  Detail: Key (id)=(113) already exists.
+  Where: COPY lang_languages, line 2
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2182)
+	at org.postgresql.core.v3.QueryExecutorImpl.processCopyResults(QueryExecutorImpl.java:909)
+	at org.postgresql.core.v3.QueryExecutorImpl.endCopy(QueryExecutorImpl.java:771)
+	at org.postgresql.core.v3.CopyInImpl.endCopy(CopyInImpl.java:59)
+	at org.postgresql.copy.CopyManager.copyIn(CopyManager.java:171)
+	at org.postgresql.copy.CopyManager.copyIn(CopyManager.java:146)
+	at com.laetienda.db.Sql.csvToTable(Sql.java:92)
+	at com.laetienda.lang.LangManager.importLang(LangManager.java:49)
+	at com.laetienda.web.listeners.Load.contextInitialized(Load.java:66)
+	at org.apache.catalina.core.StandardContext.listenerStart(StandardContext.java:4727)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:5189)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:150)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1404)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1394)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Mar 30, 2017 1:38:11 AM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler [http-nio-8088]
