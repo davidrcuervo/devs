@@ -1,4 +1,4 @@
-package multimedia;
+package com.laetienda.multimedia;
 
 public class MultimediaException extends Exception {
 	private static final long serialVersionUID = 1L;

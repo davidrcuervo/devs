@@ -7,19 +7,19 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.laetienda.db.Connection;
-import com.laetienda.db.Transaction;
-import com.laetienda.db.exceptions.*;
-import com.laetienda.lang.entities.Language;
-import com.laetienda.log.JavaLogger;
+import com.laetienda.db.Db;
+import com.laetienda.db.DbManager;
+import com.laetienda.db.DbException;
+import com.laetienda.entities.Language;
+import com.laetienda.logger.JavaLogger;
 
 public class Servlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final int PAGE_SIZE = 20;
 	
 	private String[] pathParts;
-	Connection dbManager;
-	private Transaction db;
+	private DbManager dbManager;
+	private Db db;
 	private JavaLogger log;
 	private Language langEntity;
 	
@@ -28,7 +28,7 @@ public class Servlet extends HttpServlet {
 	}
 	
 	public void init(ServletConfig config) throws ServletException {
-		dbManager = (Connection)config.getServletContext().getAttribute("dbManager");
+		dbManager = (DbManager)config.getServletContext().getAttribute("dbManager");
 		db = dbManager.createTransaction();
 	}
 	

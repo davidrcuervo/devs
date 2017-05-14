@@ -21,9 +21,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.laetienda.db.Transaction;
-import com.laetienda.db.entities.EntityObject;
-import com.laetienda.db.exceptions.DbException;
+import com.laetienda.db.Db;
+import com.laetienda.db.DbException;
 
 @Entity
 @Table(name="multimedia_videos")
@@ -181,7 +180,7 @@ public class Video extends EntityObject implements Serializable{
 	 * @param url the url to set
 	 * @throws DbException 
 	 */
-	public void setUrl(String url, Transaction db) {
+	public void setUrl(String url, Db db) {
 		
 		int counter = 0;
 		List<Video> query;

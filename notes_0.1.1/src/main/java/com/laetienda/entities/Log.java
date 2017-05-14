@@ -5,8 +5,7 @@ import java.lang.Integer;
 import java.util.Calendar;
 import java.io.IOException;
 import javax.persistence.*;
-import com.laetienda.log.*;
-import com.laetienda.db.entities.EntityObject;
+import com.laetienda.logger.*;
 
 /**
  * Entity implementation class for Entity: Log

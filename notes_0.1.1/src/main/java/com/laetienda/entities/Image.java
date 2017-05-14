@@ -18,8 +18,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.laetienda.db.entities.EntityObject;
-
 @Entity
 @Table(name="multimedia_images")
 @NamedQueries({

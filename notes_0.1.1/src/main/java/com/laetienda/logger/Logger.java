@@ -1,19 +1,19 @@
-package logger;
+package com.laetienda.logger;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import com.laetienda.db.Transaction;
-import com.laetienda.db.exceptions.DbException;
-import com.laetienda.log.entities.Log;
+import com.laetienda.db.Db;
+import com.laetienda.db.DbException;
+import com.laetienda.entities.Log;
 
 public class Logger {
 	
 public static int counter = 0;
 	
 	private File file;	
-	private Transaction db;
+	private Db db;
 	private Log entity;
 	private String message;
 	private LoggerManager logManager;

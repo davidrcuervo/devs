@@ -1,4 +1,4 @@
-package multimedia;
+package com.laetienda.multimedia;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,10 +32,10 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.google.gson.Gson;
-import com.laetienda.db.Connection;
-import com.laetienda.db.Transaction;
-import com.laetienda.db.exceptions.DbException;
-import com.laetienda.log.JavaLogger;
+import com.laetienda.db.DbManager;
+import com.laetienda.db.Db;
+import com.laetienda.db.DbException;
+import com.laetienda.logger.JavaLogger;
 
 public class Servlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
@@ -43,8 +43,8 @@ public class Servlet extends HttpServlet{
 	private String[] pathParts;
 	private JavaLogger log;
 	private MediaManager mediaManager;
-	private Connection dbManager;
-	private Transaction db;
+	private DbManager dbManager;
+	private Db db;
 	//private Map<String, String> uploadProgress;
 	
 	public Servlet(){
@@ -59,7 +59,7 @@ public class Servlet extends HttpServlet{
 		ServletContext context = request.getSession().getServletContext();
 		
 		mediaManager = (MediaManager)context.getAttribute("mediaManager");
-		dbManager = (Connection)context.getAttribute("dbManager");
+		dbManager = (DbManager)context.getAttribute("dbManager");
 		db = dbManager.createTransaction();
 		pathParts = (String[])request.getAttribute("pathParts");
 		log = (JavaLogger)request.getAttribute("logger");
@@ -97,7 +97,7 @@ public class Servlet extends HttpServlet{
 		//http://<server_name>/<context_path>/video/video_name
 		}else if(pathParts[0].equals("video") && pathParts.length == 2 && findVideoByUrl(pathParts[1]) != null){
 			
-			com.laetienda.multimedia.entities.Video video = findVideoByUrl(pathParts[1]);
+			com.laetienda.entities.Video video = findVideoByUrl(pathParts[1]);
 			request.setAttribute("video", video);
 			request.getRequestDispatcher("/WEB-INF/jsp/media/video/video.jsp").forward(request, response);
 				
@@ -305,7 +305,7 @@ public class Servlet extends HttpServlet{
 	
 	private void uploadVideo(HttpServletRequest request, HttpServletResponse response, Map<String, String> inputs) throws ServletException, IOException{
 		
-		com.laetienda.multimedia.entities.Video video = new com.laetienda.multimedia.entities.Video();
+		com.laetienda.entities.Video video = new com.laetienda.entities.Video();
 		File originalVideo = null;
 		String fileName;
 		
@@ -512,11 +512,11 @@ public class Servlet extends HttpServlet{
 		return result;
 	}
 
-	private com.laetienda.multimedia.entities.Video findVideoByUrl(String url){
-		com.laetienda.multimedia.entities.Video result = null;
+	private com.laetienda.entities.Video findVideoByUrl(String url){
+		com.laetienda.entities.Video result = null;
 		
 		try{
-			result = db.getEm().createNamedQuery("Video.findByUrl", com.laetienda.multimedia.entities.Video.class).setParameter("url", pathParts[1]).getSingleResult();
+			result = db.getEm().createNamedQuery("Video.findByUrl", com.laetienda.entities.Video.class).setParameter("url", pathParts[1]).getSingleResult();
 		}catch(NoResultException ex) {
 			log.debug(ex.getMessage());
 		}catch(NonUniqueResultException ex){

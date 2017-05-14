@@ -11,19 +11,19 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.laetienda.db.Connection;
-import com.laetienda.db.Transaction;
-import com.laetienda.log.JavaLogger;
+import com.laetienda.db.DbManager;
+import com.laetienda.db.Db;
+import com.laetienda.logger.JavaLogger;
 
 public class LangFilter implements Filter{
 	
-	Connection dbManager;
-	LangManager langManager;
+	private DbManager dbManager;
+	private LangManager langManager;
 	
 	
 	public void init(FilterConfig fConfig) throws ServletException{
 		
-		dbManager = (Connection)fConfig.getServletContext().getAttribute("dbManager");
+		dbManager = (DbManager)fConfig.getServletContext().getAttribute("dbManager");
 		langManager = (LangManager)fConfig.getServletContext().getAttribute("langManager");
 		
 	}
@@ -33,7 +33,7 @@ public class LangFilter implements Filter{
 		HttpServletRequest httpReq = (HttpServletRequest)request;
 		HttpServletResponse httpResp = (HttpServletResponse)response;
 		JavaLogger log = (JavaLogger)httpReq.getAttribute("logger");
-		Transaction db = dbManager.createTransaction();
+		Db db = dbManager.createTransaction();
 		
 		try{
 			Lang lang = new Lang(db, langManager, log);

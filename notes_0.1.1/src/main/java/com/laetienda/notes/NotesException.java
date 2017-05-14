@@ -4,7 +4,7 @@ public class NotesException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	
-private Exception parent;
+	private Exception parent;
 	
 	public NotesException() { 
 		super(); 

@@ -1,4 +1,4 @@
-package logger;
+package com.laetienda.logger;
 
 import java.io.IOException;
 import javax.servlet.Filter;

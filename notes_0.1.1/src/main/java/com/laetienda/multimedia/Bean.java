@@ -1,20 +1,21 @@
-package multimedia;
+package com.laetienda.multimedia;
 
 import java.util.List;
 
-import com.laetienda.db.Transaction;
+import com.laetienda.db.Db;
+import com.laetienda.entities.Video;
 
 public class Bean {
 	
-	Transaction db;
+	private Db db;
 	
-	public Bean(Transaction db){
+	public Bean(Db db){
 		this.db = db;
 	}
 	
-	public List<com.laetienda.multimedia.entities.Video> getVideosList(){
+	public List<Video> getVideosList(){
 				
-		return 	db.getEm().createNamedQuery("Video.findAll", com.laetienda.multimedia.entities.Video.class).getResultList();
+		return 	db.getEm().createNamedQuery("Video.findAll", Video.class).getResultList();
 	}
 
 }

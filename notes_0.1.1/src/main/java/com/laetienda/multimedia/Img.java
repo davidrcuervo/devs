@@ -1,4 +1,4 @@
-package multimedia;
+package com.laetienda.multimedia;
 
 import java.awt.image.BufferedImage;
 

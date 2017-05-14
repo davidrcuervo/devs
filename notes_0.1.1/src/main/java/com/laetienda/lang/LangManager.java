@@ -5,9 +5,9 @@ import java.io.FileInputStream;
 import java.util.Properties;
 
 import com.laetienda.db.Sql;
-import com.laetienda.db.Transaction;
-import com.laetienda.db.exceptions.*;
-import com.laetienda.log.JavaLogger;
+import com.laetienda.db.Db;
+import com.laetienda.db.SqlException;
+import com.laetienda.logger.JavaLogger;
 
 public class LangManager {
 	
@@ -22,7 +22,7 @@ public class LangManager {
     	settings = loadSettings(directory);
     }
     
-    public Lang createLangInterface(Transaction db, JavaLogger log) throws LangException {
+    public Lang createLangInterface(Db db, JavaLogger log) throws LangException {
     	return new Lang(db, this, log);
     }
     

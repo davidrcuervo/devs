@@ -18,7 +18,7 @@ public class PageFilter implements Filter{
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		
 		HttpServletRequest httpReq = (HttpServletRequest)request;
-		com.laetienda.tomcat.PageFilter.Page page = new com.laetienda.tomcat.PageFilter.Page(httpReq);
+		Page page = new Page(httpReq);
 		
 		httpReq.setAttribute("page", page);
 		

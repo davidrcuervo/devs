@@ -3,7 +3,6 @@ package com.laetienda.entities;
 import javax.persistence.*;
 
 import java.io.Serializable;
-import com.laetienda.db.entities.EntityObject;
 import com.laetienda.options.Option;
 
 @Entity

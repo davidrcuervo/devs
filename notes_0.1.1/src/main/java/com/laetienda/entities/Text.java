@@ -1,6 +1,5 @@
 package com.laetienda.entities;
 
-import com.laetienda.log.entities.TextIndex;
 import java.io.Serializable;
 import java.lang.String;
 import java.util.Calendar;

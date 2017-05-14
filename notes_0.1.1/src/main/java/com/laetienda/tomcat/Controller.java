@@ -8,7 +8,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import com.laetienda.tomcat.lib.Service;
+import com.laetienda.tomcat.Service;
 
 
 public class Controller {

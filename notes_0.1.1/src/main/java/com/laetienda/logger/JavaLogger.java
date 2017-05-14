@@ -1,4 +1,9 @@
-package logger;
+package com.laetienda.logger;
+
+import com.laetienda.db.DbException;
+import com.laetienda.db.SqlException;
+import com.laetienda.multimedia.MultimediaException;
+import com.laetienda.notes.NotesException;
 
 public class JavaLogger {
 	
@@ -44,14 +49,45 @@ public class JavaLogger {
 	
 	public void exception(Exception ex){
 		
-		if(ex instanceof com.laetienda.db.exceptions.SqlException){
-			System.out.println(ex.getMessage());
-			System.out.println(((com.laetienda.db.exceptions.SqlException) ex).getQuery());
-			((com.laetienda.db.exceptions.SqlException) ex).getParent().printStackTrace();
+		if(ex instanceof SqlException){
+			SqlException sqlException = (SqlException)ex;
+			
+			if(sqlException.getParent() != null){
+				System.out.println(ex.getMessage());
+				sqlException.getParent().printStackTrace();
+			}else{
+				ex.printStackTrace();
+			}
 		
-		}else if(ex instanceof com.laetienda.db.exceptions.DbException){
-			System.out.println(ex.getMessage());
-			((com.laetienda.db.exceptions.DbException) ex).getParent().printStackTrace();
+		}else if(ex instanceof DbException){
+			DbException dbException = (DbException)ex;
+			
+			if(dbException.getParent() != null){
+				System.out.println(ex.getMessage());
+				dbException.getParent().printStackTrace();
+			}else{
+				ex.printStackTrace();
+			}
+		
+		}else if(ex instanceof MultimediaException){
+			MultimediaException multimediaException = (MultimediaException)ex;
+			
+			if(multimediaException.getParent() != null){
+				System.out.println(ex.getMessage());
+				multimediaException.getParent().printStackTrace();
+			}else{
+				ex.printStackTrace();
+			}
+			
+		}else if(ex instanceof NotesException){
+			NotesException notesException = (NotesException)ex;
+			
+			if(notesException.getParent() != null){
+				System.out.println(ex.getMessage());
+				notesException.getParent().printStackTrace();
+			}else{
+				ex.printStackTrace();
+			}
 			
 		}else{
 			ex.printStackTrace();

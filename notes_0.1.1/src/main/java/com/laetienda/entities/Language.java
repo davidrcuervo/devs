@@ -5,8 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.laetienda.db.Transaction;
-import com.laetienda.db.entities.EntityObject;
+import com.laetienda.db.Db;
 
 import javax.persistence.*;
 
@@ -102,7 +101,7 @@ public class Language extends EntityObject implements Serializable {
 	/**
 	 * @param identifier the identifier to set
 	 */
-	public Language setIdentifier(String identifier, Transaction db) {
+	public Language setIdentifier(String identifier, Db db) {
 		
 		this.identifier = identifier;
 		

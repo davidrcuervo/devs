@@ -1,4 +1,4 @@
-package logger;
+package com.laetienda.logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -140,5 +140,9 @@ public class LoggerManager {
 	
 	public static String[] getLevels(){
 		return LEVELS;
+	}
+	
+	public void close(){
+		
 	}
 }

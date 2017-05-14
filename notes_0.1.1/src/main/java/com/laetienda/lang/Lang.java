@@ -1,17 +1,17 @@
 package com.laetienda.lang;
 
-import com.laetienda.lang.entities.Language;
-import com.laetienda.db.Transaction;
-import com.laetienda.log.JavaLogger;
+import com.laetienda.entities.Language;
+import com.laetienda.db.Db;
+import com.laetienda.logger.JavaLogger;
 
 public class Lang {
 	public static String[] LANG_CODES = {"en", "es", "fr"};
 	
-	private Transaction db;
+	private Db db;
 	private String langCode;
 	private JavaLogger log;
 	
-	protected Lang(Transaction db, LangManager manager, JavaLogger log) throws LangException {
+	protected Lang(Db db, LangManager manager, JavaLogger log) throws LangException {
 		this.log = log;
 		this.db = db;
 		setLang(manager.getSetting("default_lang"));
