@@ -27,7 +27,7 @@ public class NotesManager {
 		String path = "";
 		
 		try{
-			path = directory.getAbsolutePath() + File.separator + "etc" + File.separator + "notes" + File.separator + "conf.xml";
+			path = directory.getAbsolutePath() + File.separator + "etc" + File.separator + "notes.conf.xml";
 			
 			Properties defaults = new Properties();
 			defaults.setProperty("pathToNotes", directory.getAbsolutePath() + File.separator + "var" + File.separator + "notes");

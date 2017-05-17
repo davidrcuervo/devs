@@ -1,7 +1,9 @@
 package com.laetienda.logger;
 
+import com.laetienda.AppException;
 import com.laetienda.db.DbException;
 import com.laetienda.db.SqlException;
+import com.laetienda.lang.LangException;
 import com.laetienda.multimedia.MultimediaException;
 import com.laetienda.notes.NotesException;
 
@@ -47,6 +49,15 @@ public class JavaLogger {
 		}
 	}
 	
+	public void exception(AppException ex){
+		if(ex.getParent() != null){
+			System.out.println(ex.getMessage());
+			ex.getParent().printStackTrace();
+		}else{
+			ex.printStackTrace();
+		}
+	}
+	
 	public void exception(Exception ex){
 		
 		if(ex instanceof SqlException){
@@ -89,6 +100,15 @@ public class JavaLogger {
 				ex.printStackTrace();
 			}
 			
+		}else if(ex instanceof LangException){
+			LangException langException = (LangException)ex;
+			
+			if(langException.getParent() != null){
+				System.out.println(ex.getMessage());
+				langException.getParent().printStackTrace();
+			}else{
+				ex.printStackTrace();
+			}
 		}else{
 			ex.printStackTrace();
 		}

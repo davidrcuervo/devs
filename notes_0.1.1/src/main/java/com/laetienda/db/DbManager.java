@@ -95,6 +95,10 @@ public class DbManager {
 	   			System.out.println(temp.getKey() + ": " + temp.getValue());
 	   		}
 	   		*/
+	   		/*
+	   		 * End of debugging
+	   		 * -------------------------------
+	   		 */
 	   		
     		emfactory = Persistence.createEntityManagerFactory(
     				settings.get("PERSISTENCE_UNIT_NAME"),

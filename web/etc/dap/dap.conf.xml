@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>Configuration properties for Directory Access Protocol (DAP)</comment>
+	<entry key="app_name">la-etienda</entry>
+	<entry key="domain">la-etienda.lan</entry>
+	<entry key="server_address">homeServer3.la-etienda.lan</entry>
+	<entry key="service_port">10389</entry>
+	<entry key="user_dn">uid=2,ou=people,dc=la-etienda,dc=lan</entry>
+	<entry key="user_password">12345</entry>
+</properties>

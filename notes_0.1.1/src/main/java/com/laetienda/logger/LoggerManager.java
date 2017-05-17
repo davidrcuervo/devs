@@ -84,13 +84,12 @@ public class LoggerManager {
 			try{
 				conf = new FileInputStream(new File(directory.getAbsolutePath() + 
 						File.separator + "etc" +
-						File.separator + "logger" + 
-						File.separator + "conf.xml"));
+						File.separator + "logger.conf.xml"));
 				
 				settings.loadFromXML(conf);
 			
 			}catch(FileNotFoundException ex){
-				throw new LoggerException("the file (" + directory + "/etc/database/conf.xml) does not exist, is a directory rather than a regular file, or for some other reason cannot be opened for reading.", ex);
+				throw new LoggerException("the file (" + directory + "/etc/logger.conf.xml) does not exist, is a directory rather than a regular file, or for some other reason cannot be opened for reading.", ex);
 			}catch(SecurityException ex){
 				throw new LoggerException("checkRead method denies read access to the file (" +  directory + "/etc/database/conf.xml)", ex);
 			}catch(InvalidPropertiesFormatException ex){

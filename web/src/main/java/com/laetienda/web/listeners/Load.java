@@ -5,40 +5,56 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import com.laetienda.tomcat.lib.Service;
-import com.laetienda.log.LoggerManager;
-import com.laetienda.log.JavaLogger;
-import com.laetienda.log.LoggerException;
-import com.laetienda.db.Connection;
-import com.laetienda.db.exceptions.*;
+import com.laetienda.tomcat.Service;
+import com.laetienda.logger.LoggerManager;
+import com.laetienda.logger.JavaLogger;
+import com.laetienda.logger.LoggerException;
+import com.laetienda.db.DbManager;
+import com.laetienda.db.SqlException;
 import com.laetienda.lang.LangManager;
 import com.laetienda.multimedia.MediaManager;
 import com.laetienda.multimedia.MultimediaException;
 import com.laetienda.notes.NotesException;
 import com.laetienda.notes.NotesManager;
+import com.laetienda.dap.DapException;
+import com.laetienda.dap.DapManager;
 
 public class Load implements ServletContextListener {
 	
 	private File directory;
 	private JavaLogger log;
+	private LoggerManager logManager;
 	private LangManager langManager;
-	private Connection dbManager;
+	private DbManager dbManager;
 	private MediaManager mediaManager;
 	private NotesManager notesManager;
+	private DapManager dapManager;
 	
 	public void contextDestroyed(ServletContextEvent arg0){
 		
-		log.info("Closing webapp");
-		dbManager.close();
+		log.info("closing cafeteros web application");
 		
-		try{
-			langManager.exportLang();
+		if(notesManager != null){
 			
-		}catch (SqlException ex){
-			log.critical("Failed to close webapp objects");
-			log.exception(ex);
-		}finally{
+		}
+		
+		if(langManager != null){
 			
+			try{
+				langManager.exportLang();
+			}catch(SqlException ex){
+				log.critical("Failed to export language to CSV file. Information might be lost");
+				log.exception(ex);
+			}
+		}
+		
+		if(dbManager != null){
+			dbManager.close();
+		}
+		
+		log.info("cafeteros web application has closed successfully");
+		if(logManager != null){
+			logManager.close();
 		}
 	}
 	
@@ -49,12 +65,23 @@ public class Load implements ServletContextListener {
 		
 		try{
 			
-			LoggerManager logManager = new LoggerManager(directory);
+			logManager = new LoggerManager(directory);
 			sc.setAttribute("logManager", logManager);
-			
 			log = logManager.createJavaLogger();
+		}catch (LoggerException ex){
+			if(ex.getParent() != null){
+				System.err.println(ex.getMessage());
+				ex.getParent().printStackTrace();
+			}else{
+				ex.printStackTrace();
+			}
+			exit();
+		}
+		
+		log.info("Loading applicatoin libraries");
 			
-			dbManager = new Connection(directory);
+		try{
+			dbManager = new DbManager(directory);
 			sc.setAttribute("dbManager", dbManager);
 			
 			langManager = new LangManager(directory, logManager.createJavaLogger());
@@ -66,7 +93,15 @@ public class Load implements ServletContextListener {
 			notesManager = new NotesManager(directory);
 			sc.setAttribute("notesManager", notesManager);
 			
-			log.debug("Framework has loaded succesfully");
+			dapManager = new DapManager(directory);
+			
+			try{
+				dapManager.startDapServer();
+				sc.setAttribute("dapManager", dapManager);
+			}catch(DapException ex){
+				log.exception(ex);
+				dapManager.stopDapServer();
+			}
 			
 			try{
 				langManager.importLang();
@@ -75,14 +110,18 @@ public class Load implements ServletContextListener {
 				log.exception(ex);
 			}
 			
-		}catch (LoggerException ex){
-			ex.printStackTrace();
-		}catch (MultimediaException ex){
-			ex.printStackTrace();
-		}catch (NotesException ex){
-			ex.printStackTrace();
-		}catch (Exception ex){
+			log.info("Framework has loaded succesfully");
 			
+		}catch (MultimediaException ex){
+			log.exception(ex);
+			exit();
+		}catch (NotesException ex){
+			log.exception(ex);
+			exit();
+		}catch (DapException ex){
+			log.exception(ex);
+			this.exit();
+		}catch (Exception ex){
 			ex.printStackTrace();
 			this.exit();
 		}

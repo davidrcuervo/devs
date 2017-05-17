@@ -1,0 +1,100 @@
+version: 1
+
+dn: uid=1,ou=people,dc=la-etienda,dc=lan
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: top
+cn: sysadmin
+sn: sysadmin
+mail: web@la-etienda.com
+uid: 1
+userPassword:: e1NTSEF9aWNXeXY3cTlUaGZ1S2pFWXdKQmIvbHp5ZEV2elJhUmVHTitWU2c9P
+ Q==
+
+dn: uid=104,ou=people,dc=la-etienda,dc=lan
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: top
+cn: Leo
+sn: Messi
+mail: leo.messi@mail.com
+uid: 104
+userPassword:: e1NTSEF9ZEtQOVJqZ2p0SEFvbzBmejhadjVGSTkxc2FIYmFPbHZ6VEtxSXc9P
+ Q==
+
+dn: ou=people,dc=la-etienda,dc=lan
+objectClass: organizationalUnit
+objectClass: top
+ou: people
+
+dn: uid=103,ou=people,dc=la-etienda,dc=lan
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: top
+cn: Clarke
+sn: Kente
+mail: clark.kent@hotmail.com
+uid: 103
+userPassword:: e1NTSEF9eTA3Wkl3cDFMb2xyMnhXRFB1eUw3Z2V5ZnBmM1h6S1NSbUt3d3c9P
+ Q==
+
+dn: cn=managers,ou=groups,dc=la-etienda,dc=lan
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: managers
+uniqueMember: uid=101,ou=people,dc=la-etienda,dc=lan
+
+dn: ou=groups,dc=la-etienda,dc=lan
+objectClass: organizationalUnit
+objectClass: top
+ou: groups
+
+dn: uid=101,ou=people,dc=la-etienda,dc=lan
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: top
+cn: David
+sn: Cuervo
+mail: myself@la-etienda.com
+uid: 101
+userPassword:: e1NTSEF9TW4rUDlPSnloT2w3ZHdxTk13L3N2RU5zV0JGdFgwY2RWeXhpK2c9P
+ Q==
+
+dn: uid=2,ou=people,dc=la-etienda,dc=lan
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: top
+cn: tomcat
+sn: tomcat
+uid: 2
+userPassword:: e1NTSEF9Q2wxZURrQXNEUzYwcXplRkZUSVNXeDFkZktJQjB4RmxTdk9YbVE9P
+ Q==
+
+dn: dc=la-etienda,dc=lan
+objectclass: top
+objectclass: domain
+dc: la-etienda
+
+dn: uid=102,ou=people,dc=la-etienda,dc=lan
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: top
+cn: Bruce
+sn: Wayne
+mail: bruce.wayne@hotmail.com
+uid: 102
+userPassword:: e1NTSEF9MEFFVUExQ3pEcGYrNlp2MEd1RldacnhhSUg1Q1dmc3RiR0dPL2c9P
+ Q==
+
+dn: cn=sysadmins,ou=groups,dc=la-etienda,dc=lan
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: sysadmins
+uniqueMember: uid=1,ou=people,dc=la-etienda,dc=lan
+

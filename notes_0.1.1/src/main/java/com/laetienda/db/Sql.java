@@ -163,8 +163,7 @@ public class Sql {
 		
 		String path = directory.getAbsolutePath() 
 				+ File.separator + "etc"
-				+ File.separator + "database"
-				+ File.separator + "conf.xml";
+				+ File.separator + "database.conf.xml";
 		
 		try{
 			conf = new FileInputStream(new File(path));

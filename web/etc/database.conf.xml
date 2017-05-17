@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>Configuration properties to connect to the database</comment>
+	<entry key="db_provider">postgres</entry>
+	<entry key="PERSISTENCE_UNIT_NAME">com.laetienda.web</entry>
+	<entry key="database">dev</entry>
+	<entry key="db_host">db.la-etienda.lan</entry>
+	<entry key="db_port">5432</entry>
+	<entry key="javax.persistence.jdbc.user">web</entry>
+	<entry key="javax.persistence.jdbc.password">www.myself.com</entry>
+	
+	<entry key="javax.persistence.schema-generation.database.action">create</entry>
+	<entry key="javax.persistence.schema-generation.create-source">metadata</entry>
+	<!-- 
+	<entry key="javax.persistence.schema-generation.drop-source">script</entry>
+	<entry key="javax.persistence.schema-generation.scripts.create-target">META-INF/postgresql_create.sql
+	</entry>
+	<entry key="javax.persistence.schema-generation.scripts.drop-target">file:/home/myself/git/eclipse/Web.opt/lib/postgresql_drop.sql
+	</entry>
+	 -->
+</properties>

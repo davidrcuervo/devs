@@ -71,7 +71,7 @@ public class MediaManager {
 		String path = "";
 		
 		try{
-			path = directory.getAbsolutePath() + File.separator + "etc" + File.separator + "multimedia" + File.separator + "conf.xml";
+			path = directory.getAbsolutePath() + File.separator + "etc" + File.separator + "multimedia.conf.xml";
 			
 			Properties defaults = new Properties();
 			defaults.setProperty("images_folder", directory.getAbsolutePath() + File.separator + "var" + File.separator + "multimedia" + File.separator + "images");

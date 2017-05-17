@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>Configuration properties for Multimedia</comment>
+	<entry key="images_folder">/home/myself/git/eclipse/Web.opt/var/multimedia/images</entry>
+	<entry key="videos_folder">/home/myself/git/eclipse/Web.opt/var/multimedia/videos</entry>
+	<entry key="temp_folder">/home/myself/git/eclipse/Web.opt/var/multimedia/temp</entry>
+</properties>

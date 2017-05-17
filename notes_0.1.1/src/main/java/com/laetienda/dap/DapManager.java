@@ -174,7 +174,7 @@ public class DapManager {
 		defaults.setProperty("dapFolderPath", dapFolderPath);
 		
 		Properties result = new Properties(defaults);
-		String path = directory.getAbsolutePath() + File.separator + "etc" + File.separator + "dap.conf.xml";
+		String path = directory.getAbsolutePath() + File.separator + "etc" + File.separator + "dap" + File.separator + "dap.conf.xml";
 		
 		try{
 			FileInputStream conf = new FileInputStream(new File(path));

@@ -1,10 +1,9 @@
 package com.laetienda.dap;
 
-public class DapException extends Exception {
-private static final long serialVersionUID = 1L;
+import com.laetienda.AppException;
 
-	
-	private Exception parent;
+public class DapException extends AppException {
+private static final long serialVersionUID = 1L;
 	
 	public DapException() { 
 		super(); 
@@ -23,21 +22,6 @@ private static final long serialVersionUID = 1L;
 	}
 	
 	public DapException(String message, Exception parent){
-		super(message);
-		this.parent = parent;
-	}
-
-	/**
-	 * @return the parent
-	 */
-	public Exception getParent() {
-		return parent;
-	}
-
-	/**
-	 * @param parent the parent to set
-	 */
-	public void setParent(Exception parent) {
-		this.parent = parent;
+		super(message, parent);
 	}
 }

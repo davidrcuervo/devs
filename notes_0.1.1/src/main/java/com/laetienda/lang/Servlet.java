@@ -71,7 +71,7 @@ public class Servlet extends HttpServlet {
 			request.setAttribute("lang_delete_success", request.getSession().getAttribute("lang_delete_success"));
 			request.getSession().removeAttribute("lang_delete_success");
 		}
-		
+				
 		if(pathParts.length == 1 && pathParts[0].length() == 0){
 			request.getRequestDispatcher("/WEB-INF/jsp/lang/show.jsp").forward(request, response);
 		}else if(pathParts.length == 2 && pathParts[0].equals("edit") && findLanguage(pathParts[1]) != null){

@@ -15,7 +15,7 @@ public class LangManager {
 	private JavaLogger log;
 	private Properties settings;
     
-    public LangManager(File directory, JavaLogger log){
+    public LangManager(File directory, JavaLogger log) throws LangException{
 
     	this.directory = directory;
     	this.log = log;
@@ -49,13 +49,12 @@ public class LangManager {
     	sql.csvToTable(query, file);
     }
     
-    private Properties loadSettings(File directory){
+    private Properties loadSettings(File directory) throws LangException{
     	log.info("Loading settings for Lang object");
     	
     	String path = directory.getAbsolutePath() 
 				+ File.separator + "etc"
-				+ File.separator + "lang"
-				+ File.separator + "conf.xml";
+				+ File.separator + "lang.conf.xml";
     	
     	Properties defaults = new Properties();
     	defaults.setProperty("file_csv", directory.getAbsolutePath() + File.separator + 
@@ -72,7 +71,7 @@ public class LangManager {
 				FileInputStream conf = new FileInputStream(new File(path));
 				settings.loadFromXML(conf);
 			}catch (Exception ex){
-				log.exception(ex);
+				throw new LangException("Failed to load lang.conf.xml settings file", ex);
 			}finally{
 				
 			}
