@@ -42,7 +42,6 @@ public class Ldif {
 		}
 	}
 	
-	
 	protected static final Dn SYSADMIN_DN(){
 		try{
 			return new Dn("uid=1,ou=People", domain);
@@ -86,7 +85,7 @@ public class Ldif {
 					.add("objectclass", "top")
 					.add("uid","2")
 					.add("cn", "tomcat")
-					.add("sn", "No Sn")
+					.add("sn", "app")
 					.add("userpassword", tomcatpassword)
 					.add("ou", "People")
 					.add("description", "User for unauthenticated people");

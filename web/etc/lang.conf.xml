@@ -2,6 +2,5 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 	<comment>Configuration properties for languages</comment>
-	<entry key="file_csv">/home/myself/git/eclipse/Web.opt/var/lang/langs.csv</entry>
 	<entry key="default_lang">en</entry>
 </properties>

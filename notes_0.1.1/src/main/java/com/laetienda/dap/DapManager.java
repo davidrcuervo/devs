@@ -72,67 +72,7 @@ public class DapManager {
 		}
 	}
 	
-	private void setupDomain() throws DapException{
-					
-		LdapConnection connection = this.createConnection();
-		try{
-			if(!connection.exists(Ldif.PEOPLE_DN())){
-				connection.add(Ldif.PEOPLE_ENTRY());
-			}
-			
-			if(!connection.exists(Ldif.SYSADMIN_DN())){
-				connection.add(Ldif.SYSADMIN_ENTRY(settings.getProperty("admuserpassword")));
-			}
-			
-			if(!connection.exists(Ldif.TOMCAT_USER_DN())){
-				connection.add(Ldif.TOMCAT_USER_ENTRY(settings.getProperty("tomcatpassword")));
-			}
-			
-			if(!connection.exists(Ldif.GROUPS_DN())){
-				connection.add(Ldif.GROUPS_ENTRY());
-			}
-			
-			if(!connection.exists(Ldif.SYSADMINS_DN())){
-				connection.add(Ldif.SYSADMINS_ENTRY());
-			}
-			
-			if(!connection.exists(Ldif.MANAGERS_DN())){
-				connection.add(Ldif.MAANGERS_ENTRY());
-			}
-			
-			/*
-			if(!connection.exists(Ldif.USERS_DN())){
-				connection.add(Ldif.USERS_ENTRY());
-			}
-			
-			
-			if(!connection.exists(Ldif.VISITORS_DN())){
-				connection.add(Ldif.VISITORS_ENTRY());
-			}
-			*/
-			
-			if(!connection.exists(Ldif.ACI_SYSADMIN_DN())){
-				connection.add(Ldif.ACI_SYSADMIN());
-			}
-			
-			if(!connection.exists(Ldif.ACI_MANAGER_DN())){
-				connection.add(Ldif.ACI_MANAGER());
-			}
-			
-			if(!connection.exists(Ldif.ACI_USER_DN())){
-				connection.add(Ldif.ACI_USER());
-			}
-			
-			if(!connection.exists(Ldif.ACI_TOMCAT_DN())){
-				connection.add(Ldif.ACI_TOMCAT_SUBENTRY());
-			}
-			
-		}catch(LdapException ex){
-			throw new DapException("Unable to setup domain elements in LDAP" ,ex);
-		}finally{
-			this.closeConnection(connection);
-		}
-	}
+	
 	
 	private LdapConnectionPool startLdapConnectionPool() throws DapException{
 		
@@ -167,7 +107,6 @@ public class DapManager {
 		defaults.setProperty("domain", "example.com");
 		defaults.setProperty("server_address", "localhost");
 		defaults.setProperty("service_port", "10389");
-		defaults.setProperty("user_dn", "uid=admin,ou=system");
 		defaults.setProperty("user_password", "secret");
 		
 		String dapFolderPath = directory.getAbsolutePath() + File.separator + "var" + File.separator + "dap";

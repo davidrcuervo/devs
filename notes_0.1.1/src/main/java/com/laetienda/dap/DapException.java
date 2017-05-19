@@ -3,7 +3,7 @@ package com.laetienda.dap;
 import com.laetienda.AppException;
 
 public class DapException extends AppException {
-private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	
 	public DapException() { 
 		super(); 
