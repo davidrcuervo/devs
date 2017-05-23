@@ -6,12 +6,15 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import com.laetienda.tomcat.Service;
+import com.laetienda.tomcat.TomcatException;
 import com.laetienda.logger.LoggerManager;
 import com.laetienda.logger.JavaLogger;
 import com.laetienda.logger.LoggerException;
 import com.laetienda.db.Db;
+import com.laetienda.db.DbException;
 import com.laetienda.db.DbManager;
 import com.laetienda.db.SqlException;
+import com.laetienda.lang.LangException;
 import com.laetienda.lang.LangManager;
 import com.laetienda.multimedia.MediaManager;
 import com.laetienda.multimedia.MultimediaException;
@@ -65,10 +68,10 @@ public class Load implements ServletContextListener {
 		directory = new File(sc.getInitParameter("directory"));
 		
 		try{
-			
 			logManager = new LoggerManager(directory);
 			sc.setAttribute("logManager", logManager);
 			log = logManager.createJavaLogger();
+			log.info("Logger library has started successfully");
 		}catch (LoggerException ex){
 			if(ex.getParent() != null){
 				System.err.println(ex.getMessage());
@@ -78,65 +81,95 @@ public class Load implements ServletContextListener {
 			}
 			exit();
 		}
-		
-		log.info("Loading applicatoin libraries");
 			
 		try{
 			dbManager = new DbManager(directory);
 			sc.setAttribute("dbManager", dbManager);
-			
+			log.info("database library has loaded succesfully");
+		}catch(DbException ex){
+			log.exception(ex);
+			exit();
+		}
+		
+		try{
 			langManager = new LangManager(directory, logManager.createJavaLogger());
 			sc.setAttribute("langManager", langManager);
-			
+			log.info("language library has loaded succesfully");
+		}catch(LangException ex){
+			log.exception(ex);
+			exit();
+		}
+		
+		try{
 			mediaManager = new MediaManager(directory);
 			sc.setAttribute("mediaManager", mediaManager);
+			log.info("multimedia library has loaded succesfully");
+		}catch(MultimediaException ex){
+			log.exception(ex);
+			exit();
+		}
 			
+		try{
 			notesManager = new NotesManager(directory);
 			sc.setAttribute("notesManager", notesManager);
-			
+			log.info("notes library has loaded succesfully");
+		}catch(NotesException ex){
+			log.exception(ex);
+			exit();
+		}
+		
+		try{
 			dapManager = new DapManager(directory);
 			Db db = dbManager.createTransaction();
+			
 			try{
 				dapManager.startDapServer(db);
 				sc.setAttribute("dapManager", dapManager);
+				dbManager.closeTransaction(db);
+				log.info("DAP library has been loaded succesfully");
 			}catch(DapException ex){
 				log.exception(ex);
 				dapManager.stopDapServer();
-			}finally{
 				dbManager.closeTransaction(db);
+				exit();
 			}
 			
-			try{
-				langManager.importLang();
-				
-			}catch(SqlException ex){
-				log.exception(ex);
-			}
-			
-			log.info("Framework has loaded succesfully");
-			
-		}catch (MultimediaException ex){
+		}catch(DapException ex){
 			log.exception(ex);
 			exit();
-		}catch (NotesException ex){
-			log.exception(ex);
-			exit();
-		}catch (DapException ex){
-			log.exception(ex);
-			this.exit();
-		}catch (Exception ex){
-			ex.printStackTrace();
-			this.exit();
 		}
+			
+		try{
+			langManager.importLang();
+			
+		}catch(SqlException ex){
+			log.exception(ex);
+		}
+			
+		log.info("Framework has loaded succesfully");
 	}
 	
 	private void exit(){
+		
+		String errorMessage = "It failed while loading libraries. Application is about to shutdown";
+		
+		if(log == null){
+			System.out.println(errorMessage);
+		}else{
+			log.critical(errorMessage);
+		}
+		
 		try{
 			Service daemon = new Service(directory);
 			daemon.shutdown();
-		}catch(Exception ex1){
+		}catch(TomcatException ex1){
+			if(ex1.getParent() == null){
+				ex1.printStackTrace();
+			}else{
+				System.out.println(ex1.getMessage());
+				ex1.getParent().printStackTrace();
+			}
 			
-			ex1.printStackTrace();
 			System.exit(-1);
 		}
 	}

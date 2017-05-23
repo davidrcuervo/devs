@@ -31,7 +31,7 @@ public class Servlet extends HttpServlet {
 	
 	@Override
 	public void init(ServletConfig config) throws ServletException{
-		System.out.println("init method");
+		
 		dbManager = (DbManager)config.getServletContext().getAttribute("dbManager");
 		DapManager dapManager = (DapManager)config.getServletContext().getAttribute("dapManager");
 		db = dbManager.createTransaction();

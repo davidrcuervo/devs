@@ -86,8 +86,8 @@ public class DapManager {
 			Identifier identifier = db.getEm().createNamedQuery("Identifier.findByName", Identifier.class).setParameter("name", User.ID_NAME).getSingleResult();
 			Integer id = identifier.getValue();
 			
-			if(id <= User.FIRST_ID){
-				throw new DapException("Identifier counter for user ubjects is smaller than first id.");
+			if(User.FIRST_ID < id){
+				throw new DapException("Identifier counter for user ubjects is smaller than first id. $id: " + id);
 			}else{
 				//It means that everything is ok and find to go.
 			}

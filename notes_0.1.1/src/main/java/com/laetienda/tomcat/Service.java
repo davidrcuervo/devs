@@ -99,6 +99,7 @@ public class Service {
 	public void shutdown() throws TomcatException{
 		
 		try{
+			System.out.println(shutdownPort);
 			Socket socket = new Socket("localhost", shutdownPort);
 			
 			if(socket.isConnected()){
