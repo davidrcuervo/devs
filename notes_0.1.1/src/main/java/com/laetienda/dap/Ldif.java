@@ -22,6 +22,10 @@ public class Ldif {
 		 System.out.println("domain: " + Ldif.domain);
 	}
 	
+	public static String getDomain(){
+		return domain;
+	}
+	
 	protected static final Dn PEOPLE_DN(){
 		try{
 			return new Dn("ou=People", domain);

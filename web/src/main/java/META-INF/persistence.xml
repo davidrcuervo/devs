@@ -4,5 +4,6 @@
 		<class>com.laetienda.entities.Language</class>
 		<class>com.laetienda.entities.Video</class>
 		<class>com.laetienda.entities.Image</class>
+		<class>com.laetienda.entities.Identifier</class>
 	</persistence-unit>
 </persistence>

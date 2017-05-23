@@ -124,7 +124,7 @@ public static int counter = 0;
 	private void saveToDb(){
 		
 		try{
-			db.insert(db.getEm(), entity);
+			db.insert(entity);
 		}catch (DbException ex){
 			message += "LOG ERROR: Not possible to log on database. -> EXCEPTION MESSAGE: " + ex.getMessage();
 			saveToFile();

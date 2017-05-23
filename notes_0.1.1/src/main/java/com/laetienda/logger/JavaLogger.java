@@ -1,7 +1,6 @@
 package com.laetienda.logger;
 
 import com.laetienda.AppException;
-import com.laetienda.db.DbException;
 import com.laetienda.db.SqlException;
 import com.laetienda.lang.LangException;
 import com.laetienda.multimedia.MultimediaException;
@@ -66,16 +65,6 @@ public class JavaLogger {
 			if(sqlException.getParent() != null){
 				System.out.println(ex.getMessage());
 				sqlException.getParent().printStackTrace();
-			}else{
-				ex.printStackTrace();
-			}
-		
-		}else if(ex instanceof DbException){
-			DbException dbException = (DbException)ex;
-			
-			if(dbException.getParent() != null){
-				System.out.println(ex.getMessage());
-				dbException.getParent().printStackTrace();
 			}else{
 				ex.printStackTrace();
 			}

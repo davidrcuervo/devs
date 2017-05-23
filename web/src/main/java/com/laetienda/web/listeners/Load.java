@@ -9,6 +9,7 @@ import com.laetienda.tomcat.Service;
 import com.laetienda.logger.LoggerManager;
 import com.laetienda.logger.JavaLogger;
 import com.laetienda.logger.LoggerException;
+import com.laetienda.db.Db;
 import com.laetienda.db.DbManager;
 import com.laetienda.db.SqlException;
 import com.laetienda.lang.LangManager;
@@ -94,13 +95,15 @@ public class Load implements ServletContextListener {
 			sc.setAttribute("notesManager", notesManager);
 			
 			dapManager = new DapManager(directory);
-			
+			Db db = dbManager.createTransaction();
 			try{
-				dapManager.startDapServer();
+				dapManager.startDapServer(db);
 				sc.setAttribute("dapManager", dapManager);
 			}catch(DapException ex){
 				log.exception(ex);
 				dapManager.stopDapServer();
+			}finally{
+				dbManager.closeTransaction(db);
 			}
 			
 			try{

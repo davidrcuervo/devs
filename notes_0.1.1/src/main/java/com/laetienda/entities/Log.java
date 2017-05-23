@@ -197,4 +197,12 @@ public class Log extends EntityObject implements Serializable {
 		this.message = new TextIndex();
 		this.message.setText(message);
 	}
+	@Override
+	public String getIdentifierName() {
+		return null;
+	}
+	@Override
+	public EntityObject setIdentifierValue(Integer id) {
+		return this;
+	}
 }

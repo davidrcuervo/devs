@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class EntityObject {
+public abstract class EntityObject {
 
 	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -15,6 +15,9 @@ public class EntityObject {
 	public EntityObject() {
 		errors = new HashMap<String, List<String>>();
 	}
+	
+	public abstract String getIdentifierName();
+	public abstract EntityObject setIdentifierValue(Integer id);
 	
 	public String getDate(Calendar date){
 		

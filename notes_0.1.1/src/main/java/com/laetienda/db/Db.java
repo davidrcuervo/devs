@@ -2,11 +2,13 @@ package com.laetienda.db;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 import javax.persistence.TransactionRequiredException;
 
 import com.laetienda.entities.EntityObject;
+import com.laetienda.entities.Identifier;
 
 public class Db {
 	
@@ -86,9 +88,54 @@ public boolean begin(EntityManager em) throws DbException {
 	}
 	
 	public void insert(EntityObject entity) throws DbException {
-		insert(getEm(), entity);
+
+		insertNoCommit(entity);
+		commit();
 	}
 	
+	public void insertNoCommit(EntityObject entity) throws DbException{
+		em.clear();
+		
+		try{
+			em.getTransaction().begin();
+			
+			if(entity.getIdentifierName() != null){
+				Identifier identifier = em.createNamedQuery("Identifier.findByName", Identifier.class).setParameter("name", entity.getIdentifierName()).getSingleResult();
+				Integer id = identifier.getValue();
+				id += 1;
+				identifier.setValue(id);
+				entity.setIdentifierValue(id);
+			}
+			
+			em.persist(entity);
+			
+		}catch(IllegalStateException  ex){
+			throw new DbException("Failed to start db transaction", ex);
+		}catch(IllegalArgumentException ex){
+			throw new DbException("Failed to se arguments to query idenfier table object", ex);
+		}catch(NoResultException ex){
+			throw new DbException("No identifier found for object table", ex);
+		}catch(EntityExistsException ex){
+			throw new DbException("Object entity already exists", ex);
+		}catch(TransactionRequiredException ex){
+			throw new DbException("There is no active transaction", ex);
+		}
+	}
+	
+	public void commit() throws DbException{
+		try{
+			em.getTransaction().commit();
+		}catch(IllegalStateException ex){
+			throw new DbException("Failed to find db transaction", ex);
+		}catch(RollbackException ex){
+			rollback();
+			throw new DbException("Failed to commit transaction", ex);
+		}finally{
+			em.clear();
+		}
+	}
+	
+	/*
 	public void insert(EntityManager em, EntityObject entity) throws DbException {
 				
 		try{
@@ -120,7 +167,7 @@ public boolean begin(EntityManager em) throws DbException {
 			em.clear();
 		}
 	}
-	
+*/	
 	public boolean remove(EntityObject entity) throws DbException{
 		boolean result = false;
 		
@@ -152,11 +199,9 @@ public boolean begin(EntityManager em) throws DbException {
 			em.getTransaction().rollback();
 			
 		}catch(IllegalStateException ex){
-			em.clear();
-			throw new DbException(ex.getMessage(), ex);
+			throw new DbException("Invalid em state to rollback", ex);
 		}catch(PersistenceException ex){
-			em.clear();
-			throw new DbException(ex.getMessage(), ex);
+			throw new DbException("Unexpected error while rolling back transaction", ex);
 		}finally{
 			em.clear();
 		}

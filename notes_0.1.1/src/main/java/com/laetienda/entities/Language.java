@@ -185,4 +185,15 @@ public class Language extends EntityObject implements Serializable {
 		
 		return this;
 	}
+
+	@Override
+	public String getIdentifierName() {
+		
+		return null;
+	}
+
+	@Override
+	public EntityObject setIdentifierValue(Integer id) {
+		return this;
+	}
 }

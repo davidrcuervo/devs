@@ -1,10 +1,10 @@
 package com.laetienda.db;
 
-public class DbException extends Exception {
+import com.laetienda.AppException;
+
+public class DbException extends AppException {
 	
 private static final long serialVersionUID = 1L;
-	
-	private Exception parent;
 	
 	public DbException() { 
 		super(); 
@@ -23,22 +23,6 @@ private static final long serialVersionUID = 1L;
 	}
 	
 	public DbException(String message, Exception parent){
-		super(message);
-		this.parent = parent;
+		super(message, parent);
 	}
-
-	/**
-	 * @return the parent
-	 */
-	public Exception getParent() {
-		return parent;
-	}
-
-	/**
-	 * @param parent the parent to set
-	 */
-	public void setParent(Exception parent) {
-		this.parent = parent;
-	}
-
 }

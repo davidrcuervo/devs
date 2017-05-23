@@ -140,7 +140,7 @@ public class Servlet extends HttpServlet {
 			}else{
 				
 				if(language.getId() == null || language.getId() == 0){
-					db.insert(db.getEm(), language);
+					db.insert(language);
 					request.getSession().setAttribute("langAddFormSuccess", "language entity success: The language line has been added succesfully");
 					
 				}else{

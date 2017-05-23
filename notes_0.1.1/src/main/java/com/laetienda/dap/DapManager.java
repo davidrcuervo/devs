@@ -8,8 +8,16 @@ import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
+import javax.persistence.NoResultException;
+
 import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapConnectionPool;
+
+import com.laetienda.db.Db;
+import com.laetienda.db.DbException;
+import com.laetienda.entities.Identifier;
+import com.laetienda.entities.User;
+
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.ldap.client.api.DefaultLdapConnectionFactory;
@@ -28,10 +36,10 @@ public class DapManager {
 		Ldif.setDomain(settings.getProperty("domain"));
 	}
 	
-	public void startDapServer() throws DapException{
+	public void startDapServer(Db db) throws DapException{
 
 		connectionPool = startLdapConnectionPool();
-		//setupDomain();
+		startDbConnection(db);
 	}
 	
 	public void stopDapServer(){
@@ -72,17 +80,40 @@ public class DapManager {
 		}
 	}
 	
-	
+	public void startDbConnection(Db db) throws DapException{
+		
+		try{
+			Identifier identifier = db.getEm().createNamedQuery("Identifier.findByName", Identifier.class).setParameter("name", User.ID_NAME).getSingleResult();
+			Integer id = identifier.getValue();
+			
+			if(id <= User.FIRST_ID){
+				throw new DapException("Identifier counter for user ubjects is smaller than first id.");
+			}else{
+				//It means that everything is ok and find to go.
+			}
+			
+		}catch(NoResultException ex){
+			Identifier identifier = new Identifier();
+			identifier.setName(User.ID_NAME);
+			identifier.setIdentifier(User.FIRST_ID);
+			identifier.setDescription("Id counter to use to build user id \"uid\".");
+			
+			try{
+				db.insert(identifier);
+			}catch(DbException ex1){
+				throw new DapException("Failed to create identifier counter for user objects", ex1.getParent());
+			}
+		}
+	}
 	
 	private LdapConnectionPool startLdapConnectionPool() throws DapException{
-		
 		
 		LdapConnectionConfig config = new LdapConnectionConfig();
 		
 		try{
 			config.setLdapHost(settings.getProperty("server_address"));
 			config.setLdapPort(Integer.parseInt(settings.getProperty("service_port")));
-			config.setName(String.format(settings.getProperty("user_dn")));
+			config.setName(String.format(Ldif.TOMCAT_USER_DN().toString()));
 			config.setCredentials(String.format(settings.getProperty("user_password")));
 		}catch(NumberFormatException ex){
 			throw new DapException("It was not able to connect to the server", ex);
@@ -130,7 +161,7 @@ public class DapManager {
 	}
 	
 	public static void main(String[] args){
-		File directory = new File("/home/myself/git/eclipse/Web.opt");
+	/*	File directory = new File("/home/myself/git/eclipse/Web.opt");
 		
 		try{
 			DapManager dapManager = new DapManager(directory);
@@ -151,5 +182,6 @@ public class DapManager {
 		}finally{
 			System.out.println("Closing the application");
 		}
+		*/
 	}
 }

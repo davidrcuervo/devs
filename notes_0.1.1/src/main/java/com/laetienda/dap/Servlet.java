@@ -2,12 +2,17 @@ package com.laetienda.dap;
 
 import java.io.IOException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.laetienda.AppException;
+import com.laetienda.db.Db;
+import com.laetienda.db.DbManager;
 import com.laetienda.entities.User;
+import com.laetienda.logger.JavaLogger;
 import com.laetienda.options.OptionsManager;
 
 public class Servlet extends HttpServlet {
@@ -15,20 +20,46 @@ public class Servlet extends HttpServlet {
 	
 	private String[] pathParts;
 	private OptionsManager optManager;
+	private DbManager dbManager;
+	private DapBean dap = null;
+	private Db db;
+	private JavaLogger log;
 	
 	public Servlet(){
 		super();
 	}
-
+	
+	@Override
+	public void init(ServletConfig config) throws ServletException{
+		System.out.println("init method");
+		dbManager = (DbManager)config.getServletContext().getAttribute("dbManager");
+		DapManager dapManager = (DapManager)config.getServletContext().getAttribute("dapManager");
+		db = dbManager.createTransaction();
+		
+		try{
+			dap = new DapBean(dapManager.createConnection());
+		}catch(DapException ex){
+			//TODO
+		}
+	}
+	
 	private void build(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		pathParts = (String[])request.getAttribute("pathParts");
 		optManager = (OptionsManager)request.getServletContext().getAttribute("optManager");
+		log = (JavaLogger)request.getAttribute("logger");
 	}
 	
+	@Override
 	public void destroy(){
-		
+		dbManager.closeTransaction(db);
+		try{
+			dap.close();
+		}catch(DapException ex){
+			//TODO
+		}
 	}
 	
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		build(request, response);
 		
@@ -51,6 +82,7 @@ public class Servlet extends HttpServlet {
 		}
 	}
 	
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		build(request, response);
 		
@@ -70,5 +102,26 @@ public class Servlet extends HttpServlet {
 		
 		User user = new User();
 		user.setStatus(optManager.findOption("User status", "registered"));
+		user.setCn(request.getParameter("cn"));
+		user.setSn(request.getParameter("sn"));
+		user.setMail(request.getParameter("email"), dap);
+		user.setPassword(request.getParameter("password"), request.getParameter("password_confirm"));
+		
+		try{
+			db.insertNoCommit(user);
+			dap.addEntry(user);
+			db.commit();
+		}catch(AppException ex){
+			user.addError("user", "Internal error");
+			log.exception(ex);
+			dap.deleteEntry(user);
+		}finally{
+			if(user.getErrors().size() > 0){
+				request.setAttribute("user", user);
+			}else{
+				request.setAttribute("UserSignupForm", "success");
+			}
+			doGet(request, response);
+		}
 	}
 }
