@@ -38,6 +38,17 @@ public class User extends EntityObject implements DapEntry, Serializable{
 	@Column(name="\"status\"", nullable=false, unique=false, length=254)
 	private String status;
 	
+	@Column(name="\"language\"", nullable=false, unique=false, length=254)
+	private String language;
+	
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
 	@Transient
 	private String cn;
 	

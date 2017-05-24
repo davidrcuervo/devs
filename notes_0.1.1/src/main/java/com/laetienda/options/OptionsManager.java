@@ -14,7 +14,7 @@ public class OptionsManager {
 	private List<Variable> variables;
 	private Map<String, Variable> vars;
 	
-	public OptionsManager(File directory){
+	public OptionsManager(File directory) throws OptionException{
 		
 		String pathToFile = directory.getAbsolutePath() + File.separator + "etc" + File.separator + "variables.xml";
 		File file = new File(pathToFile);
@@ -34,7 +34,7 @@ public class OptionsManager {
 			}
 			
 		}catch(JAXBException ex){
-			ex.printStackTrace();
+			throw new OptionException("Failed to build ", ex);
 		}
 	}
 	
@@ -60,26 +60,30 @@ public class OptionsManager {
 	
 	public static void main(String args[]){
 		
-		File directory = new File("/home/myself/git/eclipse/Web.opt");
-		OptionsManager opts = new OptionsManager(directory);
-		
-		List<Variable> variables = opts.getVariables();
-
-		for(Variable variable : variables){
+		try{
+			File directory = new File("");
+			OptionsManager opts = new OptionsManager(directory);
 			
-			System.out.println("Name: " + variable.getName());
-			System.out.println("Description: " + variable.getDescription());
-			
-			System.out.println("OPTIONS:");
-			System.out.println("VALUE \t DESCRIPTION");
-			for(Option option : variable.getOptions()){
-				System.out.println(option.getValue() + "\t" + option.getDescription());
+			List<Variable> variables = opts.getVariables();
+	
+			for(Variable variable : variables){
+				
+				System.out.println("Name: " + variable.getName());
+				System.out.println("Description: " + variable.getDescription());
+				
+				System.out.println("OPTIONS:");
+				System.out.println("VALUE \t DESCRIPTION");
+				for(Option option : variable.getOptions()){
+					System.out.println(option.getValue() + "\t" + option.getDescription());
+				}
 			}
+			
+			System.out.println();
+			
+			Option test = opts.findOption("User status", "deleted");
+			System.out.println("Value: " + test.getValue() + "\t Description: " + test.getDescription());
+		}catch(OptionException ex){
+			ex.getParent().printStackTrace();
 		}
-		
-		System.out.println();
-		
-		Option test = opts.findOption("User status", "deleted");
-		System.out.println("Value: " + test.getValue() + "\t Description: " + test.getDescription());
 	}
 }

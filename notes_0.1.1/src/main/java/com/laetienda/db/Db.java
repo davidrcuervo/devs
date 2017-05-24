@@ -97,17 +97,22 @@ public boolean begin(EntityManager em) throws DbException {
 		em.clear();
 		
 		try{
-			em.getTransaction().begin();
 			
-			if(entity.getIdentifierName() != null){
-				Identifier identifier = em.createNamedQuery("Identifier.findByName", Identifier.class).setParameter("name", entity.getIdentifierName()).getSingleResult();
-				Integer id = identifier.getValue();
-				id += 1;
-				identifier.setValue(id);
-				entity.setIdentifierValue(id);
+			if(entity.getErrors().size() > 0){
+				//Better not to do anything if it has errors
+			}else{
+				em.getTransaction().begin();
+				
+				if(entity.getIdentifierName() != null){
+					Identifier identifier = em.createNamedQuery("Identifier.findByName", Identifier.class).setParameter("name", entity.getIdentifierName()).getSingleResult();
+					Integer id = identifier.getValue();
+					id += 1;
+					identifier.setValue(id);
+					entity.setIdentifierValue(id);
+				}
+				
+				em.persist(entity);
 			}
-			
-			em.persist(entity);
 			
 		}catch(IllegalStateException  ex){
 			throw new DbException("Failed to start db transaction", ex);
