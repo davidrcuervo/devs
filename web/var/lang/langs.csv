@@ -1,4 +1,6 @@
 id,created,english,french,identifier,modified,spanish
+<<<<<<< HEAD
+=======
 10,2017-04-10 21:12:03.351-04,Images,Images,Images,2017-04-10 21:12:03.351-04,Imagenes
 11,2017-04-10 21:13:25.817-04,Languages,Langues,Languages,2017-04-10 21:13:25.817-04,Idiomas
 8,2017-04-09 18:52:29.641-04,Welcome,Bienvenue,Welcome,2017-04-10 21:13:43.319-04,Bienvenido
@@ -16,3 +18,4 @@ id,created,english,french,identifier,modified,spanish
 9,2017-05-22 20:57:30.52-04,First Name,Prenom,First Name,2017-05-22 20:57:30.52-04,Nombre
 38,2017-05-22 21:11:16.345-04,Last Name,Nom,Last Name,2017-05-22 21:11:16.345-04,Apellido
 58,2017-09-14 12:32:44.079-04,Password should not be empty,Le mot de passe ne peut pas être vide,Password should not be empty,2017-09-14 12:32:44.079-04,La contraseña no puede estar vacía
+>>>>>>> refs/remotes/GitHub/web-dev
