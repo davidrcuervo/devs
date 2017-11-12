@@ -5,6 +5,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.laetienda.tomcat.Service;
+import com.laetienda.tomcat.TomcatException;
 import com.laetienda.logger.LoggerManager;
 import com.laetienda.logger.JavaLogger;
 import com.laetienda.logger.LoggerException;
@@ -18,8 +20,6 @@ import com.laetienda.multimedia.MediaManager;
 import com.laetienda.multimedia.MultimediaException;
 import com.laetienda.notes.NotesException;
 import com.laetienda.notes.NotesManager;
-import com.laetienda.options.OptionException;
-import com.laetienda.options.OptionsManager;
 import com.laetienda.dap.DapException;
 import com.laetienda.dap.DapManager;
 
@@ -33,7 +33,34 @@ public class Load implements ServletContextListener {
 	private MediaManager mediaManager;
 	private NotesManager notesManager;
 	private DapManager dapManager;
-	private OptionsManager optManager;
+	
+	public void contextDestroyed(ServletContextEvent arg0){
+		
+		log.info("closing cafeteros web application");
+		
+		if(notesManager != null){
+			
+		}
+		
+		if(langManager != null){
+			
+			try{
+				langManager.exportLang();
+			}catch(SqlException ex){
+				log.critical("Failed to export language to CSV file. Information might be lost");
+				log.exception(ex);
+			}
+		}
+		
+		if(dbManager != null){
+			dbManager.close();
+		}
+		
+		log.info("cafeteros web application has closed successfully");
+		if(logManager != null){
+			logManager.close();
+		}
+	}
 	
 	public void contextInitialized(ServletContextEvent arg0) {
 		
@@ -60,15 +87,6 @@ public class Load implements ServletContextListener {
 			sc.setAttribute("dbManager", dbManager);
 			log.info("database library has loaded succesfully");
 		}catch(DbException ex){
-			log.exception(ex);
-			exit();
-		}
-		
-		try{
-			optManager = new OptionsManager(directory);
-			sc.setAttribute("optManager", optManager);
-			log.info("Options library has loaded succesfully");
-		}catch(OptionException ex){
 			log.exception(ex);
 			exit();
 		}
@@ -131,42 +149,6 @@ public class Load implements ServletContextListener {
 		log.info("Framework has loaded succesfully");
 	}
 	
-	public void contextDestroyed(ServletContextEvent arg0){
-		close();
-	}
-	
-	private void close(){
-		
-		log.info("closing cafeteros web application");
-		
-		if(notesManager != null){
-			
-		}
-		
-		if(langManager != null){
-			
-			try{
-				langManager.exportLang();
-			}catch(SqlException ex){
-				log.critical("Failed to export language to CSV file. Information might be lost");
-				log.exception(ex);
-			}
-		}
-		
-		if(optManager != null){
-			
-		}
-		
-		if(dbManager != null){
-			dbManager.close();
-		}
-		
-		log.info("cafeteros web application has closed successfully");
-		if(logManager != null){
-			logManager.close();
-		}
-	}
-	
 	private void exit(){
 		
 		String errorMessage = "It failed while loading libraries. Application is about to shutdown";
@@ -177,7 +159,18 @@ public class Load implements ServletContextListener {
 			log.critical(errorMessage);
 		}
 		
-		close();
-		System.exit(-1);
+		try{
+			Service daemon = new Service(directory);
+			daemon.shutdown();
+		}catch(TomcatException ex1){
+			if(ex1.getParent() == null){
+				ex1.printStackTrace();
+			}else{
+				System.out.println(ex1.getMessage());
+				ex1.getParent().printStackTrace();
+			}
+			
+			System.exit(-1);
+		}
 	}
 }
