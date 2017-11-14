@@ -19,6 +19,8 @@ public class Installer {
 	
 	private DapManager dapManager;
 	private String rootPassword;
+	private LdapConnection connection;
+	
 	
 	public Installer(File directory) throws DapException{
 		rootPassword = "secret";
@@ -29,6 +31,55 @@ public class Installer {
 		rootPassword = password;
 	}
 	
+	public void setConnection(String address, int port) {
+		log4j.info("Connecting to LDAP server...");
+		log4j.debug("LDAP Server address: " + address + ":" + port); 
+		connection = new LdapNetworkConnection(address, port);
+		
+		if(connection.isConnected()){
+			log4j.info("... it has connected to LDAP server succesfully");
+		}else {
+			log4j.error("Failed to connect LDAP server");
+		}
+	}
+	
+	public void closeConnection() throws IOException {
+		log4j.info("Closing connection with the LDAP server...");
+		
+		try {
+			connection.close();
+			log4j.info("... connection with LDAP server has closed succesfully");
+		} catch (IOException ex) {
+			throw ex;
+		}
+	}
+	
+	public void bind(String username, String password) throws DapException {
+		log4j.info("Binding with the LDAP service...");
+		log4j.debug("Binding username: " + username);
+		
+		try {
+			connection.bind(username, password);
+			log4j.info("... it has binded succesfully");
+		}catch(LdapException ex) {
+			log4j.error("Failed to bind to LDAP service", ex);
+			throw new DapException("Failed to bind to LDAP service ", ex);
+		}
+	}
+	
+	public void unBind() throws DapException {
+		log4j.info("Unbinding from LDAP service...");
+		
+		try {
+			connection.unBind();
+			log4j.info("... it has unBinded succesfully");
+		} catch (LdapException ex) {
+			log4j.error("Failed to unBind from LDAP service", ex);
+			throw new DapException("Failed to unBind from LDAP service", ex);
+		}
+	}
+	
+	@Deprecated
 	public void install(String user, String password) throws DapException{
 		
 		LdapConnectionConfig config = new LdapConnectionConfig();
@@ -63,8 +114,15 @@ public class Installer {
 		}
  	}
 	
+	@Deprecated
 	private void setupDomain(LdapConnection connection) throws DapException{
-		System.out.println("Installing");
+		this.connection = connection;
+		this.install();
+	}
+	
+	public void install() throws DapException{
+		log4j.info("Adding LDAP entries to LDAP directory...");
+		
 		try{
 			if(!connection.exists(Ldif.PEOPLE_DN())){
 				connection.add(Ldif.PEOPLE_ENTRY());
@@ -117,29 +175,38 @@ public class Installer {
 				connection.add(Ldif.ACI_TOMCAT_SUBENTRY());
 			}
 			
+			log4j.info("... LDAP entries to LDAP directory has been added succesfully");
+			
 		}catch(LdapException ex){
+			log4j.error("Failed to add entries to LDAP directory", ex);
 			throw new DapException("Unable to setup domain elements in LDAP" ,ex);
 		}
 	}
 	
 	public static void main(String[] args) {
 		
-		File directory = new File("/Users/davidrcuervo/git/devs/web");
+		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
+		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
 		
 		try {
 			Installer installer = new Installer(directory);
-			installer.install("admin", "test");
-		
-		}catch(DapException ex) {
-			log4j.error("Failed to install LDAP", ex);
+			try {
+				installer.setConnection("localhost", 10389);
+				installer.bind("uid=admin,ou=system", "secret");
+				installer.install();
+				installer.unBind();
+			}catch(DapException ex) {
+				log4j.error(ex.getMessage(), ex);
+			}finally {
+				try {
+					installer.closeConnection();
+				} catch (IOException e) {
+					log4j.error("Failed to close connection", e);
+				}
+			}
+				
+		} catch (DapException ex) {
+			log4j.error(ex.getMessage(), ex);
 		}
-		
-		/*
-		LdapConnectionConfig config = new LdapConnectionConfig();
-		config.setLdapHost("localhost");
-		config.setLdapPort(10389);
-		config.setName("");
-		config.setCredentials("");
-		*/
 	}
 }
