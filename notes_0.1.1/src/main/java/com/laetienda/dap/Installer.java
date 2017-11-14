@@ -10,8 +10,12 @@ import org.apache.directory.ldap.client.api.DefaultPoolableLdapConnectionFactory
 import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapConnectionPool;
+import org.apache.directory.ldap.client.api.LdapNetworkConnection;
+
+import com.laetienda.logger.Log4j;
 
 public class Installer {
+	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(Log4j.class);
 	
 	private DapManager dapManager;
 	private String rootPassword;
@@ -116,5 +120,26 @@ public class Installer {
 		}catch(LdapException ex){
 			throw new DapException("Unable to setup domain elements in LDAP" ,ex);
 		}
+	}
+	
+	public static void main(String[] args) {
+		
+		File directory = new File("/Users/davidrcuervo/git/devs/web");
+		
+		try {
+			Installer installer = new Installer(directory);
+			installer.install("admin", "test");
+		
+		}catch(DapException ex) {
+			log4j.error("Failed to install LDAP", ex);
+		}
+		
+		/*
+		LdapConnectionConfig config = new LdapConnectionConfig();
+		config.setLdapHost("localhost");
+		config.setLdapPort(10389);
+		config.setName("");
+		config.setCredentials("");
+		*/
 	}
 }

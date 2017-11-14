@@ -36,17 +36,17 @@ public class LangManager {
     	Sql sql = new Sql(directory);
 		File file = new File(settings.getProperty("file_csv"));
 		String query = "COPY lang_languages TO STDOUT WITH DELIMITER ',' CSV HEADER";
-    	sql.queryToCsv(query, file);  	        
+    		sql.queryToCsv(query, file);  	        
     }
     
     public void importLang() throws SqlException{
-    	log.info("Importing languages from .csv file to table");
-    	
-    	Sql sql = new Sql(directory);
-    	File file = new File(settings.getProperty("file_csv"));
-    	String query = "COPY lang_languages FROM STDIN WITH DELIMITER ',' CSV HEADER";
-    	
-    	sql.csvToTable(query, file);
+	    	log.info("Importing languages from .csv file to table");
+	    	
+	    	Sql sql = new Sql(directory);
+	    	File file = new File(settings.getProperty("file_csv"));
+	    	String query = "COPY lang_languages FROM STDIN WITH DELIMITER ',' CSV HEADER";
+	    	
+	    	sql.csvToTable(query, file);
     }
     
     private Properties loadSettings(File directory) throws LangException{
