@@ -7,4 +7,5 @@
 	<entry key="server_address">localhost</entry>
 	<entry key="service_port">10389</entry>
 	<entry key="user_password">12345</entry>
+	<entry key="tomcatpassword">Welcome1</entry>
 </properties>
