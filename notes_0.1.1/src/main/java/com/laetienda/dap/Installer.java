@@ -131,7 +131,7 @@ public class Installer {
 			if(!connection.exists(Ldif.SYSADMIN_DN())){
 				connection.add(Ldif.SYSADMIN_ENTRY(rootPassword));
 			}
-			
+			System.out.println(dapManager.getSetting("tomcatpassword"));
 			if(!connection.exists(Ldif.TOMCAT_USER_DN())){
 				connection.add(Ldif.TOMCAT_USER_ENTRY(dapManager.getSetting("tomcatpassword")));
 			}

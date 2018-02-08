@@ -7,7 +7,7 @@ import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.name.Dn;
 
 public class Ldif {
-	
+	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(Ldif.class);
 	protected static String domain = new String();
 	
 	protected static void setDomain(String domain){
@@ -81,6 +81,7 @@ public class Ldif {
 	}
 	
 	protected static final Entry TOMCAT_USER_ENTRY(String tomcatpassword){
+		System.out.println("$tomcatpassword: " + tomcatpassword);
 		try{
 			return new DefaultEntry(TOMCAT_USER_DN())
 					.add("objectclass", "person")
@@ -228,23 +229,23 @@ public class Ldif {
 					.add("objectclass", "accessControlSubentry")
 					.add("cn", "aciTomcatSubentry")
 					.add("subtreeSpecification", "{base \"ou=People\"}")
-					.add("prescriptiveACI",
+					.add("prescriptiveACI ",
 							"{"
 								+ "identificationTag \"aciTomcatEnableAddEntry\","
 								+ "precedence 5,"
 								+ "authenticationLevel simple,"
-								+ "itemOrUserFirst userFirst:" 
+								+ "itemOrUserFirst userFirst: " 
 								+ "{"
-									+ "userClasses" 
+									+ "userClasses " 
 									+ "{"
 										+ "name { \"uid=2,ou=people," + domain + "\" }" 
 									+ "},"
-									+ "userPermissions" 
+									+ "userPermissions " 
 									+ "{"
 										+ "{"
 											+ "protectedItems { entry, allUserAttributeTypesAndValues },"
-											+ "grantsAndDenials" 
-											+ "{"
+											+ "grantsAndDenials " 
+											+ "{ "
 												+ "grantCompare,"
 												+ "grantFilterMatch,"
 												+ "grantReturnDN,"
@@ -279,27 +280,27 @@ public class Ldif {
 					.add("objectclass", "accessControlSubentry")
 					.add("cn", "aciSysadminControlAccess")
 					.add("subtreeSpecification", "{ }")
-					.add("prescriptiveACI", 
+					.add("prescriptiveACI ", 
 							"{"
 							+ "identificationTag \"aciSysadminControlAccess\","
 							+ "precedence 0,"
 							+ "authenticationLevel none,"
-							+ "itemOrUserFirst userFirst:" 
+							+ "itemOrUserFirst userFirst: " 
 								+ "{"
-									+ "userClasses" 
+									+ "userClasses " 
 									+ "{"
 										+ "userGroup { \"cn=sysadmins,ou=groups," + domain + "\" }" 
 	        						+ "},"
-	        						+ "userPermissions" 
+	        						+ "userPermissions " 
 	    							+ "{"
 	    								+ "{"
-	    									+ "protectedItems" 
+	    									+ "protectedItems " 
 	    									+ "{"
 	    										+ "entry,"
 	    										+ "allUserAttributeTypes,"
 												+ "allUserAttributeTypesAndValues" 
 	                						+ "},"
-	                						+ "grantsAndDenials" 
+	                						+ "grantsAndDenials " 
 	                						+ "{"
 	                							+ "grantInvoke,"
 	                							+ "grantExport,"
@@ -341,22 +342,22 @@ public class Ldif {
 					.add("objectclass", "accessControlSubentry")
 					.add("cn", "aciManagerControlAccess")
 					.add("subtreeSpecification", "{base \"ou=People\"}")
-					.add("prescriptiveACI", 
+					.add("prescriptiveACI ", 
 							"{"
 								+ "identificationTag \"aciManagerControlAccess\","
 								+ "precedence 0,"
 								+ "authenticationLevel simple,"
-								+ "itemOrUserFirst userFirst:" 
+								+ "itemOrUserFirst userFirst: " 
 								+ "{"
-									+ "userClasses" 
+									+ "userClasses " 
 									+ "{"
 										+ "userGroup { \"cn=managers,ou=groups," + domain + "\" }"
 					        		+ "},"
-					        		+ "userPermissions" 
+					        		+ "userPermissions " 
 					        		+ "{"
 					        			+ "{"
 					        				+ "protectedItems { entry, allUserAttributeTypesAndValues },"
-					        				+ "grantsAndDenials" 
+					        				+ "grantsAndDenials " 
 					        				+ "{"
 					        					+ "grantCompare,"
 					        					+ "grantFilterMatch,"
@@ -367,11 +368,11 @@ public class Ldif {
 					                		+ "}"
 					            		+ "},"
 					            		+ "{"
-					                		+ "protectedItems" 
+					                		+ "protectedItems " 
 					                		+ "{"
 					                    		+ "allAttributeValues { uid, userPassword }" 
 				                    		+ "},"
-				                    		+ "grantsAndDenials" 
+				                    		+ "grantsAndDenials " 
 				                    		+ "{"
 						                    	+ "denyAdd,"
 						                    	+ "denyRemove,"
@@ -384,16 +385,16 @@ public class Ldif {
 						                	+ "}"
 					                	+ "},"
 					                	+ "{"
-						                	+ "protectedItems" 
+						                	+ "protectedItems " 
 							                + "{"
-							                    + "allAttributeValues" 
+							                    + "allAttributeValues " 
 							                    + "{"
 							                        + "cn,"
 							                        + "sn,"
 							                        + "mail" 
 							                    + "}"
 						                    + "},"
-						                    + "grantsAndDenials" 
+						                    + "grantsAndDenials " 
 						                	+ "{"
 						                    	+ "grantModify,"
 						                    	+ "grantRemove,"
@@ -425,23 +426,23 @@ public class Ldif {
 					.add("objectclass", "accessControlSubentry")
 					.add("cn", "aciUserControlAccess")
 					.add("subtreeSpecification", "{base \"ou=People\"}")
-					.add("prescriptiveACI",
+					.add("prescriptiveACI ",
 							"{"
 								+ "identificationTag \"aciUserControlAccess\","
 								+ "precedence 0,"
 								+ "authenticationLevel simple,"
-								+ "itemOrUserFirst userFirst:" 
+								+ "itemOrUserFirst userFirst: " 
 								+ "{"
 									+ "userClasses { thisEntry },"
-									+ "userPermissions" 
+									+ "userPermissions " 
 									+ "{"
 										+ "{"
 											+ "precedence 0,"
-											+ "protectedItems" 
+											+ "protectedItems " 
 											+ "{"
 												+ "allAttributeValues { uid }" 
                 							+ "},"
-                							+ "grantsAndDenials" 
+                							+ "grantsAndDenials " 
             							+ "{"
 	            							+ "denyAdd,"
 	            							+ "denyRemove,"
@@ -453,9 +454,9 @@ public class Ldif {
             						+ "},"
         						+ "{"
         							+ "precedence 0,"
-        							+ "protectedItems" 
+        							+ "protectedItems " 
         							+ "{"
-        								+ "allAttributeValues" 
+        								+ "allAttributeValues " 
         								+ "{"
         									+ "userPassword,"
         									+ "mail,"
@@ -463,7 +464,7 @@ public class Ldif {
         									+ "cn" 
                     					+ "}"
                 					+ "},"
-                					+ "grantsAndDenials" 
+                					+ "grantsAndDenials " 
                 					+ "{"
                 						+ "grantInvoke,"
                 						+ "grantExport,"
@@ -483,7 +484,7 @@ public class Ldif {
         						+ "{"
         							+ "precedence 0,"
         							+ "protectedItems { entry, allUserAttributeTypesAndValues },"
-        							+ "grantsAndDenials" 
+        							+ "grantsAndDenials " 
     								+ "{"
     									+ "grantCompare,"
     									+ "grantFilterMatch,"
@@ -500,5 +501,39 @@ public class Ldif {
 		}catch(LdapException ex){
 			return null;
 		}
+	}
+	
+	public static void main(String[] args) {
+		Ldif.setDomain("dc=la-etienda,dc=com");
+		String text = "{"
+				+ "identificationTag \"aciTomcatEnableAddEntry\","
+				+ "precedence 5,"
+				+ "authenticationLevel simple,"
+				+ "itemOrUserFirst userFirst: " 
+				+ "{"
+					+ "userClasses " 
+					+ "{"
+						+ "name { \"uid=2,ou=people," + domain + "\" }" 
+					+ "},"
+					+ "userPermissions " 
+					+ "{"
+						+ "{"
+							+ "protectedItems { entry, allUserAttributeTypesAndValues },"
+							+ "grantsAndDenials " 
+							+ "{"
+								+ "grantCompare,"
+								+ "grantFilterMatch,"
+								+ "grantReturnDN,"
+								+ "denyModify,"
+								+ "grantBrowse,"
+								+ "grantAdd,"
+								+ "grantRead" 
+							+ "}"
+						+ "}"
+					+ "}"
+				+ "}"
+			+ "}";
+		
+		System.out.println(text);
 	}
 }
