@@ -19,7 +19,7 @@ public class Ldif {
 		 }
 		 
 		 Ldif.domain += String.format("dc=%s", domainParts[domainParts.length - 1]);
-		 System.out.println("domain: " + Ldif.domain);
+		 log4j.debug("domain: " + Ldif.domain);
 	}
 	
 	public static String getDomain(){

@@ -6,6 +6,7 @@ import com.laetienda.lang.LangException;
 import com.laetienda.multimedia.MultimediaException;
 import com.laetienda.notes.NotesException;
 
+@Deprecated
 public class JavaLogger {
 	
 	private Logger logger;

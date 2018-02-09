@@ -9,6 +9,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+@Deprecated
 public class LogFilter implements Filter{
 	
 	LoggerManager logManager;

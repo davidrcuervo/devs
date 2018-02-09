@@ -11,27 +11,27 @@ import com.laetienda.logger.JavaLogger;
 
 public class LangManager {
 	
+	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(LangManager.class);
+	
 	private File directory;
-	private JavaLogger log;
 	private Properties settings;
     
-    public LangManager(File directory, JavaLogger log) throws LangException{
+    public LangManager(File directory) throws LangException{
 
-    	this.directory = directory;
-    	this.log = log;
-    	settings = loadSettings(directory);
+    		this.directory = directory;
+    		settings = loadSettings(directory);
     }
     
     public Lang createLangInterface(Db db, JavaLogger log) throws LangException {
-    	return new Lang(db, this, log);
+    		return new Lang(db, this, log);
     }
     
     public String getSetting(String setting){
-    	return settings.getProperty(setting);
+    		return settings.getProperty(setting);
     }
     
     public void exportLang() throws SqlException{
-    	log.info("Exporting languages table to csv file");
+    	log4j.info("Exporting languages table to csv file");
     	
     	Sql sql = new Sql(directory);
 		File file = new File(settings.getProperty("file_csv"));
@@ -40,7 +40,7 @@ public class LangManager {
     }
     
     public void importLang() throws SqlException{
-	    	log.info("Importing languages from .csv file to table");
+	    	log4j.info("Importing languages from .csv file to table");
 	    	
 	    	Sql sql = new Sql(directory);
 	    	File file = new File(settings.getProperty("file_csv"));
@@ -50,7 +50,7 @@ public class LangManager {
     }
     
     private Properties loadSettings(File directory) throws LangException{
-    	log.info("Loading settings for Lang object");
+    	log4j.info("Loading settings for Lang object");
     	
     	String path = directory.getAbsolutePath() 
 				+ File.separator + "etc"

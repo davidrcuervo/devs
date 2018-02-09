@@ -8,23 +8,28 @@ import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
-import javax.persistence.NoResultException;
+//import javax.persistence.NoResultException;
 
 import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapConnectionPool;
 
-import com.laetienda.db.Db;
-import com.laetienda.db.DbException;
-import com.laetienda.entities.Identifier;
-import com.laetienda.entities.User;
+//import com.laetienda.db.Db;
+//import com.laetienda.db.DbException;
+//import com.laetienda.entities.Identifier;
+//import com.laetienda.entities.User;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.directory.api.ldap.model.cursor.EntryCursor;
+import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.ldap.client.api.DefaultLdapConnectionFactory;
 import org.apache.directory.ldap.client.api.DefaultPoolableLdapConnectionFactory;
 import org.apache.directory.ldap.client.api.LdapConnection;
 
 public class DapManager {
+	
+	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(DapManager.class);
 	
 	private Properties settings;
 	private LdapConnectionPool connectionPool;
@@ -34,18 +39,25 @@ public class DapManager {
 		connections = new ArrayList<LdapConnection>();
 		settings = loadSettings(directory);
 		Ldif.setDomain(settings.getProperty("domain"));
+		connectionPool = startLdapConnectionPool();
 	}
 	
-	public void startDapServer(Db db) throws DapException{
+	/*
+	public void startDapServer() throws DapException{
 
 		connectionPool = startLdapConnectionPool();
-		startDbConnection(db);
+		//startDbConnection(db);
 	}
+	*/
 	
 	public void stopDapServer(){
 		
 		for(LdapConnection connection : connections){
-			closeConnection(connection);
+			try {
+				closeConnection(connection);
+			}catch(DapException ex) {
+				log4j.error(ex.getMessage(), ex.getParent());
+			}
 		}
 	}
 	
@@ -64,7 +76,7 @@ public class DapManager {
 		return connection;
 	}
 	
-	public synchronized void closeConnection(LdapConnection connection){
+	public synchronized void closeConnection(LdapConnection connection) throws DapException{
 		try{
 			if(connection.isConnected()){
 				connection.close();
@@ -76,10 +88,11 @@ public class DapManager {
 			
 			connections.remove(connection);
 		}catch(IOException ex){
-			System.out.println(ex.getMessage());
+			throw new DapException("Failed to close connection", ex);
 		}
 	}
 	
+	/*
 	public void startDbConnection(Db db) throws DapException{
 		
 		try{
@@ -105,7 +118,7 @@ public class DapManager {
 			}
 		}
 	}
-	
+	*/
 	private LdapConnectionPool startLdapConnectionPool() throws DapException{
 		
 		LdapConnectionConfig config = new LdapConnectionConfig();
@@ -113,8 +126,8 @@ public class DapManager {
 		try{
 			config.setLdapHost(settings.getProperty("server_address"));
 			config.setLdapPort(Integer.parseInt(settings.getProperty("service_port")));
-			config.setName(String.format(Ldif.TOMCAT_USER_DN().toString()));
-			config.setCredentials(String.format(settings.getProperty("user_password")));
+			//config.setName(String.format(Ldif.TOMCAT_USER_DN().toString()));
+			//config.setCredentials(String.format(settings.getProperty("user_password")));
 		}catch(NumberFormatException ex){
 			throw new DapException("It was not able to connect to the server", ex);
 		}
@@ -161,27 +174,46 @@ public class DapManager {
 	}
 	
 	public static void main(String[] args){
-	/*	File directory = new File("/home/myself/git/eclipse/Web.opt");
+		File directory = new File("/Users/davidrcuervo/git/devs/web");
 		
 		try{
+			log4j.info("Starting LDAP module");
 			DapManager dapManager = new DapManager(directory);
+			log4j.info("LDAP module has started succesfully");
 			
-			try{
-				dapManager.startDapServer();
+			LdapConnection connection = dapManager.createConnection();
+		
+			try {
+				log4j.info("Binding with dap server");
+				connection.bind("uid=1,ou=people,dc=la-etienda,dc=com", "secret");
+				log4j.info("it has binded with dap server succesfully");
 				
-			}catch(DapException ex){
-				ex.printStackTrace();
-				ex.getParent().printStackTrace();
-			}finally{
-				dapManager.stopDapServer();
+				EntryCursor cursor = connection.search("ou=People,dc=la-etienda,dc=com", "(objectclass=*)", SearchScope.ONELEVEL);
+				
+				for(Entry entry : cursor) {
+					if(entry != null) {
+						log4j.debug("entry: " + entry);
+						System.out.println(entry);
+					}
+				}
+				cursor.close();
+				connection.unBind();
+			}catch(LdapException ex) {
+				log4j.error("Failed to bind/search with dap server", ex);
+			} catch (IOException ex) {
+				log4j.error("Failed to close cursor", ex);
+			}finally {
+				dapManager.closeConnection(connection);
 			}
+		
+			log4j.info("Stoping LDAP module");
+			dapManager.stopDapServer();
+			log4j.info("LDAP Module has stopped succesfully");
 			
 		}catch(DapException ex){
-			ex.printStackTrace();
-			ex.getParent().printStackTrace();
+			log4j.fatal("Failed to load LDAP module");
 		}finally{
-			System.out.println("Closing the application");
+			log4j.info("Game Over");
 		}
-		*/
 	}
 }

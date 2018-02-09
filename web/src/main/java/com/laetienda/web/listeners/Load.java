@@ -8,8 +8,6 @@ import javax.servlet.ServletContextListener;
 import com.laetienda.tomcat.Service;
 import com.laetienda.tomcat.TomcatException;
 import com.laetienda.logger.LoggerManager;
-import com.laetienda.logger.JavaLogger;
-import com.laetienda.logger.LoggerException;
 import com.laetienda.db.Db;
 import com.laetienda.db.DbException;
 import com.laetienda.db.DbManager;
@@ -25,8 +23,9 @@ import com.laetienda.dap.DapManager;
 
 public class Load implements ServletContextListener {
 	
+	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(Load.class);
+	
 	private File directory;
-	private JavaLogger log;
 	private LoggerManager logManager;
 	private LangManager langManager;
 	private DbManager dbManager;
@@ -36,7 +35,7 @@ public class Load implements ServletContextListener {
 	
 	public void contextDestroyed(ServletContextEvent arg0){
 		
-		log.info("closing cafeteros web application");
+		log4j.info("closing cafeteros web application");
 		
 		if(notesManager != null){
 			
@@ -47,8 +46,8 @@ public class Load implements ServletContextListener {
 			try{
 				langManager.exportLang();
 			}catch(SqlException ex){
-				log.critical("Failed to export language to CSV file. Information might be lost");
-				log.exception(ex);
+				log4j.fatal("Failed to export language to CSV file. Information might be lost", ex);
+				exit();
 			}
 		}
 		
@@ -56,7 +55,7 @@ public class Load implements ServletContextListener {
 			dbManager.close();
 		}
 		
-		log.info("cafeteros web application has closed successfully");
+		log4j.info("cafeteros web application has closed successfully");
 		if(logManager != null){
 			logManager.close();
 		}
@@ -68,74 +67,55 @@ public class Load implements ServletContextListener {
 		directory = new File(sc.getInitParameter("directory"));
 		
 		try{
-			logManager = new LoggerManager(directory);
-			sc.setAttribute("logManager", logManager);
-			log = logManager.createJavaLogger();
-			log.info("Logger library has started successfully");
-		}catch (LoggerException ex){
-			if(ex.getParent() != null){
-				System.err.println(ex.getMessage());
-				ex.getParent().printStackTrace();
-			}else{
-				ex.printStackTrace();
-			}
-			exit();
-		}
-			
-		try{
 			dbManager = new DbManager(directory);
 			sc.setAttribute("dbManager", dbManager);
-			log.info("database library has loaded succesfully");
+			log4j.info("database library has loaded succesfully");
 		}catch(DbException ex){
-			log.exception(ex);
+			log4j.fatal(ex);
 			exit();
 		}
 		
 		try{
-			langManager = new LangManager(directory, logManager.createJavaLogger());
+			langManager = new LangManager(directory);
 			sc.setAttribute("langManager", langManager);
-			log.info("language library has loaded succesfully");
+			log4j.info("language library has loaded succesfully");
 		}catch(LangException ex){
-			log.exception(ex);
+			log4j.fatal(ex);
 			exit();
 		}
 		
 		try{
 			mediaManager = new MediaManager(directory);
 			sc.setAttribute("mediaManager", mediaManager);
-			log.info("multimedia library has loaded succesfully");
+			log4j.info("multimedia library has loaded succesfully");
 		}catch(MultimediaException ex){
-			log.exception(ex);
+			log4j.fatal(ex);
 			exit();
 		}
 			
 		try{
 			notesManager = new NotesManager(directory);
 			sc.setAttribute("notesManager", notesManager);
-			log.info("notes library has loaded succesfully");
+			log4j.info("notes library has loaded succesfully");
 		}catch(NotesException ex){
-			log.exception(ex);
+			log4j.fatal(ex);
 			exit();
 		}
 		
 		try{
 			dapManager = new DapManager(directory);
-			Db db = dbManager.createTransaction();
-			
-			try{
-				dapManager.startDapServer(db);
-				sc.setAttribute("dapManager", dapManager);
-				dbManager.closeTransaction(db);
-				log.info("DAP library has been loaded succesfully");
-			}catch(DapException ex){
-				log.exception(ex);
+			//Db db = dbManager.createTransaction();
+			sc.setAttribute("dapManager", dapManager);
+			log4j.info("DAP library has been loaded succesfully");
+			/*}catch(DapException ex){
+				log4j.fatal(ex);
 				dapManager.stopDapServer();
 				dbManager.closeTransaction(db);
 				exit();
-			}
+			}*/
 			
 		}catch(DapException ex){
-			log.exception(ex);
+			log4j.fatal(ex);
 			exit();
 		}
 			
@@ -143,33 +123,19 @@ public class Load implements ServletContextListener {
 			langManager.importLang();
 			
 		}catch(SqlException ex){
-			log.exception(ex);
+			log4j.fatal(ex);
 		}
 			
-		log.info("Framework has loaded succesfully");
+		log4j.info("Framework has loaded succesfully");
 	}
 	
 	private void exit(){
-		
-		String errorMessage = "It failed while loading libraries. Application is about to shutdown";
-		
-		if(log == null){
-			System.out.println(errorMessage);
-		}else{
-			log.critical(errorMessage);
-		}
 		
 		try{
 			Service daemon = new Service(directory);
 			daemon.shutdown();
 		}catch(TomcatException ex1){
-			if(ex1.getParent() == null){
-				ex1.printStackTrace();
-			}else{
-				System.out.println(ex1.getMessage());
-				ex1.getParent().printStackTrace();
-			}
-			
+			log4j.fatal("Tomcat was not able to shutdown");
 			System.exit(-1);
 		}
 	}

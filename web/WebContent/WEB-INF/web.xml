@@ -44,17 +44,9 @@
 	</servlet-mapping>
 	<listener>
 		<listener-class>
-  			com.laetienda.web.listeners.Load
+  			com.laetienda.tomcat.Load
 		</listener-class>
 	</listener>
-	<filter>
-		<filter-name>logger</filter-name>
-		<filter-class>com.laetienda.logger.LogFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>logger</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
 	<filter>
 		<filter-name>lang</filter-name>
 		<filter-class>com.laetienda.lang.LangFilter</filter-class>
