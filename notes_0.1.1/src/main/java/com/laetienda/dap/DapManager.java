@@ -19,10 +19,17 @@ import org.apache.directory.ldap.client.api.LdapConnectionPool;
 //import com.laetienda.entities.User;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.directory.api.ldap.model.cursor.CursorException;
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
+import org.apache.directory.api.ldap.model.cursor.SearchCursor;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.message.Response;
+import org.apache.directory.api.ldap.model.message.SearchRequest;
+import org.apache.directory.api.ldap.model.message.SearchRequestImpl;
+import org.apache.directory.api.ldap.model.message.SearchResultEntry;
 import org.apache.directory.api.ldap.model.message.SearchScope;
+import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.DefaultLdapConnectionFactory;
 import org.apache.directory.ldap.client.api.DefaultPoolableLdapConnectionFactory;
 import org.apache.directory.ldap.client.api.LdapConnection;
@@ -174,7 +181,10 @@ public class DapManager {
 	}
 	
 	public static void main(String[] args){
-		File directory = new File("/Users/davidrcuervo/git/devs/web");
+		
+		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
+		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		
 		
 		try{
 			log4j.info("Starting LDAP module");
@@ -185,9 +195,34 @@ public class DapManager {
 		
 			try {
 				log4j.info("Binding with dap server");
-				connection.bind("uid=1,ou=people,dc=la-etienda,dc=com", "secret");
+				connection.bind("uid=2,ou=people,dc=la-etienda,dc=com", "Welcome1");
 				log4j.info("it has binded with dap server succesfully");
 				
+				/**
+				 * Example of search by attribute, very important to find if the email exists
+				 */
+				SearchRequest req = new SearchRequestImpl();
+				req.setScope(SearchScope.ONELEVEL);
+				req.addAttributes("*");
+				req.setTimeLimit(0);
+				req.setBase(new Dn("ou=People,dc=la-etienda,dc=com"));
+				req.setFilter("(mail=sysadmin@la-etienda.com)");
+				
+				SearchCursor searchCursor = connection.search(req);
+				
+				while(searchCursor.next()) {
+					
+					Response response = searchCursor.get();
+					if(response instanceof SearchResultEntry) {
+						Entry resultEntry = ((SearchResultEntry)response).getEntry();
+						log4j.debug("resultEntry: " + resultEntry);
+					}
+				}
+				
+				/**
+				 * Example to search entries of a master entry
+				 */
+				/*
 				EntryCursor cursor = connection.search("ou=People,dc=la-etienda,dc=com", "(objectclass=*)", SearchScope.ONELEVEL);
 				
 				for(Entry entry : cursor) {
@@ -197,11 +232,14 @@ public class DapManager {
 					}
 				}
 				cursor.close();
+				*/
 				connection.unBind();
 			}catch(LdapException ex) {
 				log4j.error("Failed to bind/search with dap server", ex);
-			} catch (IOException ex) {
-				log4j.error("Failed to close cursor", ex);
+			/*} catch (IOException ex) {
+				log4j.error("Failed to close cursor", ex);*/
+			} catch (CursorException ex) {
+				log4j.error("Failed to search the ldap", ex);
 			}finally {
 				dapManager.closeConnection(connection);
 			}
@@ -211,7 +249,7 @@ public class DapManager {
 			log4j.info("LDAP Module has stopped succesfully");
 			
 		}catch(DapException ex){
-			log4j.fatal("Failed to load LDAP module");
+			log4j.fatal("Failed to load LDAP module", ex);
 		}finally{
 			log4j.info("Game Over");
 		}
