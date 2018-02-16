@@ -59,11 +59,13 @@ public class DapManager {
 	
 	public void stopDapServer(){
 		
-		for(LdapConnection connection : connections){
-			try {
-				closeConnection(connection);
-			}catch(DapException ex) {
-				log4j.error(ex.getMessage(), ex.getParent());
+		if(connections.size() > 0) {
+			for(LdapConnection connection : connections){
+				try {
+					closeConnection(connection);
+				}catch(DapException ex) {
+					log4j.error(ex.getMessage(), ex.getParent());
+				}
 			}
 		}
 	}
