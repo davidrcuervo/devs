@@ -14,6 +14,7 @@ import com.laetienda.logger.*;
 @Entity
 @Table(name="logs@logger")
 
+@Deprecated
 public class Log extends EntityObject implements Serializable {
 
 	private static final long serialVersionUID = 1L;

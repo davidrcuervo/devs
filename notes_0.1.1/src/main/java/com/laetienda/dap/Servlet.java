@@ -101,6 +101,7 @@ public class Servlet extends HttpServlet {
 	private void signup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		User user = new User();
+		/*
 		user.setStatus(optManager.findOption("User status", "registered"));
 		user.setCn(request.getParameter("cn"));
 		user.setSn(request.getParameter("sn"));
@@ -122,6 +123,6 @@ public class Servlet extends HttpServlet {
 				request.setAttribute("UserSignupForm", "success");
 			}
 			doGet(request, response);
-		}
+		}*/
 	}
 }

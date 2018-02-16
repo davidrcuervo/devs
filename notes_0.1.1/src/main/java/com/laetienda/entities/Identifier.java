@@ -11,6 +11,8 @@ import java.util.Date;
 	@NamedQuery(name="Identifier.findAll", query="SELECT i FROM Identifier i"),
 	@NamedQuery(name="Identifier.findByName", query="SELECT i FROM Identifier i WHERE i.name = :name")
 })
+
+@Deprecated
 public class Identifier extends EntityObject implements Serializable{
 	public String getName() {
 		return name;
