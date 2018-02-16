@@ -200,10 +200,6 @@ public class DapManager {
 				connection.bind("uid=1,ou=people,dc=la-etienda,dc=com", "secret");
 				log4j.info("it has binded with dap server succesfully");
 				
-<<<<<<< HEAD
-				
-=======
->>>>>>> refs/remotes/github/web-dev
 				/**
 				 * Example to search entries of a master entry
 				 */
@@ -222,10 +218,7 @@ public class DapManager {
 				log4j.error("Failed to bind/search with dap server", ex);
 			} catch (IOException ex) {
 				log4j.error("Failed to close cursor", ex);
-<<<<<<< HEAD
 
-=======
->>>>>>> refs/remotes/github/web-dev
 			}finally {
 				dapManager.closeConnection(connection);
 			}
