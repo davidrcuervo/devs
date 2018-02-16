@@ -182,8 +182,8 @@ public class DapManager {
 	
 	public static void main(String[] args){
 		
-		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
+		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
 		
 		
 		try{
@@ -195,23 +195,24 @@ public class DapManager {
 		
 			try {
 				log4j.info("Binding with dap server");
-				connection.bind("uid=2,ou=people,dc=la-etienda,dc=com", "Welcome1");
+				connection.bind("uid=1,ou=people,dc=la-etienda,dc=com", "secret");
 				log4j.info("it has binded with dap server succesfully");
 				
 				/**
 				 * Example of search by attribute, very important to find if the email exists
 				 */
+				
 				SearchRequest req = new SearchRequestImpl();
-				req.setScope(SearchScope.ONELEVEL);
+				req.setScope(SearchScope.SUBTREE);
 				req.addAttributes("*");
 				req.setTimeLimit(0);
-				req.setBase(new Dn("ou=People,dc=la-etienda,dc=com"));
-				req.setFilter("(mail=sysadmin@la-etienda.com)");
+				req.setBase(new Dn("dc=la-etienda,dc=com"));
+				req.setFilter("(cn=tomcat)");
 				
 				SearchCursor searchCursor = connection.search(req);
 				
 				while(searchCursor.next()) {
-					
+					log4j.debug("Search has found another result");
 					Response response = searchCursor.get();
 					if(response instanceof SearchResultEntry) {
 						Entry resultEntry = ((SearchResultEntry)response).getEntry();
@@ -236,7 +237,7 @@ public class DapManager {
 				connection.unBind();
 			}catch(LdapException ex) {
 				log4j.error("Failed to bind/search with dap server", ex);
-			/*} catch (IOException ex) {
+	/*		} catch (IOException ex) {
 				log4j.error("Failed to close cursor", ex);*/
 			} catch (CursorException ex) {
 				log4j.error("Failed to search the ldap", ex);
