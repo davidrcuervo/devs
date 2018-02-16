@@ -10,7 +10,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 public class PathParts implements Filter{
+	
+	final static Logger log4j = Logger.getLogger(PathParts.class);
 	
 	public void init(FilterConfig fConfig) throws ServletException{
 	
@@ -45,24 +49,27 @@ public class PathParts implements Filter{
 		chain.doFilter(request, response);
 		
 		/*
-		System.out.println("uri: " + uri);
-		System.out.println("urlPattern: " + urlPattern);
-		System.out.println("path: " + path);
+		 * DISABLE BLOCK BELOW, ONLY ENABLE IT TO TROUBLESHOOT PATH PARTS MODULE
+		 */
 		
-		System.out.println("pathParts.length: " + pathParts.length);
-		System.out.println("pathParts[0].length: " + pathParts[0].length());
+		log4j.debug("uri: " + uri);
+		log4j.debug("urlPattern: " + urlPattern);
+		log4j.debug("path: " + path);
+		
+		log4j.debug("pathParts.length: " + pathParts.length);
+		log4j.debug("pathParts[0].length: " + pathParts[0].length());
 		
 		for(int c=0; c < pathParts.length; c++){
-			System.out.println("pathParts[" + c + "]: " + pathParts[c]);
+			log4j.debug("pathParts[" + c + "]: " + pathParts[c]);
 		}
 		
-		System.out.println("allpathParts.length: " + allpathParts.length);
-		System.out.println("allpathParts[0].length: " + allpathParts[0].length());
+		log4j.debug("allpathParts.length: " + allpathParts.length);
+		log4j.debug("allpathParts[0].length: " + allpathParts[0].length());
 		
 		for(int c=0; c < allpathParts.length; c++){
-			System.out.println("allpathParts[" + c + "]: " + allpathParts[c]);
+			log4j.debug("allpathParts[" + c + "]: " + allpathParts[c]);
 		}
-		*/
+		
 	}
 	
 	public void destroy(){

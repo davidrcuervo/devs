@@ -12,18 +12,19 @@ import com.laetienda.AppException;
 import com.laetienda.db.Db;
 import com.laetienda.db.DbManager;
 import com.laetienda.entities.User;
-import com.laetienda.logger.JavaLogger;
 import com.laetienda.options.OptionsManager;
+
+import org.apache.log4j.Logger;
 
 public class Servlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+
+	final static Logger log4j = Logger.getLogger(Servlet.class);
 	private String[] pathParts;
 	private OptionsManager optManager;
 	private DbManager dbManager;
 	private DapBean dap = null;
 	private Db db;
-	private JavaLogger log;
 	
 	public Servlet(){
 		super();
@@ -46,7 +47,6 @@ public class Servlet extends HttpServlet {
 	private void build(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		pathParts = (String[])request.getAttribute("pathParts");
 		optManager = (OptionsManager)request.getServletContext().getAttribute("optManager");
-		log = (JavaLogger)request.getAttribute("logger");
 	}
 	
 	@Override
@@ -67,7 +67,7 @@ public class Servlet extends HttpServlet {
 			
 			//https:///<server-name>:<port>/<context-path>
 			case "":
-				response.sendRedirect(request.getContextPath() + "/login");
+				response.sendRedirect(request.getServletPath() + "/login");
 				break;
 		
 			//https:///<server-name>:<port>/<context-path>/login
@@ -113,7 +113,7 @@ public class Servlet extends HttpServlet {
 			db.commit();
 		}catch(AppException ex){
 			user.addError("user", "Internal error");
-			log.exception(ex);
+			log4j.error("Failed to process signup form", ex);
 			dap.deleteEntry(user);
 		}finally{
 			if(user.getErrors().size() > 0){

@@ -59,11 +59,13 @@ public class DapManager {
 	
 	public void stopDapServer(){
 		
-		for(LdapConnection connection : connections){
-			try {
-				closeConnection(connection);
-			}catch(DapException ex) {
-				log4j.error(ex.getMessage(), ex.getParent());
+		if(connections.size() > 0) {
+			for(LdapConnection connection : connections){
+				try {
+					closeConnection(connection);
+				}catch(DapException ex) {
+					log4j.error(ex.getMessage(), ex.getParent());
+				}
 			}
 		}
 	}
@@ -182,8 +184,8 @@ public class DapManager {
 	
 	public static void main(String[] args){
 		
-		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
+		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
 		
 		
 		try{
@@ -195,10 +197,13 @@ public class DapManager {
 		
 			try {
 				log4j.info("Binding with dap server");
-				connection.bind("uid=2,ou=people,dc=la-etienda,dc=com", "Welcome1");
+				connection.bind("uid=1,ou=people,dc=la-etienda,dc=com", "secret");
 				log4j.info("it has binded with dap server succesfully");
 				
+<<<<<<< HEAD
 				
+=======
+>>>>>>> refs/remotes/github/web-dev
 				/**
 				 * Example to search entries of a master entry
 				 */
@@ -217,7 +222,10 @@ public class DapManager {
 				log4j.error("Failed to bind/search with dap server", ex);
 			} catch (IOException ex) {
 				log4j.error("Failed to close cursor", ex);
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/github/web-dev
 			}finally {
 				dapManager.closeConnection(connection);
 			}
