@@ -199,48 +199,23 @@ public class DapManager {
 				log4j.info("it has binded with dap server succesfully");
 				
 				/**
-				 * Example of search by attribute, very important to find if the email exists
-				 */
-				
-				SearchRequest req = new SearchRequestImpl();
-				req.setScope(SearchScope.SUBTREE);
-				req.addAttributes("*");
-				req.setTimeLimit(0);
-				req.setBase(new Dn("dc=la-etienda,dc=com"));
-				req.setFilter("(cn=tomcat)");
-				
-				SearchCursor searchCursor = connection.search(req);
-				
-				while(searchCursor.next()) {
-					log4j.debug("Search has found another result");
-					Response response = searchCursor.get();
-					if(response instanceof SearchResultEntry) {
-						Entry resultEntry = ((SearchResultEntry)response).getEntry();
-						log4j.debug("resultEntry: " + resultEntry);
-					}
-				}
-				
-				/**
 				 * Example to search entries of a master entry
 				 */
-				/*
-				EntryCursor cursor = connection.search("ou=People,dc=la-etienda,dc=com", "(objectclass=*)", SearchScope.ONELEVEL);
+				
+				EntryCursor cursor = connection.search("ou=People,dc=la-etienda,dc=com", "(cn=sysadmin)", SearchScope.ONELEVEL);
 				
 				for(Entry entry : cursor) {
 					if(entry != null) {
-						log4j.debug("entry: " + entry);
-						System.out.println(entry);
+						log4j.debug("entry: " + entry.get("uid").getString());
 					}
 				}
 				cursor.close();
-				*/
+				
 				connection.unBind();
 			}catch(LdapException ex) {
 				log4j.error("Failed to bind/search with dap server", ex);
-	/*		} catch (IOException ex) {
-				log4j.error("Failed to close cursor", ex);*/
-			} catch (CursorException ex) {
-				log4j.error("Failed to search the ldap", ex);
+			} catch (IOException ex) {
+				log4j.error("Failed to close cursor", ex);
 			}finally {
 				dapManager.closeConnection(connection);
 			}
