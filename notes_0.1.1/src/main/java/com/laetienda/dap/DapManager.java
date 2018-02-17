@@ -58,14 +58,12 @@ public class DapManager {
 	*/
 	
 	public void stopDapServer(){
-		
-		if(connections.size() > 0) {
-			for(LdapConnection connection : connections){
-				try {
-					closeConnection(connection);
-				}catch(DapException ex) {
-					log4j.error(ex.getMessage(), ex.getParent());
-				}
+			
+		for(LdapConnection connection : connections){
+			try {
+				closeConnection(connection);
+			}catch(DapException ex) {
+				log4j.error(ex.getMessage(), ex.getParent());
 			}
 		}
 	}

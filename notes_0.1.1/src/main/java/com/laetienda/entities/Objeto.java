@@ -49,6 +49,56 @@ public class Objeto implements Serializable{
 	@JoinColumn(name="\"delete_acl_id\"", nullable=false, unique=false)
 	private AccessList delete;
 	
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
+
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
+	}
+
+	public AccessList getWrite() {
+		return write;
+	}
+
+	public void setWrite(AccessList write) {
+		this.write = write;
+	}
+
+	public AccessList getRead() {
+		return read;
+	}
+
+	public void setRead(AccessList read) {
+		this.read = read;
+	}
+
+	public AccessList getDelete() {
+		return delete;
+	}
+
+	public void setDelete(AccessList delete) {
+		this.delete = delete;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setPermisions(AccessList delete, AccessList write, AccessList read){
+		this.setDelete(delete);
+		this.setWrite(write);
+		this.setRead(read);
+	}
+	
 	
 	
 }

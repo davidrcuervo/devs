@@ -38,4 +38,59 @@ public class AccessList implements Serializable{
 	
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="acl", orphanRemoval=true)
 	private List<AclGroup> groups = new ArrayList<AclGroup>();
+
+	public Objeto getObjeto() {
+		return objeto;
+	}
+
+	public void setObjeto(Objeto objeto) {
+		this.objeto = objeto;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public List<AclUser> getUsers() {
+		return users;
+	}
+	
+	public void addUser(User user) {
+		AclUser aclUser = new AclUser();
+		aclUser.setUser(user);
+		aclUser.setAcl(this);
+		
+		//TODO check if user has already added to the acl
+		users.add(aclUser);
+	}
+
+	public List<AclGroup> getGroups() {
+		return groups;
+	}
+	
+	public void addGroup(Group group) {
+		AclGroup aclGroup = new AclGroup();
+		aclGroup.setAcl(this);
+		aclGroup.setGroup(group);
+		
+		//TODO check if group had added before to the acl
+		groups.add(aclGroup);
+	}
+	
 }

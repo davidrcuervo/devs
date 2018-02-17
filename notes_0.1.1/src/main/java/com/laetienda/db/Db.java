@@ -37,7 +37,8 @@ public class Db {
 		
 		return find(entityClass, id);
 	}
-
+	
+	
 	public EntityObject find(Class<?> entityClass, Integer id) throws DbException{
 		EntityObject result;
 		
@@ -53,7 +54,8 @@ public class Db {
 		return result;
 	}
 	
-public boolean begin(EntityManager em) throws DbException {
+	
+	public boolean begin(EntityManager em) throws DbException {
 		
 		boolean result = false;
 		

@@ -26,5 +26,24 @@ public class AclUser implements Serializable{
 	
 	@ManyToOne
 	private AccessList acl;
-	
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public AccessList getAcl() {
+		return acl;
+	}
+
+	public void setAcl(AccessList acl) {
+		this.acl = acl;
+	}
 }

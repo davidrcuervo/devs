@@ -29,4 +29,32 @@ public class Group implements Serializable {
 	
 	@Column(name="\"description\"", nullable=true, unique=false, length=254)
 	private String description;
+
+	public Objeto getObjeto() {
+		return objeto;
+	}
+
+	public void setObjeto(Objeto objeto) {
+		this.objeto = objeto;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Integer getId() {
+		return id;
+	}
 }

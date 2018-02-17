@@ -26,4 +26,24 @@ public class AclGroup implements Serializable{
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="\"group_id\"", unique=false, nullable=false)
 	private Group group;
+
+	public AccessList getAcl() {
+		return acl;
+	}
+
+	public void setAcl(AccessList acl) {
+		this.acl = acl;
+	}
+
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
+	}
+
+	public Integer getId() {
+		return id;
+	}
 }
