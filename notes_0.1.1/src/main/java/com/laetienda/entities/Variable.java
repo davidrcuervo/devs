@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 @Entity
 @Table(name="variables")
 @NamedQueries({
-	@NamedQuery(name="Variable.findall", query="SELECT v FROM variable v")
+	@NamedQuery(name="Variable.findall", query="SELECT v FROM Variable v")
 })
 
 public class Variable implements Serializable{

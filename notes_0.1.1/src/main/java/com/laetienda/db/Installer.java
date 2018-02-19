@@ -41,12 +41,19 @@ public class Installer {
 		acl.setObjeto(objAcl);
 		acl.addGroup(sysadmins);
 		acl.addUser(sysadmin);
+		acl.setName("sysadmins");
+		acl.setDescription("Includes sysadmin user and sysadmin group");
 		objAcl.setOwner(sysadmin);
 		objAcl.setPermisions(acl, acl, acl);
 		objAcl.setGroup(sysadmins);
 		
 		em.getTransaction().begin();
+		em.persist(objSysadmins);
 		em.persist(objSysadmin);
+		em.persist(objAcl);
+		em.persist(sysadmins);
+		em.persist(sysadmin);
+		em.persist(acl);
 		em.getTransaction().commit();
 		dbManager.closeTransaction(db);
 	}

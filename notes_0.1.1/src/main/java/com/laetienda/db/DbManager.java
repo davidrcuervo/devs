@@ -12,10 +12,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.spi.PersistenceUnitTransactionType;
+import org.apache.log4j.Logger;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.*;
 
 public class DbManager {
+	static final Logger log4j = Logger.getLogger(DbManager.class);
 	
 	private ArrayList<EntityManager> ems;
 	private EntityManagerFactory emfactory;
@@ -39,9 +41,8 @@ public class DbManager {
 		this.directory = directory;
 		defaults = setDefaultSettings();
 		settings = loadConfFile(directory);
-    	ems = new ArrayList<EntityManager>();
-    	open();
-		
+    		ems = new ArrayList<EntityManager>();
+    		open();	
 	}
 	
     public synchronized Db createTransaction(){
@@ -90,11 +91,11 @@ public class DbManager {
 	   		 * ENABLE FOR DEBUGGING ONLY
 	   		 * -------------------------
 	   		 */
-	   		/*
+	   		
 	   		for(Map.Entry<String, String> temp : settings.entrySet()){
-	   			System.out.println(temp.getKey() + ": " + temp.getValue());
+	   			log4j.debug(temp.getKey() + ": " + temp.getValue());
 	   		}
-	   		*/
+	   		
 	   		/*
 	   		 * End of debugging
 	   		 * -------------------------------
@@ -110,13 +111,13 @@ public class DbManager {
     	}catch(PersistenceException ex){
     		throw new DbException(ex);
     	}
-	 }
+ }
 	
 	public void close(){
     	
-    	for(EntityManager em : ems){
-    		if(em.isOpen()){
-    			em.close();
+	    	for(EntityManager em : ems){
+	    		if(em.isOpen()){
+	    			em.close();
     		}
     	}
     	
@@ -156,6 +157,7 @@ public class DbManager {
 					result.put(key, settings.getProperty(key));
 				}
 				
+				log4j.debug("");
 				result.put(JDBC_URL, "jdbc:postgresql://" + result.get("db_host") + ":" + result.get("db_port") + "/" + result.get("database"));
 				/*
 				if(result.get("javax.persistence.schema-generation.scripts.create-target") != null){

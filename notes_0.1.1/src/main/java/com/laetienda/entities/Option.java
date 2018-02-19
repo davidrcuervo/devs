@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 @Entity
 @Table(name="options")
 @NamedQueries({
-	@NamedQuery(name="Option.findall", query="SELECT o FROM option o")
+	@NamedQuery(name="Option.findall", query="SELECT o FROM Option o")
 })
 
 public class Option implements Serializable {

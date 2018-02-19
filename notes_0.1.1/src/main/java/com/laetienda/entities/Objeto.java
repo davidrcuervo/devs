@@ -6,9 +6,9 @@ import javax.persistence.*;
 import org.apache.log4j.Logger;
 
 @Entity
-@Table(name="objectos")
+@Table(name="objetos")
 @NamedQueries({
-	@NamedQuery(name="Objeto.findall", query="SELECT o FROM Objecto o")
+	@NamedQuery(name="Objeto.findall", query="SELECT o FROM Objeto o")
 })
 
 public class Objeto implements Serializable{
