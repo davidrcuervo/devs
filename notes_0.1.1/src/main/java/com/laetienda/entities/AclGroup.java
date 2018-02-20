@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 	@NamedQuery(name="AclGroup.findall", query="SELECT a FROM AclGroup a")
 })
 
-public class AclGroup implements Serializable{
+public class AclGroup extends EntityObject implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static Logger log4j = Logger.getLogger(AclUser.class);
 	

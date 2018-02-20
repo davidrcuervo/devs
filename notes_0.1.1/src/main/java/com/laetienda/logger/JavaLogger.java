@@ -1,6 +1,6 @@
 package com.laetienda.logger;
 
-import com.laetienda.AppException;
+import com.laetienda.app.AppException;
 import com.laetienda.db.SqlException;
 import com.laetienda.lang.LangException;
 import com.laetienda.multimedia.MultimediaException;

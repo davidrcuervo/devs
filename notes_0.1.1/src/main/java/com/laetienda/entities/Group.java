@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 @NamedQueries({
 	@NamedQuery(name="Group.findall", query="SELECT g FROM Group g")
 })
-public class Group implements Serializable {
+public class Group extends EntityObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static Logger log4j = Logger.getLogger(Group.class);
 	
@@ -30,6 +30,15 @@ public class Group implements Serializable {
 	@Column(name="\"description\"", nullable=true, unique=false, length=254)
 	private String description;
 
+	public Group() {
+		
+	}
+	
+	public Group (String name, String description) {
+		setName(name);
+		setDescription(description);
+	}
+	
 	public Objeto getObjeto() {
 		return objeto;
 	}

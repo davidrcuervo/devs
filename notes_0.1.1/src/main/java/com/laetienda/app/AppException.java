@@ -1,4 +1,4 @@
-package com.laetienda;
+package com.laetienda.app;
 /**
  * 
  * @author myself
@@ -35,6 +35,31 @@ public abstract class AppException extends Exception {
 	 */
 	public Exception getParent() {
 		return parent;
+	}
+	
+	public Exception getRootParent() {
+		Exception result = parent;
+		if(parent != null) {
+			if(parent instanceof AppException) {
+				result = findFirstParent((AppException)parent);
+			}
+		}else {
+			result = this;
+		}
+			
+		return result;
+	}
+	
+	private Exception findFirstParent(AppException temp) {
+		Exception result = null;
+		
+		if(temp.getParent() != null && temp.getParent() instanceof AppException) {
+			findFirstParent((AppException)temp.getParent());
+		}else {
+			result = temp;
+		}
+		
+		return result;
 	}
 
 	/**

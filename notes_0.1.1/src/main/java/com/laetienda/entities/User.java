@@ -4,14 +4,12 @@ import java.io.Serializable;
 import javax.persistence.*;
 import org.apache.log4j.Logger;
 
-
-
 @Entity
 @Table(name="users")
 @NamedQueries({
 	@NamedQuery(name="User.findall", query="SELECT u FROM User u")
 })
-public class User implements Serializable{
+public class User extends EntityObject implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static Logger log4j = Logger.getLogger(User.class);
 
@@ -30,6 +28,15 @@ public class User implements Serializable{
 	
 	@Column(name="\"email\"", length=254, unique=true, nullable=false)
 	private String email;
+	
+	public User() {
+		
+	}
+	
+	public User(Integer uid, String email) {
+		setUid(uid);
+		setEmail(email);
+	}
 	
 	public Objeto getObjeto() {
 		return objeto;

@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.laetienda.AppException;
+import com.laetienda.app.AppException;
 import com.laetienda.db.Db;
 import com.laetienda.db.DbManager;
 import com.laetienda.entities.User;
@@ -99,9 +99,9 @@ public class Servlet extends HttpServlet {
 	}
 	
 	private void signup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		User user = new User();
 		/*
+		User user = new User();
+		
 		user.setStatus(optManager.findOption("User status", "registered"));
 		user.setCn(request.getParameter("cn"));
 		user.setSn(request.getParameter("sn"));

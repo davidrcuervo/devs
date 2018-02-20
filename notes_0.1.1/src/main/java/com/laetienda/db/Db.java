@@ -70,6 +70,28 @@ public class Db {
 		
 		return result;
 	}
+	/**
+	 * 
+	 * @return boolean it returns <i>true</i> if it is able to update and commit into the database otherwise it returns <i>false</i>
+	 * @throws DbException
+	 */
+	public boolean update() throws DbException {
+		boolean result = false;
+		
+		try{
+			em.getTransaction().begin();
+			em.getTransaction().commit();
+			result = true;
+		}catch(IllegalStateException ex){
+			throw new DbException(ex.getMessage(), ex);
+		}catch(RollbackException ex){
+			rollback();
+		}finally{
+			//em.clear();
+		}
+		
+		return result;
+	}
 	
 	public boolean update(EntityManager em) throws DbException {
 		boolean result = false;
@@ -88,7 +110,7 @@ public class Db {
 		
 		return result;
 	}
-	
+/*	
 	public void insert(EntityObject entity) throws DbException {
 
 		insertNoCommit(entity);
@@ -103,6 +125,7 @@ public class Db {
 			if(entity.getErrors().size() > 0){
 				//Better not to do anything if it has errors
 			}else{
+				
 				em.getTransaction().begin();
 				
 				if(entity.getIdentifierName() != null){
@@ -114,6 +137,7 @@ public class Db {
 				}
 				
 				em.persist(entity);
+				
 			}
 			
 		}catch(IllegalStateException  ex){
@@ -141,15 +165,19 @@ public class Db {
 			em.clear();
 		}
 	}
-	
-	/*
-	public void insert(EntityManager em, EntityObject entity) throws DbException {
-				
+*/	
+	/**
+	 * It inserts and instance of EntityObject into the database
+	 * @param entity Object should be instance of EntityObject
+	 * @throws DbException if it is not possible to commit into database
+	 */
+	public void insert(/*EntityManager em,*/ EntityObject entity) throws DbException {
+		
 		try{
 			if(entity.getErrors().size() > 0){
 				
 			}else{
-				em.clear();
+				//em.clear();
 				em.getTransaction().begin();
 				em.persist(entity);
 				em.getTransaction().commit();
@@ -171,10 +199,10 @@ public class Db {
 			rollback();
 			throw new DbException(ex.getMessage(), ex);
 		}finally{
-			em.clear();
+			//em.clear();
 		}
 	}
-*/	
+
 	public boolean remove(EntityObject entity) throws DbException{
 		boolean result = false;
 		

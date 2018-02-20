@@ -68,7 +68,6 @@ public class Identifier extends EntityObject implements Serializable{
 		}
 	}
 	
-	@Override
 	public String getIdentifierName(){
 		return null;
 	}
@@ -101,7 +100,6 @@ public class Identifier extends EntityObject implements Serializable{
 		return modified;
 	}
 
-	@Override
 	public EntityObject setIdentifierValue(Integer id) {
 		// TODO Auto-generated method stub
 		return this;

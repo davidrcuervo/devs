@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 	@NamedQuery(name="AclUser.findall", query="SELECT a FROM AclUser a")
 })
 
-public class AclUser implements Serializable{
+public class AclUser extends EntityObject implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static Logger log4j = Logger.getLogger(AclUser.class);
 	

@@ -1,6 +1,6 @@
 package com.laetienda.options;
 
-import com.laetienda.AppException;
+import com.laetienda.app.AppException;
 
 public class OptionException extends AppException {
 	private static final long serialVersionUID = 1L;

@@ -1,6 +1,6 @@
 package com.laetienda.db;
 
-import com.laetienda.AppException;
+import com.laetienda.app.AppException;
 
 public class DbException extends AppException {
 	

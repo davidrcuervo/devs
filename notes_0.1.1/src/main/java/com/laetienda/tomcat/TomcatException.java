@@ -1,6 +1,6 @@
 package com.laetienda.tomcat;
 
-import com.laetienda.AppException;
+import com.laetienda.app.AppException;
 
 public class TomcatException extends AppException {
 	private static final long serialVersionUID = 1L;

@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 	@NamedQuery(name="Variable.findall", query="SELECT v FROM Variable v")
 })
 
-public class Variable implements Serializable{
+public class Variable extends EntityObject implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static Logger log4j = Logger.getLogger(Variable.class);
 	

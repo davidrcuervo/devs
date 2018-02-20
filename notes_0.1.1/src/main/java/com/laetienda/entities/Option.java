@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 	@NamedQuery(name="Option.findall", query="SELECT o FROM Option o")
 })
 
-public class Option implements Serializable {
+public class Option extends EntityObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static Logger log4j = Logger.getLogger(Option.class);
 	

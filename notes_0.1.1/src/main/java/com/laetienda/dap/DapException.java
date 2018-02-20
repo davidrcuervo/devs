@@ -1,6 +1,6 @@
 package com.laetienda.dap;
 
-import com.laetienda.AppException;
+import com.laetienda.app.AppException;
 
 public class DapException extends AppException {
 	private static final long serialVersionUID = 1L;

@@ -2,7 +2,7 @@ package com.laetienda.web.bin;
 
 import java.io.File;
 
-import com.laetienda.AppException;
+import com.laetienda.app.AppException;
 import com.laetienda.install.Instalador;
 
 public class Installer {

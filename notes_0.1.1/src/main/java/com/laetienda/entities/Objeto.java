@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 	@NamedQuery(name="Objeto.findall", query="SELECT o FROM Objeto o")
 })
 
-public class Objeto implements Serializable{
+public class Objeto extends EntityObject implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static Logger log4j = Logger.getLogger(Objeto.class);
 	
@@ -30,23 +30,23 @@ public class Objeto implements Serializable{
 	private Calendar modified;
 
 	@OneToOne (cascade=CascadeType.ALL)
-	@JoinColumn(name="\"user_id\"", nullable=false, unique=false)
+	@JoinColumn(name="\"user_id\"", nullable=true, unique=false)
 	private User owner;
 	
 	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="\"group_id\"", nullable=false, unique=false)
+	@JoinColumn(name="\"group_id\"", nullable=true, unique=false)
 	private Group group;
 	
 	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="\"read_acl_id\"", nullable=false, unique=false)
+	@JoinColumn(name="\"read_acl_id\"", nullable=true, unique=false)
 	private AccessList write;
 	
 	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="\"write_acl_id\"", nullable=false, unique=false)
+	@JoinColumn(name="\"write_acl_id\"", nullable=true, unique=false)
 	private AccessList read;
 	
 	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="\"delete_acl_id\"", nullable=false, unique=false)
+	@JoinColumn(name="\"delete_acl_id\"", nullable=true, unique=false)
 	private AccessList delete;
 	
 	public User getOwner() {

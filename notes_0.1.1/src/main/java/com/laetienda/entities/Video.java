@@ -204,12 +204,10 @@ public class Video extends EntityObject implements Serializable{
 		
 	}
 
-	@Override
 	public String getIdentifierName() {
 		return null;
 	}
 
-	@Override
 	public EntityObject setIdentifierValue(Integer id) {
 		return this;
 	}

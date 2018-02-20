@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 	@NamedQuery(name="AccessList.findall", query="SELECT a FROM AccessList a")
 })
 
-public class AccessList implements Serializable{
+public class AccessList extends EntityObject implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static Logger log4j = Logger.getLogger(AccessList.class);
 	
