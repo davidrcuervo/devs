@@ -38,7 +38,16 @@ public class AccessList extends EntityObject implements Serializable{
 	
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="acl", orphanRemoval=true)
 	private List<AclGroup> groups = new ArrayList<AclGroup>();
-
+	
+	public AccessList() {
+		
+	}
+	
+	public AccessList(String name, String description) {
+		setName(name);
+		setDescription(description);
+	}
+	
 	public Objeto getObjeto() {
 		return objeto;
 	}

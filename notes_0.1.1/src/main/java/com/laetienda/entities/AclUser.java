@@ -46,4 +46,9 @@ public class AclUser extends EntityObject implements Serializable{
 	public void setAcl(AccessList acl) {
 		this.acl = acl;
 	}
+
+	@Override
+	public Objeto getObjeto() {
+		return acl.getObjeto();
+	}
 }

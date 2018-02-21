@@ -61,4 +61,10 @@ public class Image extends EntityObject implements Serializable {
 	public EntityObject setIdentifierValue(Integer id) {
 		return this;
 	}
+
+	@Override
+	public Objeto getObjeto() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

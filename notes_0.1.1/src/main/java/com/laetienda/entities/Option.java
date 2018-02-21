@@ -26,5 +26,10 @@ public class Option extends EntityObject implements Serializable {
 	
 	@ManyToOne
 	private Variable variable;
+
+	@Override
+	public Objeto getObjeto() {
+		return variable.getObjeto();
+	}
 	
 }

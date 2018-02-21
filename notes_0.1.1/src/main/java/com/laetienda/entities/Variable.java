@@ -35,4 +35,12 @@ public class Variable extends EntityObject implements Serializable{
 	
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="variable", orphanRemoval=true)
 	private List<Option> options = new ArrayList<Option>();
+	
+	public Objeto getObjeto() {
+		return objeto;
+	}
+
+	public void setObjeto(Objeto objeto) {
+		this.objeto = objeto;
+	}
 }

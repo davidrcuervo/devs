@@ -46,4 +46,9 @@ public class AclGroup extends EntityObject implements Serializable{
 	public Integer getId() {
 		return id;
 	}
+
+	@Override
+	public Objeto getObjeto() {
+		return acl.getObjeto();
+	}
 }

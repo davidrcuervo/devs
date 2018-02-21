@@ -1,6 +1,7 @@
 package com.laetienda.entities;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javax.persistence.*;
 import org.apache.log4j.Logger;
@@ -14,6 +15,7 @@ import org.apache.log4j.Logger;
 public class Objeto extends EntityObject implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static Logger log4j = Logger.getLogger(Objeto.class);
+	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	@Id
 	@SequenceGenerator(name = "objecto_id_seq", sequenceName = "objecto_id_seq", allocationSize=1)
@@ -49,8 +51,44 @@ public class Objeto extends EntityObject implements Serializable{
 	@JoinColumn(name="\"delete_acl_id\"", nullable=true, unique=false)
 	private AccessList delete;
 	
+	public Objeto() {
+		 
+	}
+	
+	public Calendar getModified() {
+		return modified;
+	}
+	
+	public Objeto setModified() {
+		setModified(Calendar.getInstance());
+		return this;
+	}
+
+	public void setModified(Calendar modified) {
+		this.modified = modified;
+	}
+
+	public Calendar getCreated() {
+		return created;
+	}
+
 	public User getOwner() {
 		return owner;
+	}
+	
+	public Objeto setCreated() {
+		setCreated(Calendar.getInstance());
+		return this;
+	}
+	
+	public void setCreated(Calendar created) {
+		this.created = created;
+	}
+
+	public Objeto setOwner(User owner, Group group) {
+		setOwner(owner);
+		setGroup(group);
+		return this;
 	}
 
 	public void setOwner(User owner) {
@@ -93,12 +131,14 @@ public class Objeto extends EntityObject implements Serializable{
 		return id;
 	}
 
-	public void setPermisions(AccessList delete, AccessList write, AccessList read){
+	public Objeto setPermisions(AccessList delete, AccessList write, AccessList read){
 		this.setDelete(delete);
 		this.setWrite(write);
 		this.setRead(read);
+		return this;
 	}
 	
-	
-	
+	public Objeto getObjeto() {
+		return this;
+	}
 }
