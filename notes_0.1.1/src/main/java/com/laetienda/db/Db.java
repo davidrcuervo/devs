@@ -7,6 +7,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 import javax.persistence.TransactionRequiredException;
 
+import com.laetienda.entities.Objeto;
 import com.laetienda.entities.EntityObject;
 import com.laetienda.entities.Identifier;
 
@@ -171,15 +172,16 @@ public class Db {
 	 * @param entity Object should be instance of EntityObject
 	 * @throws DbException if it is not possible to commit into database
 	 */
-	public void insert(/*EntityManager em,*/ EntityObject entity) throws DbException {
+	public void insert(/*EntityManager em, EntityObject entity,*/ Objeto objeto) throws DbException {
 		
 		try{
-			if(entity.getErrors().size() > 0){
+			if(objeto.getErrors().size() > 0){
 				
 			}else{
 				//em.clear();
 				em.getTransaction().begin();
-				em.persist(entity);
+				em.persist(objeto);	
+				//em.persist(entity);
 				em.getTransaction().commit();
 			}
 			
@@ -239,6 +241,40 @@ public class Db {
 			throw new DbException("Unexpected error while rolling back transaction", ex);
 		}finally{
 			em.clear();
+		}
+	}
+	
+	@Deprecated
+	public void insert(/*EntityManager em,*/ EntityObject entity) throws DbException {
+		
+		try{
+			if(entity.getErrors().size() > 0){
+				
+			}else{
+				//em.clear();
+				em.getTransaction().begin();
+				em.persist(entity);	
+				//em.persist(entity);
+				em.getTransaction().commit();
+			}
+			
+		}catch(IllegalStateException ex){
+			em.clear();
+			throw new DbException(ex.getMessage(), ex);
+		}catch(EntityExistsException ex){
+			em.clear();
+			throw new DbException(ex.getMessage(), ex);
+		}catch(IllegalArgumentException ex){
+			em.clear();
+			throw new DbException(ex.getMessage(), ex);
+		}catch(TransactionRequiredException ex){
+			em.clear();
+			throw new DbException(ex.getMessage(), ex);
+		}catch(RollbackException ex){
+			rollback();
+			throw new DbException(ex.getMessage(), ex);
+		}finally{
+			//em.clear();
 		}
 	}
 }

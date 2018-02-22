@@ -17,14 +17,24 @@ import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.LdapConnection;
 
-public class DapBean {
+public class Dap {
 	
 	private LdapConnection connection;
+	private DapUser user;
 	
-	public DapBean(LdapConnection connection){
+	public Dap(LdapConnection connection, DapUser user){
 		this.connection = connection;
 	}
 	
+	public void insertUser(DapUser newUser) throws DapException {
+		try {
+			connection.bind(user.getDn(), user.getPassword());
+		} catch (LdapException ex) {
+			throw new DapException("Failed to insert user in ldap", ex);
+		}
+	}
+	
+	/*
 	public DapBean addEntry(DapEntry dapEntry) throws DapException{
 		
 		if(dapEntry.getErrors().size() > 0){
@@ -107,7 +117,7 @@ public class DapBean {
 		
 		return this;
 	}
-	
+	*/
 	public void close() throws DapException{
 		if(connection.isConnected()){
 			try{

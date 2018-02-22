@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import org.apache.log4j.Logger;
 
+@Deprecated
 public abstract class EntityObject {
 	private static final Logger log4j = Logger.getLogger(EntityObject.class);
 	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -19,10 +20,6 @@ public abstract class EntityObject {
 	public EntityObject() {
 		errors = new HashMap<String, List<String>>();
 	}
-	
-	public abstract Objeto getObjeto();
-	//public abstract String getIdentifierName();
-	//public abstract EntityObject setIdentifierValue(Integer id);
 	
 	public String getDate(Calendar date){
 		
@@ -45,17 +42,5 @@ public abstract class EntityObject {
 	
 	public HashMap<String, List<String>> getErrors(){
 		return errors;
-	}
-	
-	@PrePersist
-	public void onPrePersist() {
-		log4j.info("Updating created timestamp");
-		this.getObjeto().setCreated(); 
-	}
-	
-	@PreUpdate
-	public void noPreUpdate() {
-		log4j.info("Updating modified timestamp");
-		this.getObjeto().setModified();
 	}
 }

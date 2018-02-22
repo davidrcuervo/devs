@@ -23,7 +23,7 @@ public class Servlet extends HttpServlet {
 	private String[] pathParts;
 	private OptionsManager optManager;
 	private DbManager dbManager;
-	private DapBean dap = null;
+	private Dap dap = null;
 	private Db db;
 	
 	public Servlet(){
@@ -38,7 +38,7 @@ public class Servlet extends HttpServlet {
 		db = dbManager.createTransaction();
 		
 		try{
-			dap = new DapBean(dapManager.createConnection());
+			dap = new Dap(dapManager.createConnection(), dapManager.getTomcat());
 		}catch(DapException ex){
 			//TODO
 		}
@@ -99,9 +99,9 @@ public class Servlet extends HttpServlet {
 	}
 	
 	private void signup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		/*
-		User user = new User();
 		
+		User user = new User();
+		/*
 		user.setStatus(optManager.findOption("User status", "registered"));
 		user.setCn(request.getParameter("cn"));
 		user.setSn(request.getParameter("sn"));
@@ -123,6 +123,7 @@ public class Servlet extends HttpServlet {
 				request.setAttribute("UserSignupForm", "success");
 			}
 			doGet(request, response);
-		}*/
+		}
+		*/
 	}
 }

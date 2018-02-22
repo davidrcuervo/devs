@@ -104,10 +104,4 @@ public class Identifier extends EntityObject implements Serializable{
 		// TODO Auto-generated method stub
 		return this;
 	}
-
-	@Override
-	public Objeto getObjeto() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

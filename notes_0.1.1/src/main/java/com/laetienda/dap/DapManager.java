@@ -41,14 +41,17 @@ public class DapManager {
 	private Properties settings;
 	private LdapConnectionPool connectionPool;
 	private ArrayList<LdapConnection> connections;
+	private DapUser tomcat;
 	
 	public DapManager(File directory) throws DapException{
 		connections = new ArrayList<LdapConnection>();
 		settings = loadSettings(directory);
 		Ldif.setDomain(settings.getProperty("domain"));
 		connectionPool = startLdapConnectionPool();
+		setTomcat();
 	}
 	
+
 	/*
 	public void startDapServer() throws DapException{
 
@@ -180,11 +183,18 @@ public class DapManager {
 		return result;
 	}
 	
+	private void setTomcat() {
+		tomcat = new DapUser(2, getSetting("tomcatpassword"));
+	}
+	
+	protected DapUser getTomcat() {
+		return tomcat;
+	}
+	
 	public static void main(String[] args){
 		
 		File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
 		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
-		
 		
 		try{
 			log4j.info("Starting LDAP module");

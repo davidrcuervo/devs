@@ -21,7 +21,6 @@ public class Installer {
 	private String rootPassword;
 	private LdapConnection connection;
 	
-	
 	public Installer(File directory) throws DapException{
 		rootPassword = "secret";
 		dapManager = new DapManager(directory);

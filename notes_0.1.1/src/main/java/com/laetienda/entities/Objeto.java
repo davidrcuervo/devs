@@ -2,7 +2,11 @@ package com.laetienda.entities;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+
 import javax.persistence.*;
 import org.apache.log4j.Logger;
 
@@ -11,8 +15,8 @@ import org.apache.log4j.Logger;
 @NamedQueries({
 	@NamedQuery(name="Objeto.findall", query="SELECT o FROM Objeto o")
 })
-
-public class Objeto extends EntityObject implements Serializable{
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Objeto implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static Logger log4j = Logger.getLogger(Objeto.class);
 	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -51,34 +55,39 @@ public class Objeto extends EntityObject implements Serializable{
 	@JoinColumn(name="\"delete_acl_id\"", nullable=true, unique=false)
 	private AccessList delete;
 	
+	@Transient
+	private HashMap<String, List<String>> errors;
+	
 	public Objeto() {
-		 
+		errors = new HashMap<String, List<String>>();
+	}
+	
+	@PrePersist
+	public void onPrePersist() {
+		log4j.info("Updating created timestamp");
+		setCreated(Calendar.getInstance()); 
+	}
+	
+	@PreUpdate
+	public void noPreUpdate() {
+		log4j.info("Updating modified timestamp");
+		setModified(Calendar.getInstance());
 	}
 	
 	public Calendar getModified() {
 		return modified;
 	}
 	
-	public Objeto setModified() {
-		setModified(Calendar.getInstance());
-		return this;
-	}
-
 	public void setModified(Calendar modified) {
 		this.modified = modified;
 	}
-
+	
 	public Calendar getCreated() {
 		return created;
 	}
 
 	public User getOwner() {
 		return owner;
-	}
-	
-	public Objeto setCreated() {
-		setCreated(Calendar.getInstance());
-		return this;
 	}
 	
 	public void setCreated(Calendar created) {
@@ -138,7 +147,21 @@ public class Objeto extends EntityObject implements Serializable{
 		return this;
 	}
 	
-	public Objeto getObjeto() {
-		return this;
+	public void addError(String list, String error){
+		
+		List<String> errorList;
+		
+		if(errors.get(list) == null){
+			errorList = new ArrayList<String>();
+		} else{
+			errorList = errors.get(list);			
+		}
+		
+		errorList.add(error);
+		errors.put(list, errorList);
+	}
+	
+	public HashMap<String, List<String>> getErrors(){
+		return errors;
 	}
 }
