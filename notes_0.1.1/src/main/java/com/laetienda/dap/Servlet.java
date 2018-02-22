@@ -2,6 +2,8 @@ package com.laetienda.dap;
 
 import java.io.IOException;
 
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,7 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.laetienda.app.AppException;
 import com.laetienda.db.Db;
+import com.laetienda.db.DbException;
 import com.laetienda.db.DbManager;
+import com.laetienda.entities.Option;
 import com.laetienda.entities.User;
 import com.laetienda.options.OptionsManager;
 
@@ -23,7 +27,7 @@ public class Servlet extends HttpServlet {
 	private String[] pathParts;
 	private OptionsManager optManager;
 	private DbManager dbManager;
-	private Dap dap = null;
+	private Dap dap;
 	private Db db;
 	
 	public Servlet(){
@@ -38,7 +42,7 @@ public class Servlet extends HttpServlet {
 		db = dbManager.createTransaction();
 		
 		try{
-			dap = new Dap(dapManager.createConnection(), dapManager.getTomcat());
+			dap = dapManager.createDap();
 		}catch(DapException ex){
 			//TODO
 		}
@@ -101,6 +105,42 @@ public class Servlet extends HttpServlet {
 	private void signup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		User user = new User();
+		DapUser dapUser = new DapUser();
+		
+		try {
+			Option status = db.findObtion("User status", "registered");
+	
+			dapUser.setUid(user.getId() + 100);
+			dapUser.setCn(request.getParameter("cn"));
+			dapUser.setSn(request.getParameter("sn")); 
+			dapUser.setMail(request.getParameter("email"));
+			dapUser.setPassword(request.getParameter("password"), request.getParameter("password_confirm"));
+
+			user.setEmail(dapUser.getMail());
+			user.setStatus(status);
+			
+			if(dapUser.getErrors().size() > 0 || user.getErrors().size() > 0) {
+				db.insert(user);
+				dap.insertUser(dapUser);
+			}
+			
+		}catch(DbException ex) {
+			log4j.error("Failed to persist user in database", ex.getRootParent());
+			dapUser.addError("user", "Internal error. There was an error while saving into the database");
+		} catch (DapException e) {
+			try {
+				db.remove(user);
+			} catch (DbException e1) {
+				log4j.fatal("Failed to remove user from DB that was not able to be saved in ldap directory", e1.getRootParent());
+			}
+		}finally {
+			if(dapUser.getErrors().size() > 0 || user.getErrors().size() > 0) {
+				log4j.info("FAILED to add user to the website");
+			}else {
+				log4j.info("User has been added SUCCESFULLY");
+			}
+		}
+		
 		/*
 		user.setStatus(optManager.findOption("User status", "registered"));
 		user.setCn(request.getParameter("cn"));

@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.*;
-import org.apache.log4j.Logger;
 
 @Entity
 @Table(name="objetos")
@@ -16,9 +15,8 @@ import org.apache.log4j.Logger;
 	@NamedQuery(name="Objeto.findall", query="SELECT o FROM Objeto o")
 })
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Objeto implements Serializable{
+public abstract class Objeto extends EntityObject implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private static Logger log4j = Logger.getLogger(Objeto.class);
 	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	@Id
@@ -55,22 +53,22 @@ public abstract class Objeto implements Serializable{
 	@JoinColumn(name="\"delete_acl_id\"", nullable=true, unique=false)
 	private AccessList delete;
 	
+	/*
 	@Transient
 	private HashMap<String, List<String>> errors;
+	*/
 	
 	public Objeto() {
-		errors = new HashMap<String, List<String>>();
+		//errors = new HashMap<String, List<String>>();
 	}
 	
 	@PrePersist
 	public void onPrePersist() {
-		log4j.info("Updating created timestamp");
 		setCreated(Calendar.getInstance()); 
 	}
 	
 	@PreUpdate
 	public void noPreUpdate() {
-		log4j.info("Updating modified timestamp");
 		setModified(Calendar.getInstance());
 	}
 	
@@ -146,7 +144,7 @@ public abstract class Objeto implements Serializable{
 		this.setRead(read);
 		return this;
 	}
-	
+	/*
 	public void addError(String list, String error){
 		
 		List<String> errorList;
@@ -164,4 +162,5 @@ public abstract class Objeto implements Serializable{
 	public HashMap<String, List<String>> getErrors(){
 		return errors;
 	}
+	*/
 }

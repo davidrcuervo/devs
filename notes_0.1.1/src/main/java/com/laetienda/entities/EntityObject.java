@@ -10,22 +10,22 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import org.apache.log4j.Logger;
 
-@Deprecated
 public abstract class EntityObject {
 	private static final Logger log4j = Logger.getLogger(EntityObject.class);
 	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	private HashMap<String, List<String>> errors;
-	
-	public EntityObject() {
-		errors = new HashMap<String, List<String>>();
-	}
+	private HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 	
 	public String getDate(Calendar date){
 		
 		return FORMATTER.format(date.getTime());
 	}	
 	
+	/**
+	 * 
+	 * @param list Name of the list of errors
+	 * @param error Error description, cause and consequences make sure it exists in language database
+	 */
 	public void addError(String list, String error){
 		
 		List<String> errorList;

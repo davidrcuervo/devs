@@ -2,7 +2,6 @@ package com.laetienda.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import org.apache.log4j.Logger;
 
 @Entity
 @Table(name="users")
@@ -11,13 +10,16 @@ import org.apache.log4j.Logger;
 })
 public class User extends Objeto implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private static Logger log4j = Logger.getLogger(User.class);
 
 	@Column(name="\"uid\"", unique=true, nullable=false)
 	private Integer uid;
 	
 	@Column(name="\"email\"", length=254, unique=true, nullable=false)
 	private String email;
+	
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="\"option_id\"", nullable=false, unique=false)
+	private Option status;
 	
 	public User() {
 		
@@ -43,4 +45,13 @@ public class User extends Objeto implements Serializable{
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	public Option getStatus() {
+		return status;
+	}
+
+	public void setStatus(Option status) {
+		this.status = status;
+	}
+	
 }

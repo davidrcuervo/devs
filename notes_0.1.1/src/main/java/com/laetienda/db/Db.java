@@ -3,13 +3,13 @@ package com.laetienda.db;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 import javax.persistence.TransactionRequiredException;
 
-import com.laetienda.entities.Objeto;
-import com.laetienda.entities.EntityObject;
-import com.laetienda.entities.Identifier;
+
+import com.laetienda.entities.*;
 
 public class Db {
 	
@@ -242,6 +242,18 @@ public class Db {
 		}finally{
 			em.clear();
 		}
+	}
+	
+	public Option findObtion(String variable, String  Option) throws DbException {
+		Option result = null;
+		try {
+			Variable status = em.createNamedQuery("", Variable.class).setParameter("name", variable).getSingleResult();
+			result = em.createNamedQuery("Option.findByName", Option.class).setParameter("varaible", status).setParameter("name", Option).getSingleResult();
+		}catch(NoResultException | NonUniqueResultException ex) {
+			throw new DbException("Failed to find option", ex);
+		}
+		
+		return result;
 	}
 	
 	@Deprecated

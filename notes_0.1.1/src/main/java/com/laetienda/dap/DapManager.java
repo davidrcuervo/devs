@@ -24,6 +24,7 @@ import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.cursor.SearchCursor;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.message.Response;
 import org.apache.directory.api.ldap.model.message.SearchRequest;
 import org.apache.directory.api.ldap.model.message.SearchRequestImpl;
@@ -84,6 +85,18 @@ public class DapManager {
 		}
 		
 		return connection;
+	}
+	
+	public synchronized Dap createDap() throws DapException {
+		Dap result = null;
+		
+		try {
+			result = new Dap(createConnection(), getTomcat(), new Dn(Ldif.getDomain()));
+		}catch(LdapInvalidDnException ex) {
+			throw new DapException("Failed to create Dap object", ex);
+		}
+			
+		return result;
 	}
 	
 	public synchronized void closeConnection(LdapConnection connection) throws DapException{
@@ -193,8 +206,8 @@ public class DapManager {
 	
 	public static void main(String[] args){
 		
-		File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
+		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
 		
 		try{
 			log4j.info("Starting LDAP module");
@@ -212,7 +225,8 @@ public class DapManager {
 				 * Example to search entries of a master entry
 				 */
 				
-				EntryCursor cursor = connection.search("ou=People,dc=la-etienda,dc=com", "(cn=sysadmin)", SearchScope.ONELEVEL);
+				EntryCursor cursor = connection.search("ou=People,dc=la-etienda,dc=com", "(|(cn=tomcat)(cn=sysadmin))", SearchScope.ONELEVEL);
+				
 				
 				for(Entry entry : cursor) {
 					if(entry != null) {

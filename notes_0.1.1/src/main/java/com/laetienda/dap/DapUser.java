@@ -1,14 +1,18 @@
 package com.laetienda.dap;
 
-public class DapUser {
+import com.laetienda.entities.EntityObject;
+
+public class DapUser extends EntityObject{
 	
 	private Integer uid;
 	private String cn;
 	private String sn;
 	private String password;
+	private String mail;
+	private String description;
 
 	public DapUser() {
-		
+
 	}
 	
 	public DapUser(Integer uid, String password) {
@@ -16,16 +20,12 @@ public class DapUser {
 		this.password = password;
 	}
 	
-	public DapUser(Integer uid, String cn, String sn, String password, String password2) {
+	public DapUser(Integer uid, String cn, String sn, String email, String password, String password2) {
 		setUid(uid);
 		setCn(cn);
 		setSn(sn);
+		setMail(email);
 		setPassword(password, password2);
-	}
-	
-	public String getDn() {
-		//TODO implement an algorithm to build the DN
-		return null;
 	}
 	
 	public Integer getUid() {
@@ -59,10 +59,27 @@ public class DapUser {
 	public void setPassword(String password, String password2) {
 		this.password = password;
 	}
+	
+	public String getMail() {
+		return mail;
+	}
 
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 	}
+
 
 }

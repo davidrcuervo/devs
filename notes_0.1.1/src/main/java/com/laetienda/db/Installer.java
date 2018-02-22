@@ -68,6 +68,13 @@ public class Installer {
 		aclAll.addUser(allUser);
 		db.insert(aclAll);
 		
+		Variable userStatus = new Variable("User Status", "Different options of status of the user withing the website");
+		userStatus.addOption("active", "User is active. It has been registered and password has been confirmed");
+		userStatus.addOption("blocked", "User has been blocked to use the application");
+		userStatus.addOption("deleted", "User has removed himself from the website");
+		userStatus.addOption("registered", "User has been registered but password has not been confirmed");
+		db.insert(userStatus);
+		
 		sysadmins.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		managers.setOwner(manager, managers).setPermisions(acl, aclGroup, aclGroup);
 		empty.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
@@ -81,6 +88,7 @@ public class Installer {
 		aclOwner.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		aclGroup.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		aclAll.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
+		userStatus.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, aclAll);
 	
 		db.update();	
 		dbManager.closeTransaction(db);

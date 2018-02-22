@@ -81,7 +81,7 @@ public class Ldif {
 	}
 	
 	protected static final Entry TOMCAT_USER_ENTRY(String tomcatpassword){
-		System.out.println("$tomcatpassword: " + tomcatpassword);
+		//System.out.println("$tomcatpassword: " + tomcatpassword);
 		try{
 			return new DefaultEntry(TOMCAT_USER_DN())
 					.add("objectclass", "person")
