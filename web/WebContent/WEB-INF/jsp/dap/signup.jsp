@@ -28,7 +28,7 @@
 					<span class="input-group-addon">
 						<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
 					</span>
-					<input type="email" class="form-control" id="email" name="email" placeholder="${lang.out('Email address') }" value="${user.mail }">
+					<input type="email" class="form-control" id="email" name="email" placeholder="${lang.out('Email address') }" value="${user.email }">
 				</div>
 				<c:if test="${user.errors['email'] != null}">
 					<div class="text-danger text-center">

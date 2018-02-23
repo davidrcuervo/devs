@@ -20,18 +20,20 @@ import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.LdapConnection;
 
+import com.laetienda.entities.User;
+
 public class Dap {
 	
 	private LdapConnection connection;
 	private Dn baseDn;
-	private DapUser tomcat;
+	private User tomcat;
 	
-	public Dap(LdapConnection connection, DapUser tomcat, Dn baseDn){
+	public Dap(LdapConnection connection, User tomcat, Dn baseDn){
 		this.connection = connection;
 		setBaseDn(baseDn);
 	}
 	
-	public void insertUser(DapUser newUser) throws DapException {
+	public void insertUser(User newUser) throws DapException {
 		
 		EntryCursor search = null;
 		
@@ -42,7 +44,7 @@ public class Dap {
 			connection.bind(tomcatDn, tomcat.getPassword());
 			
 			search = connection.search(peopleDn, 
-					"(|(uid=" + Integer.toString(newUser.getUid()) + ")(cn=" + newUser.getMail() + "))", 
+					"(|(uid=" + Integer.toString(newUser.getUid()) + ")(cn=" + newUser.getEmail() + "))", 
 					SearchScope.ONELEVEL);
 			
 			for(Entry entry : search) {
@@ -74,7 +76,7 @@ public class Dap {
 		}
 	}
 	
-	public Entry getDapUserEntry(DapUser user) throws DapException  {
+	public Entry getDapUserEntry(User user) throws DapException  {
 		Entry result = null;
 		try {
 			Dn userDn = new Dn("uid=" + Integer.toString(user.getUid()), "ou=People", baseDn.getName());

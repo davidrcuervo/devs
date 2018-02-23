@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import com.laetienda.entities.EntityObject;
 
+@Deprecated
 public class DapUser extends EntityObject{
 	private final static Logger log4j = Logger.getLogger(DapUser.class);	
 	

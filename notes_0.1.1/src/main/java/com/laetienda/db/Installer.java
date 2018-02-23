@@ -50,34 +50,22 @@ public class Installer {
 		Group empty = new Group("empty", "This group will not have any users. if it does is a bug");
 		db.insert(empty);
 		
-		User sysadmin = new User(1, "sysadmin@la-etienda.com");
-		sysadmin.setLanguage(language);
-		sysadmin.setStatus(status);
+		User sysadmin = new User(1, "sysadmin@la-etienda.com", status, language);
 		db.insert(sysadmin);
 		
-		User tomcat = new User(2, "web@la-etienda.com");
-		tomcat.setLanguage(language);
-		tomcat.setStatus(status);
+		User tomcat = new User(2, "web@la-etienda.com", status, language);
 		db.insert(tomcat);
 		
-		User owner = new User(3, "owner@mail.com");
-		owner.setLanguage(language);
-		owner.setStatus(status);
+		User owner = new User(3, "owner@mail.com", status, language);
 		db.insert(owner);
 		
-		User groupUser = new User(4, "group@mail.com");
-		groupUser.setLanguage(language);
-		groupUser.setStatus(status);
+		User groupUser = new User(4, "group@mail.com", status, language);
 		db.insert(groupUser);
 		
-		User allUser = new User(5, "all@mail.com");
-		allUser.setLanguage(language);
-		allUser.setStatus(status);
+		User allUser = new User(5, "all@mail.com", status, language);
 		db.insert(allUser);
 		
-		User manager = new User(6, "manager@mail.com");
-		manager.setLanguage(language);
-		manager.setStatus(status);
+		User manager = new User(6, "manager@mail.com", status, language);
 		db.insert(manager);
 		
 		AccessList acl = new AccessList();
@@ -125,8 +113,8 @@ public class Installer {
 	
 	public static void main(String[] args){
 		
-		File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
+		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
 		
 		try {
 			log4j.info("DATABASE IS BEING INSTALLED");

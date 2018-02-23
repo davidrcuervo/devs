@@ -105,30 +105,29 @@ public class Servlet extends HttpServlet {
 	private void signup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		User user = new User();
-		DapUser dapUser = new DapUser();
 		
 		try {
 			Option status = db.findOption("user status", "registered");
 			Option language = db.findOption("languages", request.getParameter("language"));
 			Integer uid = db.getNextUid();
-			dapUser.setUid(uid);
-			dapUser.setCn(request.getParameter("cn"));
-			dapUser.setSn(request.getParameter("sn")); 
-			dapUser.setMail(request.getParameter("email"));
-			dapUser.setPassword(request.getParameter("password"), request.getParameter("password_confirm"));
-
-			user.setEmail(dapUser.getMail());
+			user.setUid(uid);
+			user.setCn(request.getParameter("cn"));
+			user.setSn(request.getParameter("sn")); 
+			user.setEmail(request.getParameter("email"));
+			user.setPassword(request.getParameter("password"), request.getParameter("password_confirm"));
 			user.setStatus(status);
 			user.setLanguage(language);
 			
-			if(dapUser.getErrors().size() > 0 || user.getErrors().size() > 0) {
+			if(user.getErrors().size() > 0) {
+				log4j.info("Parameters included in the form are not valid");
+			}else {
 				db.insert(user);
-				dap.insertUser(dapUser);
+				dap.insertUser(user);
 			}
 			
 		}catch(DbException ex) {
 			log4j.error("Failed to persist user in database", ex.getRootParent());
-			dapUser.addError("user", "Internal error. There was an error while saving into the database");
+			user.addError("user", "Internal error. There was an error while saving into the database");
 		} catch (DapException e) {
 			try {
 				db.remove(user);
@@ -136,9 +135,9 @@ public class Servlet extends HttpServlet {
 				log4j.fatal("Failed to remove user from DB that was not able to be saved in ldap directory", e1.getRootParent());
 			}
 		}finally {
-			if(dapUser.getErrors().size() > 0 || user.getErrors().size() > 0) {
+			if(user.getErrors().size() > 0 || user.getErrors().size() > 0) {
 				log4j.info("FAILED to add user to the website");
-				request.setAttribute("user", dapUser);
+				request.setAttribute("user", user);
 				doGet(request, response);
 			}else {
 				log4j.info("User has been added SUCCESFULLY");

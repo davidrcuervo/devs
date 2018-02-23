@@ -13,6 +13,8 @@ import java.util.Properties;
 import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapConnectionPool;
 
+import com.laetienda.entities.User;
+
 //import com.laetienda.db.Db;
 //import com.laetienda.db.DbException;
 //import com.laetienda.entities.Identifier;
@@ -42,7 +44,8 @@ public class DapManager {
 	private Properties settings;
 	private LdapConnectionPool connectionPool;
 	private ArrayList<LdapConnection> connections;
-	private DapUser tomcat;
+//	private DapUser tomcat;
+	private User tomcat;
 	
 	public DapManager(File directory) throws DapException{
 		connections = new ArrayList<LdapConnection>();
@@ -197,10 +200,10 @@ public class DapManager {
 	}
 	
 	private void setTomcat() {
-		tomcat = new DapUser(2, getSetting("tomcatpassword"));
+		tomcat = new User(2, getSetting("tomcatpassword"));
 	}
 	
-	protected DapUser getTomcat() {
+	protected User getTomcat() {
 		return tomcat;
 	}
 	
