@@ -9,5 +9,6 @@
 		<class>com.laetienda.entities.Objeto</class>
 		<class>com.laetienda.entities.User</class>
 		<class>com.laetienda.entities.Variable</class>
+		<class>com.laetienda.entities.Language</class>
 	</persistence-unit>
 </persistence>

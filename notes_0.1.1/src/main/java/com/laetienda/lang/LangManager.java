@@ -7,7 +7,6 @@ import java.util.Properties;
 import com.laetienda.db.Sql;
 import com.laetienda.db.Db;
 import com.laetienda.db.SqlException;
-import com.laetienda.logger.JavaLogger;
 
 public class LangManager {
 	
@@ -22,8 +21,8 @@ public class LangManager {
     		settings = loadSettings(directory);
     }
     
-    public Lang createLangInterface(Db db, JavaLogger log) throws LangException {
-    		return new Lang(db, this, log);
+    public Lang createLangInterface(Db db) throws LangException {
+    		return new Lang(db, this);
     }
     
     public String getSetting(String setting){

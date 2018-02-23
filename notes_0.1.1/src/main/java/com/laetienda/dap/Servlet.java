@@ -108,9 +108,10 @@ public class Servlet extends HttpServlet {
 		DapUser dapUser = new DapUser();
 		
 		try {
-			Option status = db.findObtion("User status", "registered");
-	
-			dapUser.setUid(user.getId() + 100);
+			Option status = db.findOption("user status", "registered");
+			Option language = db.findOption("languages", request.getParameter("language"));
+			Integer uid = db.getNextUid();
+			dapUser.setUid(uid);
 			dapUser.setCn(request.getParameter("cn"));
 			dapUser.setSn(request.getParameter("sn")); 
 			dapUser.setMail(request.getParameter("email"));
@@ -118,6 +119,7 @@ public class Servlet extends HttpServlet {
 
 			user.setEmail(dapUser.getMail());
 			user.setStatus(status);
+			user.setLanguage(language);
 			
 			if(dapUser.getErrors().size() > 0 || user.getErrors().size() > 0) {
 				db.insert(user);
@@ -136,6 +138,8 @@ public class Servlet extends HttpServlet {
 		}finally {
 			if(dapUser.getErrors().size() > 0 || user.getErrors().size() > 0) {
 				log4j.info("FAILED to add user to the website");
+				request.setAttribute("user", dapUser);
+				doGet(request, response);
 			}else {
 				log4j.info("User has been added SUCCESFULLY");
 			}

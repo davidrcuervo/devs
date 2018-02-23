@@ -13,13 +13,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.laetienda.db.DbManager;
 import com.laetienda.db.Db;
-import com.laetienda.logger.JavaLogger;
+import org.apache.log4j.Logger;
 
 public class LangFilter implements Filter{
+	private final static Logger log4j = Logger.getLogger(LangFilter.class);
 	
 	private DbManager dbManager;
 	private LangManager langManager;
-	
+	private Db db;
 	
 	public void init(FilterConfig fConfig) throws ServletException{
 		
@@ -32,22 +33,21 @@ public class LangFilter implements Filter{
 		
 		HttpServletRequest httpReq = (HttpServletRequest)request;
 		HttpServletResponse httpResp = (HttpServletResponse)response;
-		JavaLogger log = (JavaLogger)httpReq.getAttribute("logger");
-		Db db = dbManager.createTransaction();
+		db = dbManager.createTransaction();
 		
 		try{
-			Lang lang = new Lang(db, langManager, log);
+			Lang lang = new Lang(db, langManager);
 			httpReq.setAttribute("lang", lang);
 			//log.debug("Lang attribute has been set to this request");
 		}catch(LangException ex){
-			log.critical("It was not poossible to crete lang object");
-			log.exception(ex);
+			log4j.fatal("It was not poossible to crete lang object", ex);
 			httpResp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		chain.doFilter(request, response);
 	}
 	
 	public void destroy(){
+		dbManager.closeTransaction(db);
 
 	}
 }

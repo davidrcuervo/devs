@@ -68,10 +68,9 @@
 			<div class="form-group">
 				<label for="language_select">${lang.out('Prefered language') }</label>
 				<select id="language_select" class="form-control" name="language">
-					<option value="no">${lang.out('Select a language') }</option>
-					<option value="en" ${user.language.value == 'en' ? 'selected' : '' }>English</option>
-					<option value="es" ${user.language.value == 'es' ? 'selected' : '' }>Español</option>
-					<option value="fr" ${user.language.value == 'fr' ? 'selected' : '' }>Francais</option>
+					<c:forEach var="option" items="${vars.options('languages') }">
+						<option value="${option.name}">${option.description}</option>
+					</c:forEach>
 				</select>
 				<c:if test="${user.errors['language'] != null}">
 					<div class="text-danger text-center">

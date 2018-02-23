@@ -44,18 +44,21 @@ public class DbManager {
     		ems = new ArrayList<EntityManager>();
     		open();	
 	}
-	
+	/**
+	 * 
+	 * @return Db instance
+	 */
     public synchronized Db createTransaction(){
     	
-    	return new Db(getEm()); 
+    		return new Db(getEm()); 
     }
     
     public synchronized EntityManager getEm(){
     	
-    	EntityManager em = emfactory.createEntityManager();
-    	ems.add(em);
-    	
-    	return em;
+	    	EntityManager em = emfactory.createEntityManager();
+	    	ems.add(em);
+	    	
+	    	return em;
     }
     
     public void closeTransaction(Db db){

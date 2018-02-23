@@ -18,8 +18,12 @@ public class User extends Objeto implements Serializable{
 	private String email;
 	
 	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="\"option_id\"", nullable=false, unique=false)
+	@JoinColumn(name="\"status_option_id\"", nullable=false, unique=false)
 	private Option status;
+	
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="\"language_option_id\"", nullable=false, unique=false)
+	private Option language;
 	
 	public User() {
 		
@@ -53,5 +57,16 @@ public class User extends Objeto implements Serializable{
 	public void setStatus(Option status) {
 		this.status = status;
 	}
-	
+
+	public Option getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Option language) {
+		this.language = language;
+		
+		if(language == null || language.getName().isEmpty() || language.getName().equals("none")) {
+			addError("language", "Select a valid language");
+		}
+	}
 }

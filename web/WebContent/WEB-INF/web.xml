@@ -82,4 +82,12 @@
 		<url-pattern>/wiki/*</url-pattern>
 		<url-pattern>/session/*</url-pattern>
 	</filter-mapping>
+	<filter>
+		<filter-name>options</filter-name>
+		<filter-class>com.laetienda.options.OptionFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>options</filter-name>
+		<url-pattern>/session/*</url-pattern>
+	</filter-mapping>
 </web-app>

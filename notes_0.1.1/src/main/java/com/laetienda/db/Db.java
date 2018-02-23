@@ -243,14 +243,36 @@ public class Db {
 			em.clear();
 		}
 	}
-	
-	public Option findObtion(String variable, String  Option) throws DbException {
+	/**
+	 * 
+	 * @param variable String
+	 * @param Option String
+	 * @return Option object com.laetienda.entities.Option
+	 * @throws DbException
+	 */
+	public Option findOption(String variable, String  Option) throws DbException {
 		Option result = null;
 		try {
-			Variable status = em.createNamedQuery("", Variable.class).setParameter("name", variable).getSingleResult();
-			result = em.createNamedQuery("Option.findByName", Option.class).setParameter("varaible", status).setParameter("name", Option).getSingleResult();
+			Variable status = em.createNamedQuery("Variable.findByName", Variable.class).setParameter("name", variable).getSingleResult();
+			result = em.createNamedQuery("Option.findByName", Option.class).setParameter("variable", status).setParameter("name", Option).getSingleResult();
 		}catch(NoResultException | NonUniqueResultException ex) {
 			throw new DbException("Failed to find option", ex);
+		}
+		
+		return result;
+	}
+	
+	public synchronized Integer getNextUid() throws DbException {
+		Integer result = null;
+		
+		Option value = findOption("user uid", "uid");
+		
+		try {
+			result = Integer.parseInt(value.getDescription());
+			value.setDescription(Integer.toString(result + 1));
+			update();
+		}catch(NumberFormatException ex) {
+			throw new DbException("The uid is not a valid value", ex);
 		}
 		
 		return result;
