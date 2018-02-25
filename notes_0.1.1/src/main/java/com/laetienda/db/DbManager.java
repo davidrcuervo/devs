@@ -63,9 +63,11 @@ public class DbManager {
     
     public void closeTransaction(Db db){
     	
-    		db.getEm().clear();
-    		closeEm(db.getEm());
-    		db = null;
+    		if(db != null) {
+    			db.getEm().clear();
+    			closeEm(db.getEm());
+    			db = null;
+    		}
     }
     
     public synchronized boolean closeEm(EntityManager em){

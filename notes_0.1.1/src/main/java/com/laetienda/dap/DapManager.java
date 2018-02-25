@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 //import javax.persistence.NoResultException;
@@ -15,22 +17,11 @@ import org.apache.directory.ldap.client.api.LdapConnectionPool;
 
 import com.laetienda.entities.User;
 
-//import com.laetienda.db.Db;
-//import com.laetienda.db.DbException;
-//import com.laetienda.entities.Identifier;
-//import com.laetienda.entities.User;
-
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.directory.api.ldap.model.cursor.CursorException;
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
-import org.apache.directory.api.ldap.model.cursor.SearchCursor;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
-import org.apache.directory.api.ldap.model.message.Response;
-import org.apache.directory.api.ldap.model.message.SearchRequest;
-import org.apache.directory.api.ldap.model.message.SearchRequestImpl;
-import org.apache.directory.api.ldap.model.message.SearchResultEntry;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.DefaultLdapConnectionFactory;
@@ -43,8 +34,7 @@ public class DapManager {
 	
 	private Properties settings;
 	private LdapConnectionPool connectionPool;
-	private ArrayList<LdapConnection> connections;
-//	private DapUser tomcat;
+	private List<LdapConnection> connections;
 	private User tomcat;
 	
 	public DapManager(File directory) throws DapException{
@@ -65,22 +55,35 @@ public class DapManager {
 	*/
 	
 	public void stopDapServer(){
+		
+		synchronized(connections) {
 			
-		for(LdapConnection connection : connections){
-			try {
-				closeConnection(connection);
-			}catch(DapException ex) {
-				log4j.error(ex.getMessage(), ex.getParent());
+			Iterator<LdapConnection> iter = connections.iterator();
+			while(iter.hasNext()) {
+				LdapConnection connection = iter.next();
+				if(connection != null && connection.isConnected()) {
+					try {
+						connection.close();
+					}catch(IOException ex) {
+						log4j.error("Failed to close LDAP connection", ex);
+					}
+				}
 			}
+			connections.removeAll(connections);
 		}
 	}
 	
 	public synchronized LdapConnection createConnection() throws DapException{
+		log4j.debug("Creating LDAP connection from pool");
 		LdapConnection connection = null;
 		
 		try{
 			connection = connectionPool.getConnection();
-			connections.add(connection);
+			if(connection != null) {
+				connections.add(connection);
+				log4j.debug("LDAP Connection has been created succesfully");
+			}
+			
 		}catch(LdapException ex){
 			throw new DapException("Error while creating connection" ,ex);
 		}finally{
@@ -102,9 +105,9 @@ public class DapManager {
 		return result;
 	}
 	
-	public synchronized void closeConnection(LdapConnection connection) throws DapException{
+	public synchronized void closeConnection(LdapConnection connection){
 		try{
-			if(connection.isConnected()){
+			if(connection != null && connection.isConnected()){
 				connection.close();
 			}
 			
@@ -114,37 +117,14 @@ public class DapManager {
 			
 			connections.remove(connection);
 		}catch(IOException ex){
-			throw new DapException("Failed to close connection", ex);
+			log4j.error("Failed to close connection", ex);
 		}
 	}
 	
-	/*
-	public void startDbConnection(Db db) throws DapException{
-		
-		try{
-			Identifier identifier = db.getEm().createNamedQuery("Identifier.findByName", Identifier.class).setParameter("name", User.ID_NAME).getSingleResult();
-			Integer id = identifier.getValue();
-			
-			if(User.FIRST_ID < id){
-				throw new DapException("Identifier counter for user ubjects is smaller than first id. $id: " + id);
-			}else{
-				//It means that everything is ok and find to go.
-			}
-			
-		}catch(NoResultException ex){
-			Identifier identifier = new Identifier();
-			identifier.setName(User.ID_NAME);
-			identifier.setIdentifier(User.FIRST_ID);
-			identifier.setDescription("Id counter to use to build user id \"uid\".");
-			
-			try{
-				db.insert(identifier);
-			}catch(DbException ex1){
-				throw new DapException("Failed to create identifier counter for user objects", ex1.getParent());
-			}
-		}
+	public void closeConnection(Dap dap) {
+		if(dap != null && dap.getConnection() != null) closeConnection(dap.getConnection());
 	}
-	*/
+	
 	private LdapConnectionPool startLdapConnectionPool() throws DapException{
 		
 		LdapConnectionConfig config = new LdapConnectionConfig();

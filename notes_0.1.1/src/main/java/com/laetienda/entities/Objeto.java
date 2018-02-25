@@ -2,10 +2,7 @@ package com.laetienda.entities;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
 
 import javax.persistence.*;
 
@@ -53,13 +50,7 @@ public abstract class Objeto extends EntityObject implements Serializable{
 	@JoinColumn(name="\"delete_acl_id\"", nullable=true, unique=false)
 	private AccessList delete;
 	
-	/*
-	@Transient
-	private HashMap<String, List<String>> errors;
-	*/
-	
 	public Objeto() {
-		//errors = new HashMap<String, List<String>>();
 	}
 	
 	@PrePersist
@@ -144,23 +135,4 @@ public abstract class Objeto extends EntityObject implements Serializable{
 		this.setRead(read);
 		return this;
 	}
-	/*
-	public void addError(String list, String error){
-		
-		List<String> errorList;
-		
-		if(errors.get(list) == null){
-			errorList = new ArrayList<String>();
-		} else{
-			errorList = errors.get(list);			
-		}
-		
-		errorList.add(error);
-		errors.put(list, errorList);
-	}
-	
-	public HashMap<String, List<String>> getErrors(){
-		return errors;
-	}
-	*/
 }

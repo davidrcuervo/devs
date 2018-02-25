@@ -42,6 +42,14 @@
 		<servlet-name>wiki</servlet-name>
 		<url-pattern>/wiki/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>thankyou</servlet-name>
+		<servlet-class>com.laetienda.tomcat.Thankyou</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>thankyou</servlet-name>
+		<url-pattern>/thankyou/*</url-pattern>
+	</servlet-mapping>
 	<listener>
 		<listener-class>
   			com.laetienda.tomcat.Load
@@ -67,6 +75,7 @@
 		<url-pattern>/media/*</url-pattern>
 		<url-pattern>/wiki/*</url-pattern>
 		<url-pattern>/session/*</url-pattern>
+		<url-pattern>/thankyou/*</url-pattern>
 	</filter-mapping>
 	<filter>
 		<filter-name>page</filter-name>
@@ -81,6 +90,7 @@
 		<url-pattern>/media/*</url-pattern>
 		<url-pattern>/wiki/*</url-pattern>
 		<url-pattern>/session/*</url-pattern>
+		<url-pattern>/thankyou/*</url-pattern>
 	</filter-mapping>
 	<filter>
 		<filter-name>options</filter-name>

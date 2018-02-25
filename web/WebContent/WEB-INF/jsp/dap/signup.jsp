@@ -9,7 +9,14 @@
 						<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
 					</span>
 					<input type="text" class="form-control" id="cn" name="cn" placeholder="${lang.out('First Name')}" value="${user.cn }" />
-				</div> 
+				</div>
+				<c:if test="${user.errors['cn'] != null }">
+					<div class="text-danger text-center">
+						<c:forEach var="error" items="${user.errors['cn'] }">
+							<small>${lang.out(error)}</small>
+						</c:forEach>
+					</div>
+				</c:if>
 			</div>
 			
 			<div class="form-group">
@@ -19,7 +26,14 @@
 						<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
 					</span>
 					<input type="text" class="form-control" id="sn" name="sn" placeholder="${lang.out('Last Name')}" value="${user.sn }" />
-				</div> 
+				</div>
+				<c:if test="${user.errors['sn'] != null }">
+					<div class="text-danger text-center">
+						<c:forEach var="error" items="${user.errors['sn'] }">
+							<small>${lang.out(error)}</small>
+						</c:forEach>
+					</div>
+				</c:if>
 			</div>
 			
 			<div class="form-group">

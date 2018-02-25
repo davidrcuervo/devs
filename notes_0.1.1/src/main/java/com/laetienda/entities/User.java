@@ -1,8 +1,12 @@
 package com.laetienda.entities;
 
 import java.io.Serializable;
+import java.util.List;
+
 import javax.persistence.*;
 import org.apache.log4j.Logger;
+
+import com.laetienda.db.Db;
 
 /**
  * @author I849921
@@ -11,7 +15,8 @@ import org.apache.log4j.Logger;
 @Entity
 @Table(name="users")
 @NamedQueries({
-	@NamedQuery(name="User.findall", query="SELECT u FROM User u")
+	@NamedQuery(name="User.findall", query="SELECT u FROM User u"),
+	@NamedQuery(name="User.findByEmail", query="SELECT u FROM User u WHERE u.email = :email")
 })
 public class User extends Objeto implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -23,11 +28,11 @@ public class User extends Objeto implements Serializable{
 	@Column(name="\"email\"", length=254, unique=true, nullable=false)
 	private String email;
 	
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne(cascade=CascadeType.PERSIST)
 	@JoinColumn(name="\"status_option_id\"", nullable=false, unique=false)
 	private Option status;
 	
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne(cascade=CascadeType.PERSIST)
 	@JoinColumn(name="\"language_option_id\"", nullable=false, unique=false)
 	private Option language;
 	
@@ -57,9 +62,9 @@ public class User extends Objeto implements Serializable{
 		this.password = password;
 	}
 	
-	public User(Integer uid, String email, Option status, Option language) {
+	public User(Integer uid, String email, Option status, Option language, Db db) {
 		setUid(uid);
-		setEmail(email);
+		setEmail(email, db);
 		setStatus(status);
 		setLanguage(language);
 	}
@@ -83,8 +88,25 @@ public class User extends Objeto implements Serializable{
 		return email;
 	}
 
-	public void setEmail(String email) {
+	public void setEmail(String email, Db db) {
 		this.email = email;
+		
+		if(email == null || email.isEmpty()) {
+			addError("email", "The email can't be empty");
+		}else {
+			if(email.length() > 254) {
+				addError("email", "The mail can't have more than 255 charcters");
+			}
+			
+			List<User> test = db.getEm().createNamedQuery("User.findByEmail", User.class).setParameter("email", email).getResultList();
+			
+			if(test != null && test.size() > 0) {
+				addError("email", "This email address has already been registered");
+			}
+			
+			//TODO validate that mail has a proper structure. tip: use regular expresions
+		}
+		
 	}
 
 	public Option getStatus() {
@@ -151,6 +173,10 @@ public class User extends Objeto implements Serializable{
 		}else {
 			if(!password.equals(password2)) {
 				addError("password", "The password and confirmation should be identical");
+			}
+			
+			if(password.length() < 8) {
+				addError("password", "The password must have at least 8 characters");
 			}
 			
 			if(password.length() > 255) {

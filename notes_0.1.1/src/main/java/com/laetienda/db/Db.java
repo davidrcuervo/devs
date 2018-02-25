@@ -223,9 +223,10 @@ public class Db {
 			em.clear();
 			throw new DbException(ex.getMessage(), ex);
 		}catch(RollbackException ex){
-			rollback();
+			em.getTransaction().rollback();
+			//rollback();
 		}finally{
-			em.clear();
+			
 		}
 		
 		return result;
