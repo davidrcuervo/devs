@@ -3,8 +3,6 @@ package com.laetienda.entities;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.persistence.*;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,6 +36,7 @@ public abstract class EntityObject {
 		
 		errorList.add(error);
 		errors.put(list, errorList);
+		log4j.info("Adding error message to hashmap. $list: " + list + " - $error: " + error);
 	}
 	
 	public HashMap<String, List<String>> getErrors(){
