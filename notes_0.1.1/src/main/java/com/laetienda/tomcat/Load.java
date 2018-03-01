@@ -13,6 +13,8 @@ import com.laetienda.db.DbManager;
 import com.laetienda.db.SqlException;
 import com.laetienda.lang.LangException;
 import com.laetienda.lang.LangManager;
+import com.laetienda.mail.MailException;
+import com.laetienda.mail.MailManager;
 import com.laetienda.multimedia.MediaManager;
 import com.laetienda.multimedia.MultimediaException;
 import com.laetienda.notes.NotesException;
@@ -22,12 +24,13 @@ public class Load implements ServletContextListener{
 	
 	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(Load.class);
 	
-	File directory;
+	private File directory;
 	private DbManager dbManager;
 	private LangManager langManager;
 	private MediaManager mediaManager;
 	private NotesManager notesManager;
 	private DapManager dapManager;
+	private MailManager mailManager;
 	
 	public void contextInitialized(ServletContextEvent arg0) {
 		log4j.info("Tomcat context is initializing");
@@ -83,6 +86,15 @@ public class Load implements ServletContextListener{
 		}catch(DapException ex) {
 			log4j.fatal("Failed to load LDAP module",ex);
 			exit();
+		}
+		
+		try {
+			log4j.info("Starting MAIL module");
+			mailManager = new MailManager(directory);
+			sc.setAttribute("mailManager", mailManager);
+			log4j.info("MAIL module has started succesfully");
+		} catch (MailException ex) {
+			log4j.fatal("Failed to load Mailer module");
 		}
 
 		log4j.info("Tomcat context has been initialized succesfully");

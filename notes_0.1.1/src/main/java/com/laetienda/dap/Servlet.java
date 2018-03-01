@@ -2,8 +2,8 @@ package com.laetienda.dap;
 
 import java.io.IOException;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
+//import javax.persistence.NoResultException;
+//import javax.persistence.NonUniqueResultException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,6 +15,9 @@ import com.laetienda.db.DbException;
 import com.laetienda.db.DbManager;
 import com.laetienda.entities.Option;
 import com.laetienda.entities.User;
+import com.laetienda.mail.Email;
+import com.laetienda.mail.MailException;
+import com.laetienda.mail.MailManager;
 import com.laetienda.tomcat.Page;
 
 import org.apache.log4j.Logger;
@@ -26,7 +29,7 @@ public class Servlet extends HttpServlet {
 	private String[] pathParts;
 	private DbManager dbManager;
 	private DapManager dapManager;
-//	private Db db;
+	private MailManager mailManager;
 	
 	public Servlet(){
 		super();
@@ -38,6 +41,7 @@ public class Servlet extends HttpServlet {
 		
 		dbManager = (DbManager)config.getServletContext().getAttribute("dbManager");
 		dapManager = (DapManager)config.getServletContext().getAttribute("dapManager");
+		mailManager = (MailManager)config.getServletContext().getAttribute("mailManager");
 	}
 	
 	private void build(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -93,7 +97,9 @@ public class Servlet extends HttpServlet {
 		
 		Db db = null;
 		Dap dap = null;
+		Email email = null;
 		User user = new User();
+		request.setAttribute("user", user);
 		Page page = (Page)request.getAttribute("page");
 		
 		try {
@@ -115,6 +121,9 @@ public class Servlet extends HttpServlet {
 				db.insert(user);
 				dap = dapManager.createDap();
 				dap.insertUser(user);
+				email = mailManager.createEmail();
+				email.setText("/WEB-INF/jsp/email/signup.jsp", request, response);
+				email.send(user.getEmail(), "La-eTienda email and password validation");
 			}
 			
 		}catch(DbException ex) {
@@ -124,23 +133,26 @@ public class Servlet extends HttpServlet {
 			user.addError("user", "Internal error. Failed to add user");
 			log4j.error("Failed to add user to ldap directory", e.getRootParent());
 			try {
-				User temp = db.getEm().createNamedQuery("User.findByEmail", User.class).setParameter("email", user.getEmail()).getSingleResult();
-				db.remove(temp);
-			}catch (NoResultException | NonUniqueResultException e1) {
-				log4j.fatal("User didn't save in ldap directory and it is still in database", e1);
+				//User temp = db.getEm().createNamedQuery("User.findByEmail", User.class).setParameter("email", user.getEmail()).getSingleResult();
+				db.remove(user);
+			/*}catch (NoResultException | NonUniqueResultException e1) {
+				log4j.fatal("User didn't save in ldap directory and it is still in database", e1);*/
 			} catch (DbException e2) {
 				log4j.fatal("Failed to remove user from DB that was not able to be saved in ldap directory", e2.getRootParent());
 			}
+		} catch(MailException ex) {
+			user.addError("user", "Internal error. Failed to add user");
+			log4j.error("Failed to send confirmation email", ex.getRootParent());			
 		}finally {
 			dapManager.closeConnection(dap);
 			dbManager.closeTransaction(db);
 			
 			if(user.getErrors().size() > 0) {
 				log4j.info("FAILED to add user to the website");
-				request.setAttribute("user", user);
 				doGet(request, response);
 			}else {
 				log4j.info("User has been added SUCCESFULLY");
+				request.removeAttribute("user");
 				request.getSession().setAttribute("ThankyouToken", "signup");
 				response.sendRedirect(page.getRootUrl() + "/thankyou/signup");	
 			}

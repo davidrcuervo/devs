@@ -82,7 +82,7 @@ public class Aes {
 	public static void main(String[] args) throws Exception{
 	    
 	    Aes en=new Aes();
-	    String encryptedWord=en.encrypt("wnkyvajtyzkwpyme", "davidrcuervo@gmail.com"); 
+	    String encryptedWord=en.encrypt("password", "username"); 
 	    System.out.println("Encrypted word is : " + encryptedWord);
 	    
 		/*

@@ -3,6 +3,8 @@ package com.laetienda.entities;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.persistence.*;
 import org.apache.log4j.Logger;
 
@@ -104,9 +106,14 @@ public class User extends Objeto implements Serializable{
 				addError("email", "This email address has already been registered");
 			}
 			
-			//TODO validate that mail has a proper structure. tip: use regular expresions
+			try {
+				InternetAddress address = new InternetAddress(email);
+				address.validate();
+			} catch (AddressException ex) {
+				addError("email", "Please make sure you have typed a valid address");
+				log4j.debug("Email address not valid.", ex);
+			}
 		}
-		
 	}
 
 	public Option getStatus() {

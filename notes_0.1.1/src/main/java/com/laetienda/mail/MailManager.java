@@ -5,6 +5,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 import org.apache.log4j.Logger;
 
 import com.laetienda.app.Aes;
@@ -14,15 +19,26 @@ public class MailManager {
 	private final static Logger log4j = Logger.getLogger(MailManager.class);
 	
 	private Properties settings;
-	private String password;
+	private Session session;
+	private InternetAddress from;
 	
 	public MailManager(File directory) throws MailException {
 		settings = loadSettings(directory);
-		password = getPassword();
+		String password = findPassword();
+		String username = findUsername();
+		from = findFrom();
+		
+		session = Session.getInstance(settings,
+				  new javax.mail.Authenticator() {
+					protected PasswordAuthentication getPasswordAuthentication() {
+						
+						return new PasswordAuthentication(username, password);
+					}
+				  });
 	}
 	
 	public synchronized Email createEmail() throws MailException {
-		return new Email(settings, password);
+		return new Email(session, from);
 	}
 	
 	private Properties loadSettings(File directory) throws MailException {
@@ -43,7 +59,7 @@ public class MailManager {
 		return result;
 	}
 
-	public String getPassword() throws MailException {
+	private String findPassword() throws MailException {
 		Aes aes = new Aes();
 		String result = new String();
 		try {
@@ -51,14 +67,14 @@ public class MailManager {
 		} catch (Exception ex) {
 			throw new MailException("Failed to get find password", ex);
 		}
-		log4j.debug("$password: " + result);
+		
 		return result;
 	}
 	
 	public static void main(String[] args){
 		
-		File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
+		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
 		
 		try {
 			MailManager mailManager = new MailManager(directory);
@@ -67,8 +83,20 @@ public class MailManager {
 			log4j.info("Email has been sent succesfully");
 		} catch (MailException ex) {
 			log4j.error("Failed to send email", ex.getRootParent());
+		}	
+	}
+	
+	private InternetAddress findFrom() throws MailException {
+		InternetAddress result = null;
+		try {
+			result = new InternetAddress(settings.getProperty("address"));
+		} catch (AddressException ex) {
+			throw new MailException("Failed to set \"from\" mail address", ex);
 		}
-		
-		
+		return result;
+	}
+	
+	private String findUsername() {
+		return settings.getProperty("username");
 	}
 }

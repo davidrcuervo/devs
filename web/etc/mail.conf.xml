@@ -5,11 +5,11 @@
 	
 	<entry key="mail.smtp.auth">true</entry>
 	<!-- <entry key="mail.smtp.starttls.enable">true</entry> -->
-	<entry key="mail.smtp.host">smtp.gmail.com</entry>
+	<entry key="mail.smtp.host">smtp.zoho.com</entry>
 	<entry key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</entry>
 	<entry key="mail.smtp.socketFactory.port">465</entry>
 	<entry key="mail.smtp.port">465</entry>
-	<entry key="address">davidrcuervo@gmail.com</entry>
-	<entry key="username">davidrcuervo@gmail.com</entry>
-	<entry key="password">NPGREa1auDunbYt/gzeBQMR109STYxpbf2g4KkPyBmscIl3cQpFIUrlOE29QBilhGLhOOwOec/q73VWicDER1jISU+w=</entry>
+	<entry key="address">myself@la-etienda.com</entry>
+	<entry key="username">myself@la-etienda.com</entry>
+	<entry key="password">FYhUcf21EInP55vn+Qa/eOIeSeJGiI4jWE8IMEnaFf2MjRl+p69WBMhqUpEPsyjaCs97ow==</entry>
 </properties>

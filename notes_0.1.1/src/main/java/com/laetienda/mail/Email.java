@@ -3,11 +3,9 @@ package com.laetienda.mail;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Properties;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
@@ -24,18 +22,14 @@ public class Email {
 	private final static Logger log4j = Logger.getLogger(Email.class);
 	
 	private InternetAddress from;
-	private String username;
 	private InternetAddress to;
 	private String subject;
 	private String text;
-	private String password;
-	private Properties props;
+	private Session session;
 	
-	public Email(Properties props, String password) throws MailException {
-		this.props = props;
-		username = findUsername();
-		this.password = password;
-		from = findFrom();
+	public Email(Session session, InternetAddress from) throws MailException {
+		this.session = session;
+		this.from = from;
 	}
 	
 	public void send(String to, String subject) throws MailException {
@@ -45,15 +39,7 @@ public class Email {
 	}
 	
 	public void send() throws MailException {
-		
-		Session session = Session.getInstance(props,
-				  new javax.mail.Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						
-						return new PasswordAuthentication(username, password);
-					}
-				  });
-		
+
 		Message message = new MimeMessage(session);
 		try {
 			message.setFrom(from);
@@ -72,16 +58,6 @@ public class Email {
 		return from;
 	}
 	
-	public InternetAddress findFrom() throws MailException {
-		InternetAddress result = null;
-		try {
-			result = new InternetAddress(props.getProperty("address"));
-		} catch (AddressException ex) {
-			throw new MailException("Failed to set \"from\" mail address", ex);
-		}
-		return result;
-	}
-
 	public void setFrom(InternetAddress from) {
 		this.from = from;
 	}
@@ -94,7 +70,7 @@ public class Email {
 		try {
 			setTo(new InternetAddress(to));
 		} catch (AddressException ex) {
-			throw new MailException("Failed to set \"from\" mail address", ex);
+			throw new MailException("Failed to set \"to\" mail address", ex);
 		}
 	}
 
@@ -149,22 +125,8 @@ public class Email {
 		return this;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-
-
 	public static void main(String[] args) {
 		
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
-	private String findUsername() {
-		return props.getProperty("username");
-	}
-	
 }
