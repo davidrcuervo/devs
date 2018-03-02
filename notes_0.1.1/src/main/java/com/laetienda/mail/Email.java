@@ -45,7 +45,7 @@ public class Email {
 			message.setFrom(from);
 			message.setRecipient(Message.RecipientType.TO, to);
 			message.setSubject(subject);
-			message.setText(text);
+			message.setContent(text, "text/html; charset=utf-8");
 			Transport.send(message);
 			log4j.debug("Email message from " + from.toString() + " to " + to.toString() + " has been sent succesfully.");
 

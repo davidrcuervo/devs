@@ -142,7 +142,15 @@ public class Servlet extends HttpServlet {
 			}
 		} catch(MailException ex) {
 			user.addError("user", "Internal error. Failed to add user");
-			log4j.error("Failed to send confirmation email", ex.getRootParent());			
+			log4j.error("Failed to send confirmation email", ex.getRootParent());	
+			
+			try {
+				db.remove(user);
+				dap.deleteUser(user);
+			} catch (DbException e) {
+				log4j.fatal("Failed to remove user from DB that was not able to be saved in ldap directory", e.getRootParent());
+			}
+			
 		}finally {
 			dapManager.closeConnection(dap);
 			dbManager.closeTransaction(db);

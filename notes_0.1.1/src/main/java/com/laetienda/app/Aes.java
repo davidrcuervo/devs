@@ -79,16 +79,17 @@ public class Aes {
 	    return new String(decryptedTextBytes);
 	  }
 	
+	
 	public static void main(String[] args) throws Exception{
 	    
+		/*
 	    Aes en=new Aes();
 	    String encryptedWord=en.encrypt("password", "username"); 
 	    System.out.println("Encrypted word is : " + encryptedWord);
-	    
+	    */
 		/*
 	    Aes de =new Aes();
 	    System.out.println("Decrypted word is : " +    de.decrypt("hxE0Zhg35cfdWOu/jRXv6Z4hzEBcC6M8eQ75IoBtno0MoMdA7syP1q8xYV/uZR2xxYIcDg==", "web@la-etienda.com"));
 	    */
 	  }
-
 }

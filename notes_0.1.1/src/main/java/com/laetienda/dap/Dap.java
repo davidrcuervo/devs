@@ -71,6 +71,10 @@ public class Dap {
 		}
 	}
 	
+	public void deleteUser(User user) {
+		//TODO implement method that deletes user frod LDAP directory for testing proposes we can remove it manually.
+	}
+	
 	public Entry getDapUserEntry(User user) throws DapException  {
 		Entry result = null;
 		try {
