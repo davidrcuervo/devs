@@ -2,16 +2,16 @@
 <c:set scope="request" var="login_form">
 	<form method="post">
 		<div class="form-group">
-			<label for="login_email">${lang.out('Email') }:</label>
+			<label for="login_username">${lang.out('Username') }:</label>
 			<div class="input-group input-group-lg">
 				<span class="input-group-addon">
-					<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+					<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
 				</span>
-				<input type="text" class="form-control" id="login_email" name="username" placeholder="${lang.out('Email address') }" value="${auth.username }">
+				<input type="text" class="form-control" id="login_username" name="username" placeholder="${lang.out('Username or Email address') }" value="${user.uid }">
 			</div>
-			<c:if test="${auth.errors['username'] != null}">
+			<c:if test="${user.errors['uid'] != null}">
 				<div class="text-danger text-center">
-					<c:forEach var="error" items="${auth.errors['username'] }">
+					<c:forEach var="error" items="${user.errors['uid'] }">
 						<small>${lang.out(error) }</small><br />
 					</c:forEach>
 				</div>
@@ -25,19 +25,19 @@
 				</span>
 				<input class="form-control" type="password" id="login_password" name="password" placeholder="${lang.out('Type your password') }">
 			</div>
-			<c:if test="${auth.errors['password'] != null}">
+			<c:if test="${user.errors['password'] != null}">
 				<div class="text-danger text-center">
-					<c:forEach var="error" items="${auth.errors['password'] }">
+					<c:forEach var="error" items="${user.errors['password'] }">
 						<small>${lang.out(error) }</small><br />
 					</c:forEach>
 				</div>
 			</c:if>
 		</div>
 			
-		<button type="submit" name="submit" value="login" class="btn btn-primary btn-lg btn-block"><span class="glyphicon glyphicon-log-in"></span>  ${lang.out('Login') }</button>
-		<c:if test="${auth.errors['login'] != null}">
+		<button type="submit" name="submit" value="login" class="btn btn-primary btn-lg btn-block"><span class="glyphicon glyphicon-log-in"></span>  ${lang.out('LogIn') }</button>
+		<c:if test="${user.errors['user'] != null}">
 			<div class="text-danger text-center">
-				<c:forEach var="error" items="${auth.errors['login'] }">
+				<c:forEach var="error" items="${user.errors['user'] }">
 					<small>${lang.out(error) }</small><br />
 				</c:forEach>
 			</div>

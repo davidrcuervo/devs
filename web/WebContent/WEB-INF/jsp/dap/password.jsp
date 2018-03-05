@@ -7,11 +7,11 @@
 				<span class="input-group-addon">
 					<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
 				</span>
-				<input type="text" class="form-control" id="email" name="username" placeholder="${lang.out('Email address') }">
+				<input type="text" class="form-control" id="email" name="email" placeholder="${lang.out('Email address') }">
 			</div>
-			<c:if test="${user.errors['username'] != null}">
+			<c:if test="${user.errors['email'] != null}">
 				<div class="text-danger text-center">
-					<c:forEach var="error" items="${user.errors['username'] }">
+					<c:forEach var="error" items="${user.errors['email'] }">
 						<small>${error}</small><br />
 					</c:forEach>
 				</div>
@@ -20,9 +20,9 @@
 		
 		<button type="submit" name="submit" value="password" class="btn btn-primary btn-block">${lang.out('Reset password')}</button>
 		
-		<c:if test="${user.errors['username'] != null}">
+		<c:if test="${user.errors['user'] != null}">
 			<div class="text-danger text-center">
-				<c:forEach var="error" items="${user.errors['username'] }">
+				<c:forEach var="error" items="${user.errors['user'] }">
 					<small>${error}</small><br />
 				</c:forEach>
 			</div>

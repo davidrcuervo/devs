@@ -27,9 +27,11 @@ public class Installer {
 		userStatus.addOption("operative system", "This user belongs to the operative system of the website");
 		db.insert(userStatus);
 		
+		/*
 		Variable userUid = new Variable("user uid", "This variable keeps the counting of uid. Starting at 101");
 		userUid.addOption("uid", "101");
 		db.insert(userUid);
+		*/
 		
 		Variable languages = new Variable("languages", "Languages availables in the system");
 		languages.addOption("none", "Select a language");
@@ -50,22 +52,22 @@ public class Installer {
 		Group empty = new Group("empty", "This group will not have any users. if it does is a bug");
 		db.insert(empty);
 		
-		User sysadmin = new User(1, "sysadmin@la-etienda.com", status, language, db);
+		User sysadmin = new User("sysadmin", "sysadmin@la-etienda.com", status, language, db);
 		db.insert(sysadmin);
 		
-		User tomcat = new User(2, "web@la-etienda.com", status, language, db);
+		User tomcat = new User("tomcat", "tomcat@la-etienda.com", status, language, db);
 		db.insert(tomcat);
 		
-		User owner = new User(3, "owner@mail.com", status, language, db);
+		User owner = new User("owner", "owner@mail.com", status, language, db);
 		db.insert(owner);
 		
-		User groupUser = new User(4, "group@mail.com", status, language, db);
+		User groupUser = new User("group", "group@mail.com", status, language, db);
 		db.insert(groupUser);
 		
-		User allUser = new User(5, "all@mail.com", status, language, db);
+		User allUser = new User("all", "todos@mail.com", status, language, db);
 		db.insert(allUser);
 		
-		User manager = new User(6, "manager@mail.com", status, language, db);
+		User manager = new User("manager", "manager@mail.com", status, language, db);
 		db.insert(manager);
 		
 		AccessList acl = new AccessList();
@@ -91,7 +93,7 @@ public class Installer {
 		db.insert(aclAll);
 		
 		userStatus.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, aclAll);
-		userUid.setOwner(tomcat, empty).setPermisions(acl, aclOwner, aclAll);
+		//userUid.setOwner(tomcat, empty).setPermisions(acl, aclOwner, aclAll);
 		languages.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, aclAll);
 		sysadmins.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		managers.setOwner(manager, managers).setPermisions(acl, aclGroup, aclGroup);
@@ -113,8 +115,8 @@ public class Installer {
 	
 	public static void main(String[] args){
 		
-		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
+		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
 		
 		try {
 			log4j.info("DATABASE IS BEING INSTALLED");

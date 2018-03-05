@@ -97,7 +97,7 @@ public class DapManager {
 		Dap result = null;
 		
 		try {
-			result = new Dap(createConnection(), getTomcat(), new Dn(Ldif.getDomain()));
+			result = new Dap(createConnection(), getTomcat(), new Dn(Ldif.getDomain()), settings.getProperty("domain"));
 		}catch(LdapInvalidDnException ex) {
 			throw new DapException("Failed to create Dap object", ex);
 		}
@@ -180,7 +180,7 @@ public class DapManager {
 	}
 	
 	private void setTomcat() {
-		tomcat = new User(2, getSetting("tomcatpassword"));
+		tomcat = new User("tomcat", getSetting("tomcatpassword"));
 	}
 	
 	protected User getTomcat() {

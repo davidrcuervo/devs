@@ -10,7 +10,7 @@
 		<td>Please, validate you email address and password use the link below</td>
 	</tr>
 	<tr>
-		<td></td>
+		<td><a href="${page.urlWithPattern}/validate/${page.simpleEncrypt(user.uid)}">Click here to validate eMail and password</a></td>
 	</tr>
 	<tr>
 		<td>Thank you.</td>

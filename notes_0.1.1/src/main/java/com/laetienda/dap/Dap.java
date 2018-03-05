@@ -20,10 +20,12 @@ public class Dap {
 	private LdapConnection connection;
 	private Dn baseDn;
 	private User tomcat;
+	private String domain;
 	
-	public Dap(LdapConnection connection, User tomcat, Dn baseDn){
+	public Dap(LdapConnection connection, User tomcat, Dn baseDn, String domain){
 		this.connection = connection;
 		this.tomcat = tomcat;
+		this.domain = domain;
 		setBaseDn(baseDn);
 	}
 	
@@ -34,12 +36,12 @@ public class Dap {
 		try {
 			log4j.debug("tomcat uid: " + tomcat.getUid());
 			Dn peopleDn = new Dn("ou=People", baseDn.getName());
-			Dn tomcatDn = new Dn("uid=" + Integer.toString(tomcat.getUid()), "ou=People", baseDn.getName());
+			Dn tomcatDn = new Dn("uid=" + tomcat.getUid(), "ou=People", baseDn.getName());
 			
 			connection.bind(tomcatDn, tomcat.getPassword());
 			
 			search = connection.search(peopleDn, 
-					"(|(uid=" + Integer.toString(newUser.getUid()) + ")(cn=" + newUser.getEmail() + "))", 
+					"(|(uid=" + newUser.getUid() + ")(cn=" + newUser.getEmail() + "))", 
 					SearchScope.ONELEVEL);
 			
 			for(Entry entry : search) {
@@ -78,15 +80,19 @@ public class Dap {
 	public Entry getDapUserEntry(User user) throws DapException  {
 		Entry result = null;
 		try {
-			Dn userDn = new Dn("uid=" + Integer.toString(user.getUid()), "ou=People", baseDn.getName());
+			Dn userDn = new Dn("uid=" + user.getUid(), "ou=People", baseDn.getName());
 			result = new DefaultEntry(userDn);
 			result.add("objectclass", "person")
 				.add("objectclass", "inetOrgPerson")
+				.add("objectClass", "krb5KDCEntry")
+				.add("objectClass", "krb5Principal")
 				.add("objectclass", "organizationalPerson")
 				.add("objectclass", "top")
-				.add("uid",Integer.toString(user.getUid()))
+				.add("uid",user.getUid())
 				.add("cn", user.getCn())
+				.add("krb5KeyVersionNumber", "1")
 				.add("sn", user.getSn())
+				.add("krb5PrincipalName", user.getUid() + "@" + domain.toUpperCase())
 				.add("userpassword", user.getPassword())
 				//.add("description", "")
 				.add("ou", "People");
@@ -118,7 +124,27 @@ public class Dap {
 		} catch (LdapInvalidDnException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean checkPassword (String uid, String password) {
+		boolean result = false;
 		
+		try {
+			Dn userDn = new Dn("uid=" + uid, "ou=People", baseDn.getName());
+			connection.bind(userDn, password);
+			
+			if(connection.isConnected() && connection.isAuthenticated()) {
+				result = true;
+				connection.unBind();
+			}
+			
+		} catch (LdapException e) {
+			log4j.info("Failed to bind checkPassword for user. $username: " + uid);
+		}finally {
+
+		}
+		
+		return result;
 	}
 	
 }

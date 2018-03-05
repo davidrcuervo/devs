@@ -263,6 +263,7 @@ public class Db {
 		return result;
 	}
 	
+	/*
 	public synchronized Integer getNextUid() throws DbException {
 		Integer result = null;
 		
@@ -278,6 +279,7 @@ public class Db {
 		
 		return result;
 	}
+	*/
 	
 	@Deprecated
 	public void insert(/*EntityManager em,*/ EntityObject entity) throws DbException {
