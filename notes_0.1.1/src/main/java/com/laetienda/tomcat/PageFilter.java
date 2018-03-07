@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class PageFilter implements Filter{
 	
@@ -18,7 +19,8 @@ public class PageFilter implements Filter{
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		
 		HttpServletRequest httpReq = (HttpServletRequest)request;
-		Page page = new Page(httpReq);
+		HttpServletResponse httpRes = (HttpServletResponse)response;
+		Page page = new Page(httpReq, httpRes);
 		
 		httpReq.setAttribute("page", page);
 		

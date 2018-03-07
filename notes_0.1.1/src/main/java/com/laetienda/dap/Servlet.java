@@ -68,38 +68,7 @@ public class Servlet extends HttpServlet {
 			
 			//https://<server-name>:<port>/<context-path>/validate/:enryptedUsername
 			case "validate":
-				Db db = dbManager.createTransaction();
-				
-				User user;
-				
-				log4j.debug("$pathParts[1]: " + pathParts[1]);
-				log4j.debug("Username: " + page.simpleDecrypt(pathParts[1]));
-				
-				try {
-					 
-					if(request.getAttribute("user") == null) {
-						
-						user = db.getEm().createNamedQuery("User.findByUid", User.class).setParameter("uid", page.simpleDecrypt(pathParts[1])).getSingleResult();
-						
-						if(user != null && user.getStatus().getName().equals(db.findOption("user status", "registered").getName())) {
-							log4j.debug("User has been found from encoded url. $username: " + user.getUid());
-						}else {
-							response.sendError(HttpServletResponse.SC_NOT_FOUND);
-						}
-					}else {
-						user = (User)request.getAttribute("user");
-					}
-					
-					request.setAttribute("user", user);
-					request.getRequestDispatcher("/WEB-INF/jsp/dap/validate.jsp").forward(request, response);
-					
-				}catch(DbException | NoResultException | NonUniqueResultException ex) {
-					log4j.debug("Failed to serve validate page", ex);
-					response.sendError(HttpServletResponse.SC_NOT_FOUND);
-				}finally {
-					dbManager.closeTransaction(db);
-				}
-				
+				doGetValidate(request, response);
 				break;
 		
 			//https:///<server-name>:<port>/<context-path>/login
@@ -108,7 +77,8 @@ public class Servlet extends HttpServlet {
 			case "login":
 				request.getRequestDispatcher("/WEB-INF/jsp/dap/container.jsp").forward(request, response);
 				break;
-				
+			
+			//https:///<server-name>:<port>/<context-path>/logout	
 			case "logout":
 				if(request.getSession().getAttribute("sessionUser") == null) {
 					response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -118,6 +88,12 @@ public class Servlet extends HttpServlet {
 					response.sendRedirect(page.getRootUrl() + "/home");
 				}
 				
+				break;
+			
+			//https://<server-name>:<port>/<context-path>/recoverpassword/:enryptedUsernameAndEmail
+			//enryptedUsername = user.getUid() + ":" + user.getEmail()
+			case "recoverpassword":
+				doGetPasswordRecover(request, response);
 				break;
 		
 			default:
@@ -137,15 +113,19 @@ public class Servlet extends HttpServlet {
 					break;
 					
 				case "validate":
-					validate(request, response);
+					doPostValidate(request, response);
 					break;
 					
 				case "login":
 					login(request, response);
 					break;
 					
-				case "passwordReset":
-					passwordReset(request, response);
+				case "password":
+					password(request, response);
+					break;
+					
+				case "passwordrecover":
+					doGetPasswordRecover(request, response);
 					break;
 					
 				default:
@@ -188,7 +168,7 @@ public class Servlet extends HttpServlet {
 				dap.insertUser(user);
 				email = mailManager.createEmail();
 				email.setText("/WEB-INF/jsp/email/signup.jsp", request, response);
-				email.send(user.getEmail(), "La-eTienda email and password validation");
+				email.send(user.getEmail(), (String)request.getAttribute("emailSubject"));
 			}
 			
 		}catch(DbException ex) {
@@ -229,8 +209,43 @@ public class Servlet extends HttpServlet {
 			}
 		}
 	}
-
-	private void validate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+	//https://<server-name>:<port>/<context-path>/validate/:enryptedUsername
+	private void doGetValidate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+		Db db = dbManager.createTransaction();
+		Page page = (Page)request.getAttribute("page");
+		User user;
+		
+		log4j.debug("$pathParts[1]: " + pathParts[1]);
+		log4j.debug("Username: " + page.simpleDecrypt(pathParts[1]));
+		
+		try {
+			 
+			if(request.getAttribute("user") == null) {
+				
+				user = db.getEm().createNamedQuery("User.findByUid", User.class).setParameter("uid", page.simpleDecrypt(pathParts[1])).getSingleResult();
+				
+				if(user != null && user.getStatus().getName().equals(db.findOption("user status", "registered").getName())) {
+					log4j.debug("User has been found from encoded url. $username: " + user.getUid());
+				}else {
+					response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				}
+			}else {
+				user = (User)request.getAttribute("user");
+			}
+			
+			request.setAttribute("user", user);
+			request.getRequestDispatcher("/WEB-INF/jsp/dap/validate.jsp").forward(request, response);
+			
+		}catch(DbException | NoResultException | NonUniqueResultException ex) {
+			log4j.debug("Failed to serve validate page", ex);
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}finally {
+			dbManager.closeTransaction(db);
+		}
+	}
+	
+	private void doPostValidate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Db db = dbManager.createTransaction();
 		Dap dap = null;
 		User user = new User();
@@ -318,26 +333,100 @@ public class Servlet extends HttpServlet {
 		}
 	}
 	
-	private void passwordReset(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void password(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Db db = dbManager.createTransaction();
 		String email = request.getParameter("email");
 		User user = new User();
 		user.setUid(email, db);
-		Dap dap = null;
 		Page page = (Page)request.getAttribute("page");
 				
 		try {
-			dap = dapManager.createDap();
-			user = db.getEm().createNamedQuery("User.findByEmail", User.class).setParameter("input", email).getSingleResult();
-			
-			
+			user = db.getEm().createNamedQuery("User.findByEmail", User.class).setParameter("email", email).getSingleResult();
+			request.setAttribute("user", user);
+			Email mailer = mailManager.createEmail();
+			mailer.setText("/WEB-INF/jsp/email/passwordRecovery.jsp", request, response);
+			mailer.send(user.getEmail(), (String)request.getAttribute("emailSubject"));
 			
 		}catch(NoResultException | NonUniqueResultException ex) {
 			user.addError("email", "This email address has not been registered yet.");
-		}catch(DapException  ex) {
+		}catch(MailException ex) {
 			user.addError("user", "Internal error while reseting password $email: " + email);
 			log4j.error("Failed to reset password", ex.getRootParent());
+		}finally {
+			dbManager.closeTransaction(db);
+			
+			if(user.getErrors().size() > 0) {
+				log4j.info("Failed to process password recovery form: $email" + email);
+				doGet(request, response);
+			}else {
+				request.removeAttribute("user");
+				request.getSession().setAttribute("ThankyouToken", "password");
+				response.sendRedirect(page.getLinkFromRootUrl("/thankyou/password"));
+			}
 		}
+	}
+
+	//https://<server-name>:<port>/<context-path>/recoverpassword/:enryptedUsernameAndEmail
+	//enryptedUsername = user.getUid() + ":" + user.getEmail()
+	private void doGetPasswordRecover(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		Page page = (Page)request.getAttribute("page");
+		String[] usernameAndEmail = page.simpleDecrypt(pathParts[1]).split(":");
+		Db db = dbManager.createTransaction();
+		
+		log4j.debug("$pathParts[1]: " + pathParts[1]);
+		log4j.debug("$usernameAndEmail: " + page.simpleDecrypt(pathParts[1]));
+		log4j.debug("$Username: " + usernameAndEmail[0]);
+		log4j.debug("$eMail: " + usernameAndEmail[1]);
+		
+		try {
+			User user = db.getEm().createNamedQuery("User.findByUid", User.class).setParameter("uid", usernameAndEmail[0]).getSingleResult();
+			
+			if(user.getEmail().equals(usernameAndEmail[1])) {
+				
+				if(request.getParameter("submit").equals("passwordrecover")) {
+					doPostPasswordRecover(db, user, request, response);
+					
+				}else {
+					request.getRequestDispatcher("/WEB-INF/jsp/dap/passwordRecover.jsp").forward(request, response);
+				}
+				
+			}else {
+				log4j.info("Invalid url recovery link. User email in database is not the same that email in link");
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			}
+			
+		}catch(NoResultException | NonUniqueResultException ex) {
+			log4j.info("Invalid url recovery link. Username does not exist in database");
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}finally {
+			dbManager.closeTransaction(db);
+		}
+	}
 	
+	private void doPostPasswordRecover(Db db, User user, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		user.setPassword(request.getParameter("password"), request.getParameter("password_confirm"));
+		
+		try {
+			if(user.getErrors().size() > 0) {
+				
+			}else {
+				//TODO something interesting happens here. Load user from LDAP and sync it with user database
+				db.update();
+				//TODO update dap directory
+			}
+			
+		}catch(DbException ex) {
+			log4j.error("Failed to persist user in database", ex.getRootParent());
+			user.addError("user", "Internal error. There was an error while saving into the database");
+		}finally {
+			if(user.getErrors().size() > 0) {
+				request.setAttribute("user", user);
+				request.getRequestDispatcher("/WEB-INF/jsp/dap/passwordRecover.jsp").forward(request, response);
+			}else {
+				//TODO send to thank you page
+			}
+		}
 	}
 }

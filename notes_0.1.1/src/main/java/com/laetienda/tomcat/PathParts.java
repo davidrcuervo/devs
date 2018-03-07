@@ -62,14 +62,14 @@ public class PathParts implements Filter{
 		for(int c=0; c < pathParts.length; c++){
 			log4j.debug("pathParts[" + c + "]: " + pathParts[c]);
 		}
-		
+		/*
 		log4j.debug("allpathParts.length: " + allpathParts.length);
 		log4j.debug("allpathParts[0].length: " + allpathParts[0].length());
 		
 		for(int c=0; c < allpathParts.length; c++){
 			log4j.debug("allpathParts[" + c + "]: " + allpathParts[c]);
 		}
-		
+		*/
 	}
 	
 	public void destroy(){
