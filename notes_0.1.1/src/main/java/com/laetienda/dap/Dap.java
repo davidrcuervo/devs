@@ -4,7 +4,11 @@ import java.io.IOException;
 
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.entry.DefaultEntry;
+import org.apache.directory.api.ldap.model.entry.DefaultModification;
 import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.entry.Modification;
+import org.apache.directory.api.ldap.model.entry.ModificationOperation;
+import org.apache.directory.api.ldap.model.exception.LdapAuthenticationException;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
@@ -75,6 +79,38 @@ public class Dap {
 	
 	public void deleteUser(User user) {
 		//TODO implement method that deletes user frod LDAP directory for testing proposes we can remove it manually.
+	}
+	
+	public void changeUserPassword(User user) throws DapException {
+		if(user != null && user.getPassword() != null && !user.getPassword().isEmpty()) {
+			try {
+				Dn tomcatDn = new Dn("uid=" + tomcat.getUid(), "ou=People", baseDn.getName());
+				Dn userDn = new Dn("uid=" + user.getUid(), "ou=People", baseDn.getName());
+				
+				Modification replacePassword = new DefaultModification(ModificationOperation.REPLACE_ATTRIBUTE, "userpassword", user.getPassword());
+				
+				try {
+					connection.bind(userDn, user.getPassword());
+					log4j.debug("User is trying to use old password and it does not need to be replaced");
+				}catch(LdapAuthenticationException ex) {
+					connection.bind(tomcatDn, tomcat.getPassword());
+					connection.modify(userDn, replacePassword);
+				}
+				
+			} catch (LdapException ex) {
+				throw new DapException("Failed to update password in LDAP", ex);
+			}finally {
+				try {
+					if(connection.isConnected() || connection.isAuthenticated()) {
+						connection.unBind();
+					}
+				} catch (LdapException e) {
+					throw new DapException("Failed to close connection with ldap server", e);
+				}
+			}
+		}else {
+			throw new DapException("User or password was null or empty");
+		}
 	}
 	
 	public Entry getDapUserEntry(User user) throws DapException  {

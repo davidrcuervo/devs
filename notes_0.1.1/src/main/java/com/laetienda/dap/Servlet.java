@@ -371,6 +371,7 @@ public class Servlet extends HttpServlet {
 	private void doGetPasswordRecover(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		Page page = (Page)request.getAttribute("page");
+		String session = request.getParameter("submit");
 		String[] usernameAndEmail = page.simpleDecrypt(pathParts[1]).split(":");
 		Db db = dbManager.createTransaction();
 		
@@ -384,7 +385,7 @@ public class Servlet extends HttpServlet {
 			
 			if(user.getEmail().equals(usernameAndEmail[1])) {
 				
-				if(request.getParameter("submit").equals("passwordrecover")) {
+				if(session != null && session.equals("passwordrecover")) {
 					doPostPasswordRecover(db, user, request, response);
 					
 				}else {
@@ -406,26 +407,34 @@ public class Servlet extends HttpServlet {
 	
 	private void doPostPasswordRecover(Db db, User user, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		Page page = (Page)request.getAttribute("page");
 		user.setPassword(request.getParameter("password"), request.getParameter("password_confirm"));
+		Dap dap = null;
+		Email email = null;
 		
 		try {
 			if(user.getErrors().size() > 0) {
-				
+				log4j.debug("Password is not valid then it will not saved in LDAP");
 			}else {
-				//TODO something interesting happens here. Load user from LDAP and sync it with user database
-				db.update();
-				//TODO update dap directory
+				dap = dapManager.createDap();
+				dap.changeUserPassword(user);
+				email = mailManager.createEmail();
+				email.setText("/WEB-INF/jsp/email/passwordReset.jsp", request, response);
+				email.send(user.getEmail(), (String)request.getAttribute("emailSubject"));
 			}
 			
-		}catch(DbException ex) {
-			log4j.error("Failed to persist user in database", ex.getRootParent());
+		}catch(DapException | MailException ex) {
+			log4j.error("Failed to update password in LDAP", ex.getRootParent());
 			user.addError("user", "Internal error. There was an error while saving into the database");
 		}finally {
+			dapManager.closeConnection(dap);
+			
 			if(user.getErrors().size() > 0) {
 				request.setAttribute("user", user);
 				request.getRequestDispatcher("/WEB-INF/jsp/dap/passwordRecover.jsp").forward(request, response);
 			}else {
-				//TODO send to thank you page
+				request.getSession().setAttribute("ThankyouToken", "recoverpassword");
+				response.sendRedirect(page.getRootUrl() + "/thankyou/recoverpassword");
 			}
 		}
 	}

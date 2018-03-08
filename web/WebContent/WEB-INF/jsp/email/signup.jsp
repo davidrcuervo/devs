@@ -1,5 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="emailSubject" scope="request" value="La-eTienda. Password recovery" />
+<c:set var="emailSubject" scope="request" value="La-eTienda. You have registered successfully" />
 <c:set var="content" scope="request">
 	<table>
 		<tr>

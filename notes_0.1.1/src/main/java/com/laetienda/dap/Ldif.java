@@ -40,6 +40,7 @@ public class Ldif {
 					.add("objectclass", "top")
 					.add("objectclass", "organizationalUnit")
 					.add("ou", "People")
+					//.add("administrativeRole", "accessControlSpecificArea")
 					.add("description", "People who has been regestired in the domain");
 		}catch(LdapException ex){
 			return null;
@@ -200,13 +201,13 @@ public class Ldif {
 											+ "protectedItems { entry, allUserAttributeTypesAndValues },"
 											+ "grantsAndDenials " 
 											+ "{ "
-												+ "grantCompare,"
-												+ "grantFilterMatch,"
-												+ "grantReturnDN,"
-												+ "denyModify,"
+												+ "grantRename,"
 												+ "grantBrowse,"
+												+ "grantRemove,"
 												+ "grantAdd,"
-												+ "grantRead" 
+												+ "grantModify,"
+												+ "grantReturnDN,"
+												+ "grantRead"
 											+ "}"
 										+ "}"
 									+ "}"
