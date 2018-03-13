@@ -20,9 +20,12 @@ import com.laetienda.multimedia.MultimediaException;
 import com.laetienda.notes.NotesException;
 import com.laetienda.notes.NotesManager;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 public class Load implements ServletContextListener{
 	
-	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(Load.class);
+	private static final Logger log4j = LogManager.getLogger(Load.class.getName());
 	
 	private File directory;
 	private DbManager dbManager;

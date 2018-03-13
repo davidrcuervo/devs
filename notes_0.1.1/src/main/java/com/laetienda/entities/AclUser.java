@@ -2,7 +2,8 @@ package com.laetienda.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 @Entity
 @Table(name="user_lists")
@@ -12,7 +13,7 @@ import org.apache.log4j.Logger;
 
 public class AclUser implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private static Logger log4j = Logger.getLogger(AclUser.class);
+	private static Logger log4j = LogManager.getLogger(AclUser.class);
 	
 	@Id
 	@SequenceGenerator(name = "acl_user_id_seq", sequenceName = "acl_user_id_seq", allocationSize=1)

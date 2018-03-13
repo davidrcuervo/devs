@@ -5,9 +5,11 @@ import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Ldif {
-	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(Ldif.class);
+	final static Logger log4j = LogManager.getLogger(Ldif.class);
 	protected static String domain = new String();
 	
 	protected static void setDomain(String domain){

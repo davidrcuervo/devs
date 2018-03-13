@@ -12,12 +12,13 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.spi.PersistenceUnitTransactionType;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.*;
 
 public class DbManager {
-	static final Logger log4j = Logger.getLogger(DbManager.class);
+	static final Logger log4j = LogManager.getLogger(DbManager.class);
 	
 	private ArrayList<EntityManager> ems;
 	private EntityManagerFactory emfactory;

@@ -10,13 +10,14 @@ import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.app.Aes;
 
 
 public class MailManager {
-	private final static Logger log4j = Logger.getLogger(MailManager.class);
+	private final static Logger log4j = LogManager.getLogger(MailManager.class);
 	
 	private Properties settings;
 	private Session session;

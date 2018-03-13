@@ -27,10 +27,12 @@ import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.DefaultLdapConnectionFactory;
 import org.apache.directory.ldap.client.api.DefaultPoolableLdapConnectionFactory;
 import org.apache.directory.ldap.client.api.LdapConnection;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class DapManager {
 	
-	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(DapManager.class);
+	final static Logger log4j = LogManager.getLogger(DapManager.class);
 	
 	private Properties settings;
 	private LdapConnectionPool connectionPool;

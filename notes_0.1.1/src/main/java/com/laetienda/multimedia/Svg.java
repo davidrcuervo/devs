@@ -8,7 +8,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+//import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.batik.transcoder.TranscoderException;

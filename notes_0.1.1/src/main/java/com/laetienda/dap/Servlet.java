@@ -20,12 +20,13 @@ import com.laetienda.mail.MailException;
 import com.laetienda.mail.MailManager;
 import com.laetienda.tomcat.Page;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Servlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	final static Logger log4j = Logger.getLogger(Servlet.class);
+	final static Logger log4j = LogManager.getLogger(Servlet.class);
 	private String[] pathParts;
 	private DbManager dbManager;
 	private DapManager dapManager;

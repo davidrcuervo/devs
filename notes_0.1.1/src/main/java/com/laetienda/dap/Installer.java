@@ -12,10 +12,11 @@ import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapConnectionPool;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 
-import com.laetienda.logger.Log4j;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Installer {
-	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(Log4j.class);
+	final static Logger log4j = LogManager.getLogger(Installer.class);
 	
 	private DapManager dapManager;
 	private String rootPassword;

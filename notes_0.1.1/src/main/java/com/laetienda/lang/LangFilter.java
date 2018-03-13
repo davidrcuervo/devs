@@ -13,10 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.laetienda.db.DbManager;
 import com.laetienda.db.Db;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class LangFilter implements Filter{
-	private final static Logger log4j = Logger.getLogger(LangFilter.class);
+	private final static Logger log4j = LogManager.getLogger(LangFilter.class);
 	
 	private DbManager dbManager;
 	private LangManager langManager;

@@ -10,11 +10,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class PathParts implements Filter{
 	
-	final static Logger log4j = Logger.getLogger(PathParts.class);
+	final static Logger log4j = LogManager.getLogger(PathParts.class);
 	
 	public void init(FilterConfig fConfig) throws ServletException{
 	

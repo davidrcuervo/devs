@@ -21,9 +21,12 @@ import com.laetienda.notes.NotesManager;
 import com.laetienda.dap.DapException;
 import com.laetienda.dap.DapManager;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 public class Load implements ServletContextListener {
 	
-	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(Load.class);
+	final static Logger log4j = LogManager.getLogger(Load.class);
 	
 	private File directory;
 	private LoggerManager logManager;
@@ -62,7 +65,7 @@ public class Load implements ServletContextListener {
 	}
 	
 	public void contextInitialized(ServletContextEvent arg0) {
-		
+		log4j.error("Testing log4j2 logger");
 		ServletContext sc = arg0.getServletContext();
 		directory = new File(sc.getInitParameter("directory"));
 		

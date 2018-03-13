@@ -10,12 +10,13 @@ import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.LdapConnection;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.entities.User;
 
 public class Dap {
-	private final static Logger log4j = Logger.getLogger(Dap.class);
+	private final static Logger log4j = LogManager.getLogger(Dap.class);
 	
 	private LdapConnection connection;
 	private Dn baseDn;

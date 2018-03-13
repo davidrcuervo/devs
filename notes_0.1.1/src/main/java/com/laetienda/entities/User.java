@@ -6,7 +6,8 @@ import java.util.List;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.persistence.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.db.Db;
 
@@ -22,7 +23,7 @@ import com.laetienda.db.Db;
 })
 public class User extends Objeto implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private static final Logger log4j = Logger.getLogger(User.class);
+	private static final Logger log4j = LogManager.getLogger(User.class);
 
 	@Column(name="\"uid\"", unique=true, nullable=false)
 	private Integer uid;

@@ -16,11 +16,12 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Page {
 	private final String strKey = new String("vS8WkS8uZcHZufyWENUWPgX8FPugDBH8");
-	private final static Logger log4j = Logger.getLogger(Page.class);
+	private final static Logger log4j = LogManager.getLogger(Page.class);
 	private String url;
 	private String rootUrl;
 	private String urlWithPattern;

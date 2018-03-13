@@ -1,12 +1,13 @@
 package com.laetienda.dap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.entities.EntityObject;
 
 @Deprecated
 public class DapUser extends EntityObject{
-	private final static Logger log4j = Logger.getLogger(DapUser.class);	
+	private final static Logger log4j = LogManager.getLogger(DapUser.class);	
 	
 	private Integer uid;
 	private String cn;

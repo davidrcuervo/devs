@@ -2,7 +2,8 @@ package com.laetienda.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 @Entity
 @Table(name="grupos")
@@ -11,7 +12,7 @@ import org.apache.log4j.Logger;
 })
 public class Group extends Objeto implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static Logger log4j = Logger.getLogger(Group.class);
+	private static Logger log4j = LogManager.getLogger(Group.class);
 	
 	@Column(name="\"name\"", nullable=false, unique=true, length=254)
 	private String name;

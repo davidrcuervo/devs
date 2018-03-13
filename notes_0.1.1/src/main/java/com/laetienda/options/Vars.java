@@ -10,10 +10,11 @@ import com.laetienda.db.Db;
 import com.laetienda.entities.Option;
 import com.laetienda.entities.Variable;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Vars {
-	private final static Logger log4j = Logger.getLogger(Vars.class);
+	private final static Logger log4j = LogManager.getLogger(Vars.class);
 	
 	private Db db;
 	

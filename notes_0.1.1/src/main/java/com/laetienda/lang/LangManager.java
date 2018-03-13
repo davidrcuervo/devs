@@ -7,10 +7,12 @@ import java.util.Properties;
 import com.laetienda.db.Sql;
 import com.laetienda.db.Db;
 import com.laetienda.db.SqlException;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class LangManager {
 	
-	final static org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(LangManager.class);
+	final static Logger log4j = LogManager.getLogger(LangManager.class);
 	
 	private File directory;
 	private Properties settings;

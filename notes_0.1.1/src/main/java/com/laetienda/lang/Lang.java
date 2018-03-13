@@ -2,10 +2,11 @@ package com.laetienda.lang;
 
 import com.laetienda.entities.Language;
 import com.laetienda.db.Db;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Lang {
-	private final static Logger log4j = Logger.getLogger(Lang.class);
+	private final static Logger log4j = LogManager.getLogger(Lang.class);
 	public static String[] LANG_CODES = {"en", "es", "fr"};
 	
 	private Db db;

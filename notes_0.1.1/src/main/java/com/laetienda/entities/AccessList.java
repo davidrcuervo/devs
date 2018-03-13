@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 @Entity
 @Table(name="access_control_lists")
@@ -15,7 +16,7 @@ import org.apache.log4j.Logger;
 
 public class AccessList extends Objeto implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private static Logger log4j = Logger.getLogger(AccessList.class);
+	private static Logger log4j = LogManager.getLogger(AccessList.class);
 	
 	@Column(name="\"name\"", unique=true, nullable=false, length=254)
 	private String name;

@@ -6,10 +6,11 @@ import java.util.List;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public abstract class EntityObject {
-	private static final Logger log4j = Logger.getLogger(EntityObject.class);
+	private static final Logger log4j = LogManager.getLogger(EntityObject.class);
 	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private HashMap<String, List<String>> errors = new HashMap<String, List<String>>();

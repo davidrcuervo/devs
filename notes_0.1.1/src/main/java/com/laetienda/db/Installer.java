@@ -1,12 +1,13 @@
 package com.laetienda.db;
 
 import java.io.File;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.entities.*;
 
 public class Installer {
-	static final Logger log4j = Logger.getLogger(Installer.class);
+	static final Logger log4j = LogManager.getLogger(Installer.class);
 	
 	DbManager dbManager;
 	File directory;
