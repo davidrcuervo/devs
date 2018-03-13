@@ -4,7 +4,11 @@ import java.io.IOException;
 
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.entry.DefaultEntry;
+import org.apache.directory.api.ldap.model.entry.DefaultModification;
 import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.entry.Modification;
+import org.apache.directory.api.ldap.model.entry.ModificationOperation;
+import org.apache.directory.api.ldap.model.exception.LdapAuthenticationException;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
@@ -21,10 +25,12 @@ public class Dap {
 	private LdapConnection connection;
 	private Dn baseDn;
 	private User tomcat;
+	private String domain;
 	
-	public Dap(LdapConnection connection, User tomcat, Dn baseDn){
+	public Dap(LdapConnection connection, User tomcat, Dn baseDn, String domain){
 		this.connection = connection;
 		this.tomcat = tomcat;
+		this.domain = domain;
 		setBaseDn(baseDn);
 	}
 	
@@ -35,12 +41,12 @@ public class Dap {
 		try {
 			log4j.debug("tomcat uid: " + tomcat.getUid());
 			Dn peopleDn = new Dn("ou=People", baseDn.getName());
-			Dn tomcatDn = new Dn("uid=" + Integer.toString(tomcat.getUid()), "ou=People", baseDn.getName());
+			Dn tomcatDn = new Dn("uid=" + tomcat.getUid(), "ou=People", baseDn.getName());
 			
 			connection.bind(tomcatDn, tomcat.getPassword());
 			
 			search = connection.search(peopleDn, 
-					"(|(uid=" + Integer.toString(newUser.getUid()) + ")(cn=" + newUser.getEmail() + "))", 
+					"(|(uid=" + newUser.getUid() + ")(cn=" + newUser.getEmail() + "))", 
 					SearchScope.ONELEVEL);
 			
 			for(Entry entry : search) {
@@ -76,18 +82,54 @@ public class Dap {
 		//TODO implement method that deletes user frod LDAP directory for testing proposes we can remove it manually.
 	}
 	
+	public void changeUserPassword(User user) throws DapException {
+		if(user != null && user.getPassword() != null && !user.getPassword().isEmpty()) {
+			try {
+				Dn tomcatDn = new Dn("uid=" + tomcat.getUid(), "ou=People", baseDn.getName());
+				Dn userDn = new Dn("uid=" + user.getUid(), "ou=People", baseDn.getName());
+				
+				Modification replacePassword = new DefaultModification(ModificationOperation.REPLACE_ATTRIBUTE, "userpassword", user.getPassword());
+				
+				try {
+					connection.bind(userDn, user.getPassword());
+					log4j.debug("User is trying to use old password and it does not need to be replaced");
+				}catch(LdapAuthenticationException ex) {
+					connection.bind(tomcatDn, tomcat.getPassword());
+					connection.modify(userDn, replacePassword);
+				}
+				
+			} catch (LdapException ex) {
+				throw new DapException("Failed to update password in LDAP", ex);
+			}finally {
+				try {
+					if(connection.isConnected() || connection.isAuthenticated()) {
+						connection.unBind();
+					}
+				} catch (LdapException e) {
+					throw new DapException("Failed to close connection with ldap server", e);
+				}
+			}
+		}else {
+			throw new DapException("User or password was null or empty");
+		}
+	}
+	
 	public Entry getDapUserEntry(User user) throws DapException  {
 		Entry result = null;
 		try {
-			Dn userDn = new Dn("uid=" + Integer.toString(user.getUid()), "ou=People", baseDn.getName());
+			Dn userDn = new Dn("uid=" + user.getUid(), "ou=People", baseDn.getName());
 			result = new DefaultEntry(userDn);
 			result.add("objectclass", "person")
 				.add("objectclass", "inetOrgPerson")
+				.add("objectClass", "krb5KDCEntry")
+				.add("objectClass", "krb5Principal")
 				.add("objectclass", "organizationalPerson")
 				.add("objectclass", "top")
-				.add("uid",Integer.toString(user.getUid()))
+				.add("uid",user.getUid())
 				.add("cn", user.getCn())
+				.add("krb5KeyVersionNumber", "1")
 				.add("sn", user.getSn())
+				.add("krb5PrincipalName", user.getUid() + "@" + domain.toUpperCase())
 				.add("userpassword", user.getPassword())
 				//.add("description", "")
 				.add("ou", "People");
@@ -119,7 +161,27 @@ public class Dap {
 		} catch (LdapInvalidDnException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean checkPassword (String uid, String password) {
+		boolean result = false;
 		
+		try {
+			Dn userDn = new Dn("uid=" + uid, "ou=People", baseDn.getName());
+			connection.bind(userDn, password);
+			
+			if(connection.isConnected() && connection.isAuthenticated()) {
+				result = true;
+				connection.unBind();
+			}
+			
+		} catch (LdapException e) {
+			log4j.info("Failed to bind checkPassword for user. $username: " + uid);
+		}finally {
+
+		}
+		
+		return result;
 	}
 	
 }

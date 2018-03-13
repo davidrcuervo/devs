@@ -14,6 +14,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.Logger;
@@ -29,8 +30,10 @@ public class Page {
 	private List<String> styles;
 	private List<String> scripts;
 	private String variables;
+	private HttpServletResponse response;
 	
-	public Page(HttpServletRequest request){
+	public Page(HttpServletRequest request, HttpServletResponse response){
+		this.response = response;
 		allpathParts = (String[])request.getAttribute("allpathParts");
 		rootUrl = buildRootUrl(request);
 		url = buildUrl(request);
@@ -212,5 +215,13 @@ public class Page {
 		}
 		
 		return result;
+	}
+	
+	public String getLinkFromRootUrl(String url) {
+		return response.encodeURL(getRootUrl() + url);
+	}
+	
+	public String getLinkFromUrlWithPattern(String url) {
+		return response.encodeURL(getUrlWithPattern() + url);
 	}
 }

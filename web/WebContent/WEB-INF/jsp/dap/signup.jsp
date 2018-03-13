@@ -3,6 +3,24 @@
 	<c:if test="${ UserSignupForm != 'success' }">
 		<form method="post">
 			<div class="form-group">
+				<label for="uid">${lang.out('Username')}</label>
+				<div class="input-group input-group-lg">
+					<span class="input-group-addon">
+						<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+					</span>
+					<input type="text" class="form-control" id="uid" name="uid" placeholder="${lang.out('Username')}" value="${user.uid }"/>
+				</div>
+				<c:if test="${user.errors['uid'] != null }">
+					<div class="text-danger text-center">
+						<c:forEach var="error" items="${user.errors['uid'] }">
+							<small>${lang.out(error) }</small>
+						</c:forEach>
+					</div>
+				</c:if>
+			</div>
+		
+		
+			<div class="form-group">
 				<label for="cn">${lang.out('First Name')}</label>
 				<div class="input-group input-group-lg">
 					<span class="input-group-addon">

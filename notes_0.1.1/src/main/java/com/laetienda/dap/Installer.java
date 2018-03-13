@@ -15,8 +15,11 @@ import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+
 public class Installer {
+
 	final static Logger log4j = LogManager.getLogger(Installer.class);
+
 	
 	private DapManager dapManager;
 	private String rootPassword;
@@ -148,16 +151,17 @@ public class Installer {
 				connection.add(Ldif.MAANGERS_ENTRY());
 			}
 			
-			/*
-			if(!connection.exists(Ldif.USERS_DN())){
-				connection.add(Ldif.USERS_ENTRY());
+			if(!connection.exists(Ldif.SERVICES_DN())) {
+				connection.add(Ldif.SERVICES_ENTRY());
 			}
 			
-			
-			if(!connection.exists(Ldif.VISITORS_DN())){
-				connection.add(Ldif.VISITORS_ENTRY());
+			if(!connection.exists(Ldif.LDAP_DN())) {
+				connection.add(Ldif.LDAP_ENTRY());
 			}
-			*/
+			
+			if(!connection.exists(Ldif.KRBTGT_DN())) {
+				connection.add(Ldif.KRBTGT_ENTRY());
+			}
 			
 			if(!connection.exists(Ldif.ACI_SYSADMIN_DN())){
 				connection.add(Ldif.ACI_SYSADMIN());
@@ -185,8 +189,8 @@ public class Installer {
 	
 	public static void main(String[] args) {
 		
-		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
+		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
 		
 		try {
 			Installer installer = new Installer(directory);
@@ -196,7 +200,7 @@ public class Installer {
 				installer.install();
 				installer.unBind();
 			}catch(DapException ex) {
-				log4j.error(ex.getMessage(), ex);
+				log4j.error(ex.getMessage(), ex.getRootParent());
 			}finally {
 				try {
 					installer.closeConnection();

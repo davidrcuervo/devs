@@ -9,13 +9,21 @@ ${page.addScript("<script src='/assets/home.js'></script>") }
 <c:set scope="request" var="content">
 	<h1 class="text-center" style="margin-bottom: 100px; margin-top: 150px">La &nbsp;eTienda</h1>
 	<div class="row">
-		<div class="${csshomecols}" onclick="jsLink('${page.rootUrl}/session/login')">
-			<div class="text-center"><span class="glyphicon glyphicon-user" style="font-size: 150px;"></span></div>
-			<h3 class="text-center" style="margin-top: 0px;">${lang.out('Login') }</h3>
-		</div>
+		<c:if test="${sessionScope.sessionUser == null }">
+			<div class="${csshomecols}" onclick="jsLink('${page.rootUrl}/session/login')">
+				<div class="text-center"><span class="glyphicon glyphicon-user" style="font-size: 150px;"></span></div>
+				<h3 class="text-center" style="margin-top: 0px;">${lang.out('Login') }</h3>
+			</div>
+		</c:if>
+		<c:if test="${sessionScope.sessionUser != null }">
+			<div class="${csshomecols}" onclick="jsLink('${page.rootUrl}/session/logout')">
+				<div class="text-center"><span class="glyphicon glyphicon-log-out" style="font-size: 150px;"></span></div>
+				<h3 class="text-center" style="margin-top: 0px;">${lang.out('Close Session') }</h3>
+			</div>
+		</c:if>
 		<div class="${csshomecols}" onclick="jsLink('${page.rootUrl}/media/video')">
 			<div class="text-center"><span class="glyphicon glyphicon-facetime-video" style="font-size: 150px;"></span></div>
-			<h3 class="text-center" style="margin-top: 0px;">Videos</h3>
+			<h3 class="text-center" style="margin-top: 0px;">${lang.out('Videos')}</h3>
 		</div>
 		<div class="${csshomecols}">
 			<div class="text-center"><span class="glyphicon glyphicon-picture" style="font-size: 150px;"></span></div>
@@ -23,7 +31,7 @@ ${page.addScript("<script src='/assets/home.js'></script>") }
 		</div>
 		<div class="${csshomecols}" onclick="jsLink('${page.rootUrl}/wiki')">
 			<div class="text-center"><span class="glyphicon glyphicon-file" style="font-size: 150px;"></span></div>
-			<h3 class="text-center" style="margin-top: 0px;">Wiki</h3>
+			<h3 class="text-center" style="margin-top: 0px;">${lang.out('Wiki')}</h3>
 		</div>
 		<div class="${csshomecols}" onclick="jsLink('${page.rootUrl}/lang')">
 			<div class="text-center"><span class="glyphicon glyphicon-globe" style="font-size: 150px;"></span></div>

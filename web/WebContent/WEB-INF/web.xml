@@ -70,6 +70,7 @@
 	<filter-mapping>
 		<filter-name>pathParts</filter-name>
 		<url-pattern>/</url-pattern>
+		<url-pattern>/home</url-pattern>
 		<url-pattern>/web/*</url-pattern>
 		<url-pattern>/lang/*</url-pattern>
 		<url-pattern>/media/*</url-pattern>

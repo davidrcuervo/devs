@@ -1,0 +1,111 @@
+version: 1
+
+dn: uid=174,ou=People,dc=la-etienda,dc=com
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: person
+objectclass: top
+cn: nombre
+sn: apellido
+ou: People
+uid: 174
+userpassword:: e1NTSEF9UStvNTBFTTdsekV4aHU5Tk8rVEhBWFpnRDRlRjJZRkdrdElXTmc9P
+ Q==
+
+dn: uid=2,ou=People,dc=la-etienda,dc=com
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: person
+objectclass: top
+cn: tomcat
+sn: app
+description: User for unauthenticated people
+mail: test@la-etienda.com
+ou: People
+uid: 2
+userpassword:: e1NTSEF9cnMyV2U0ZlJrNVovbllDY1JmU3MrcUpzQ2hDbTR0N1I1NFhtWXc9P
+ Q==
+
+dn: uid=171,ou=People,dc=la-etienda,dc=com
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: person
+objectclass: top
+cn: David
+sn: Cuervo
+ou: People
+uid: 171
+userpassword:: e1NTSEF9MzFGc0xCR2dGaDJQQmhtTlFYUzh5MllOZ2VmeVlBQ3lsOGxzZUE9P
+ Q==
+
+dn: ou=Groups,dc=la-etienda,dc=com
+objectclass: organizationalUnit
+objectclass: top
+ou: Groups
+description: Groups that will clasify people in the domain
+
+dn: cn=sysadmins,ou=Groups,dc=la-etienda,dc=com
+objectclass: groupOfUniqueNames
+objectclass: top
+cn: sysadmins
+uniquemember: uid=1,ou=People,dc=la-etienda,dc=com
+description: Users with priviledges to do everything
+ou: Groups
+
+dn: uid=1,ou=People,dc=la-etienda,dc=com
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: person
+objectclass: top
+cn: sysadmin
+sn: sysadmin
+description: Admin user for everything
+mail: sysadmin@la-etienda.com
+ou: People
+uid: 1
+userpassword:: e1NTSEF9d2JWLy9XbUlVZ3cySmJEOG82UEd4NE9lNXNCZG1Ld0FDYXozVkE9P
+ Q==
+
+dn: cn=managers,ou=Groups,dc=la-etienda,dc=com
+objectclass: groupOfUniqueNames
+objectclass: top
+cn: managers
+uniquemember: uid=1,ou=People,dc=la-etienda,dc=com
+description: Managers of the web site
+ou: Groups
+
+dn: ou=People,dc=la-etienda,dc=com
+objectclass: organizationalUnit
+objectclass: top
+ou: People
+description: People who has been regestired in the domain
+
+dn: uid=166,ou=People,dc=la-etienda,dc=com
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: person
+objectclass: top
+cn: David
+sn: Cuervo
+ou: People
+uid: 166
+userpassword:: e1NTSEF9cTN3eXM1Mkc5YTB3N3dldE9mVDZmOHVKa0NFL1NWcEVlbDJJQ1E9P
+ Q==
+
+dn: uid=161,ou=People,dc=la-etienda,dc=com
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: person
+objectclass: top
+cn: David
+sn: Cuervo
+ou: People
+uid: 161
+userpassword:: e1NTSEF9QnZ1dXdVUTdMZElrNGZPRlJtSHdOcUduV1hrVXhOV1MxMkVmRFE9P
+ Q==
+
+dn: dc=la-etienda,dc=com
+objectclass: top
+objectclass: domain
+dc: la-etienda
+

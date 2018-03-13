@@ -33,10 +33,11 @@
 	<div class="container">
 	<div class="pull-right" style="margin-top: 5px;">${nav_fast_button}</div>
 	<div style="margin-top: 5px;">
+		
 		<c:if test="${fn:length(allpathParts[0]) > 0}">
 			<a href="${page.rootUrl}" class="btn btn-link"><span class="glyphicon glyphicon-home"></span>&nbsp; Home</a> &nbsp; | &nbsp;  
 		</c:if>
-	
+	 
 		<% 	String[] allpathParts = (String[])request.getAttribute("allpathParts"); 
 			
 			for(int c=0; c < allpathParts.length; c++){

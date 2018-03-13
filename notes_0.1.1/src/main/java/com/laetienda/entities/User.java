@@ -19,14 +19,16 @@ import com.laetienda.db.Db;
 @Table(name="users")
 @NamedQueries({
 	@NamedQuery(name="User.findall", query="SELECT u FROM User u"),
-	@NamedQuery(name="User.findByEmail", query="SELECT u FROM User u WHERE u.email = :email")
+	@NamedQuery(name="User.findByUid", query="SELECT u FROM User u WHERE u.uid = :uid"),
+	@NamedQuery(name="User.findByEmail", query="SELECT u FROM User u WHERE u.email = :email"),
+	@NamedQuery(name="User.findByUidOrEmail", query="SELECT u FROM User u WHERE u.email = :input OR u.uid = :input")
 })
 public class User extends Objeto implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private static final Logger log4j = LogManager.getLogger(User.class);
 
-	@Column(name="\"uid\"", unique=true, nullable=false)
-	private Integer uid;
+	@Column(name="\"uid\"", length=254, unique=true, nullable=false)
+	private String uid;
 	
 	@Column(name="\"email\"", length=254, unique=true, nullable=false)
 	private String email;
@@ -60,30 +62,42 @@ public class User extends Objeto implements Serializable{
 	 * @param uid
 	 * @param password
 	 */
-	public User(Integer uid, String password) {
+	public User(String uid, String password) {
 		this.uid = uid;
 		this.password = password;
 	}
 	
-	public User(Integer uid, String email, Option status, Option language, Db db) {
-		setUid(uid);
+	public User(String uid, String email, Option status, Option language, Db db) {
+		setUid(uid, db);
 		setEmail(email, db);
 		setStatus(status);
 		setLanguage(language);
 	}
 
-	public Integer getUid() {
+	public String getUid() {
 		return uid;
 	}
 
-	public void setUid(Integer uid) {
+	public void setUid(String uid, Db db) {
 		this.uid = uid;
 		
-		if(uid != null && uid > 100) {
-			log4j.debug("uid has been correctly set. $uid: " + uid);
+		if(uid == null || uid.isEmpty()) {
+			addError("uid", "Username can't be empty");
 		}else {
-			addError("user", "Internal error while saving user in the database");
-			log4j.fatal("The uid for regestering user is not an integer");
+			if(uid.length() < 4) {
+				addError("uid", "Username must have at least 4 characters");
+			}
+			
+			if(uid.length() > 64) {
+				addError("uid", "Username can't have more than 64 characters");
+			}
+			
+			List<User> test = db.getEm().createNamedQuery("User.findByUid", User.class).setParameter("uid", uid).getResultList();
+			
+			if(test != null && test.size() > 0) {
+				addError("uid", "This username has already been registered");
+			}
+			
 		}
 	}
 

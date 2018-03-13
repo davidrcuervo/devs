@@ -42,6 +42,7 @@ public class Ldif {
 					.add("objectclass", "top")
 					.add("objectclass", "organizationalUnit")
 					.add("ou", "People")
+					//.add("administrativeRole", "accessControlSpecificArea")
 					.add("description", "People who has been regestired in the domain");
 		}catch(LdapException ex){
 			return null;
@@ -50,7 +51,7 @@ public class Ldif {
 	
 	protected static final Dn SYSADMIN_DN(){
 		try{
-			return new Dn("uid=1,ou=People", domain);
+			return new Dn("uid=sysadmin,ou=People", domain);
 		}catch(LdapInvalidDnException ex){
 			return null;
 		}
@@ -63,7 +64,7 @@ public class Ldif {
 					.add("objectclass", "inetOrgPerson")
 					.add("objectclass", "organizationalPerson")
 					.add("objectclass", "top")
-					.add("uid","1")
+					.add("uid","sysadmin")
 					.add("cn", "sysadmin")
 					.add("sn", "sysadmin")
 					.add("userpassword", admuserpassword)
@@ -76,7 +77,7 @@ public class Ldif {
 	
 	protected static final Dn TOMCAT_USER_DN(){
 		try{
-			return new Dn("uid=2,ou=People", domain);
+			return new Dn("uid=tomcat,ou=People", domain);
 		}catch(LdapInvalidDnException ex){
 			return null;
 		}
@@ -90,9 +91,9 @@ public class Ldif {
 					.add("objectclass", "inetOrgPerson")
 					.add("objectclass", "organizationalPerson")
 					.add("objectclass", "top")
-					.add("uid","2")
+					.add("uid","tomcat")
 					.add("cn", "tomcat")
-					.add("sn", "app")
+					.add("sn", "tomcat")
 					.add("userpassword", tomcatpassword)
 					.add("ou", "People")
 					.add("description", "User for unauthenticated people");
@@ -135,7 +136,7 @@ public class Ldif {
 			return new DefaultEntry(SYSADMINS_DN())
 					.add("objectclass", "top")
 					.add("objectclass", "groupOfUniqueNames")
-					.add("uniquemember","uid=1,ou=People," + domain)
+					.add("uniquemember","uid=sysadmin,ou=People," + domain)
 					.add("ou", "Groups")
 					.add("description", "Users with priviledges to do everything")
 					.add("cn","sysadmins");
@@ -158,7 +159,7 @@ public class Ldif {
 			return new DefaultEntry(MANAGERS_DN())
 					.add("objectclass", "top")
 					.add("objectclass", "groupOfUniqueNames")
-					.add("uniquemember","uid=1,ou=People," + domain)
+					.add("uniquemember","uid=sysadmin,ou=People," + domain)
 					.add("ou", "Groups")
 					.add("description", "Managers of the web site")
 					.add("cn","managers");
@@ -168,53 +169,7 @@ public class Ldif {
 		}
 	}
 	
-	/*
-	protected static final Dn USERS_DN(){
-		try{
-			return new Dn("cn=users,ou=Groups", domain);
-		}catch(LdapInvalidDnException ex){
-			return null;
-		}
-	}
 	
-	protected static final Entry USERS_ENTRY(){
-		try{
-			return new DefaultEntry(USERS_DN())
-					.add("objectclass", "top")
-					.add("objectclass", "groupOfUniqueNames")
-					.add("uniquemember","uid=1,ou=People," + domain)
-					.add("ou", "Groups")
-					.add("description", "Users that register to the web site and are very active")
-					.add("cn","users");
-			
-		}catch(LdapException ex){
-			return null;
-		}
-	}
-	
-	protected static final Dn VISITORS_DN(){
-		try{
-			return new Dn("cn=visitors,ou=Groups", domain);
-		}catch(LdapInvalidDnException ex){
-			return null;
-		}
-	}
-	
-	protected static final Entry VISITORS_ENTRY(){
-		try{
-			return new DefaultEntry(VISITORS_DN())
-					.add("objectclass", "top")
-					.add("objectclass", "groupOfUniqueNames")
-					.add("uniquemember","uid=1,ou=People," + domain)
-					.add("ou", "Groups")
-					.add("description", "Users that register on the web site")
-					.add("cn","visitors");
-			
-		}catch(LdapException ex){
-			return null;
-		}
-	}
-	*/
 	protected static final Dn ACI_TOMCAT_DN(){
 		try{
 			return new Dn("cn=aciTomcatControlAccess", domain);
@@ -229,7 +184,7 @@ public class Ldif {
 					.add("objectclass", "top")
 					.add("objectclass", "subentry")
 					.add("objectclass", "accessControlSubentry")
-					.add("cn", "aciTomcatSubentry")
+					.add("cn", "aciTomcatControlAccess")
 					.add("subtreeSpecification", "{base \"ou=People\"}")
 					.add("prescriptiveACI ",
 							"{"
@@ -240,7 +195,7 @@ public class Ldif {
 								+ "{"
 									+ "userClasses " 
 									+ "{"
-										+ "name { \"uid=2,ou=people," + domain + "\" }" 
+										+ "name { \"uid=tomcat,ou=people," + domain + "\" }" 
 									+ "},"
 									+ "userPermissions " 
 									+ "{"
@@ -248,13 +203,13 @@ public class Ldif {
 											+ "protectedItems { entry, allUserAttributeTypesAndValues },"
 											+ "grantsAndDenials " 
 											+ "{ "
-												+ "grantCompare,"
-												+ "grantFilterMatch,"
-												+ "grantReturnDN,"
-												+ "denyModify,"
+												+ "grantRename,"
 												+ "grantBrowse,"
+												+ "grantRemove,"
 												+ "grantAdd,"
-												+ "grantRead" 
+												+ "grantModify,"
+												+ "grantReturnDN,"
+												+ "grantRead"
 											+ "}"
 										+ "}"
 									+ "}"
@@ -264,6 +219,78 @@ public class Ldif {
 		}catch(LdapException ex){
 			return null;
 		}
+	}
+	
+	protected static final Dn SERVICES_DN() throws DapException {
+		try{
+			return new Dn("ou=services", domain);
+		}catch(LdapInvalidDnException ex){
+			throw new DapException("Failed to create SERVICES DN", ex);
+		}
+	}
+	
+	protected static final Entry SERVICES_ENTRY() throws DapException {
+			try {
+				return new DefaultEntry(SERVICES_DN())
+						.add("objectclass", "top")
+					    .add("objectclass", "organizationalunit")
+					    .add("ou", "services");
+			} catch (LdapException ex) {
+				throw new DapException("", ex);
+			}
+	}
+	
+	protected static final Dn LDAP_DN() throws DapException {
+		try{
+			return new Dn("uid=ldap","ou=services", domain);
+		}catch(LdapInvalidDnException ex){
+			throw new DapException("Failed to create LDAP DN", ex);
+		}
+	}
+	
+	protected static final Entry LDAP_ENTRY() throws DapException {
+			try {
+				return new DefaultEntry(LDAP_DN())
+						.add("objectClass", "top")
+						.add("objectClass", "organizationalUnit")
+						.add("objectClass", "krb5KDCEntry")
+						.add("objectClass", "uidObject")
+						.add("objectClass", "krb5Principal")
+						.add("krb5KeyVersionNumber", "0")
+						.add("krb5PrincipalName", "ldap/la-etienda.com@LA-ETIENDA.COM")
+						.add("uid", "ldap")
+						.add("userPassword", "randomKey")
+						.add("ou", "TGT");
+			} catch (LdapException ex) {
+				throw new DapException("Failed to create SERVICES entry", ex);
+			}
+	}
+
+	protected static final Dn KRBTGT_DN() throws DapException {
+		try{
+			return new Dn("uid=krbtgt","ou=services", domain);
+		}catch(LdapInvalidDnException ex){
+			throw new DapException("Failed to create KRBTGT DN", ex);
+		}
+	}
+	
+	protected static final Entry KRBTGT_ENTRY() throws DapException {
+			try {
+				return new DefaultEntry(KRBTGT_DN())
+						.add("objectclass", "top")
+						.add("objectClass", "organizationalUnit")
+						.add("objectClass", "krb5KDCEntry")
+						.add("objectClass", "uidObject")
+						.add("objectClass", "krb5Principal")
+						.add("krb5KeyVersionNumber", "0")
+						.add("krb5PrincipalName", "krbtgt/la-etienda.com@LA-ETIENDA.COM")
+						.add("uid", "krbtgt")
+						.add("userPassword", "randomkey")
+						.add("ou", "LDAP");
+
+			} catch (LdapException ex) {
+				throw new DapException("Failed to create KRBTGT entry", ex);
+			}
 	}
 	
 	protected static final Dn ACI_SYSADMIN_DN(){

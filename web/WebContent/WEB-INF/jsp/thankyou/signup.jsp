@@ -5,6 +5,6 @@
 	<h1>Thank You</h1>
 	<p>You have signed up successfully</p>
 	<p>Please do not hesitate to confirm you email address and password</p>
-	<a href="${pager.rootUrl}" class="btn btn-primary">Continue to home page</a>
+	<a href="${page.rootUrl}" class="btn btn-primary">Continue to home page</a>
 </c:set>
 <jsp:include page="/WEB-INF/jsp/templates/thankyou.jsp"></jsp:include>
