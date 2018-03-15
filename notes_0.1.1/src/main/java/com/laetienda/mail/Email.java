@@ -109,7 +109,7 @@ public class Email {
 	        };
 	        
 			request.getRequestDispatcher(jsp).include(request, responseWrapper);
-			
+		
 	        this.text = responseWrapper.toString();
 	        
 		}catch(IOException ex) {

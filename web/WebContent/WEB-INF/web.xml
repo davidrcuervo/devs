@@ -50,6 +50,14 @@
 		<servlet-name>thankyou</servlet-name>
 		<url-pattern>/thankyou/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>crud</servlet-name>
+		<servlet-class>com.laetienda.form.Servlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>crud</servlet-name>
+		<url-pattern>/crud/*</url-pattern>
+	</servlet-mapping>
 	<listener>
 		<listener-class>
   			com.laetienda.tomcat.Load
@@ -77,6 +85,7 @@
 		<url-pattern>/wiki/*</url-pattern>
 		<url-pattern>/session/*</url-pattern>
 		<url-pattern>/thankyou/*</url-pattern>
+		<url-pattern>/crud/*</url-pattern>
 	</filter-mapping>
 	<filter>
 		<filter-name>page</filter-name>
@@ -92,6 +101,7 @@
 		<url-pattern>/wiki/*</url-pattern>
 		<url-pattern>/session/*</url-pattern>
 		<url-pattern>/thankyou/*</url-pattern>
+		<url-pattern>/crud/*</url-pattern>
 	</filter-mapping>
 	<filter>
 		<filter-name>options</filter-name>

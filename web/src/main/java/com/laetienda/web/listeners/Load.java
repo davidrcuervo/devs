@@ -8,7 +8,6 @@ import javax.servlet.ServletContextListener;
 import com.laetienda.tomcat.Service;
 import com.laetienda.tomcat.TomcatException;
 import com.laetienda.logger.LoggerManager;
-import com.laetienda.db.Db;
 import com.laetienda.db.DbException;
 import com.laetienda.db.DbManager;
 import com.laetienda.db.SqlException;

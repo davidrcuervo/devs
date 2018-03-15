@@ -15,8 +15,11 @@ import java.util.Properties;
 import javax.servlet.ServletException;
 
 import java.net.Socket;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Service {
+	private final static Logger log4j2 = LogManager.getLogger();
 	
 	private Tomcat tomcat = new Tomcat();
 	private File directory;
@@ -99,7 +102,7 @@ public class Service {
 	public void shutdown() throws TomcatException{
 		
 		try{
-			System.out.println(shutdownPort);
+			log4j2.info("$shutdownPort: " + shutdownPort);
 			Socket socket = new Socket("localhost", shutdownPort);
 			
 			if(socket.isConnected()){

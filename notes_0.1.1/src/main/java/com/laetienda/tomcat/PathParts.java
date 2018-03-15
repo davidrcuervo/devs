@@ -47,7 +47,7 @@ public class PathParts implements Filter{
 		
 		httpReq.setAttribute("pathParts", pathParts);
 		httpReq.setAttribute("allpathParts", allpathParts);
-		chain.doFilter(request, response);
+		
 		
 		/*
 		 * DISABLE BLOCK BELOW, ONLY ENABLE IT TO TROUBLESHOOT PATH PARTS MODULE
@@ -71,6 +71,8 @@ public class PathParts implements Filter{
 			log4j.debug("allpathParts[" + c + "]: " + allpathParts[c]);
 		}
 		*/
+		
+		chain.doFilter(request, response);
 	}
 	
 	public void destroy(){
