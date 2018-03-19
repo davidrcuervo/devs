@@ -44,7 +44,7 @@ public class Group extends Objeto implements Serializable {
 		boolean flag = true;
 		
 		for(User usuario : users) {
-			if(user.getId().equals(usuario.getId())) {
+			if(user.getId() == usuario.getId()) {
 				flag = false;
 				break;
 			}
