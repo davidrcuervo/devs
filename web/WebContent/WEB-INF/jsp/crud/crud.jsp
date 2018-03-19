@@ -3,7 +3,6 @@
 <c:set scope="request" var="content">
 	<c:if test="${pathParts[1] == 'create' }">
 		<h1 class="text-center">Creation crud</h1>
-			<div>${forma.smallTest }</div>
 			<div>${forma.print }</div>
 	</c:if>
 </c:set>

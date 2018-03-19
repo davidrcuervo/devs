@@ -10,5 +10,7 @@
 		<class>com.laetienda.entities.User</class>
 		<class>com.laetienda.entities.Variable</class>
 		<class>com.laetienda.entities.Language</class>
+		<class>com.laetienda.entities.Form</class>
+		<class>com.laetienda.entities.Input</class>
 	</persistence-unit>
 </persistence>

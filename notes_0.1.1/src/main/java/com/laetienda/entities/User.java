@@ -223,6 +223,10 @@ public class User extends Objeto implements Serializable{
 		}
 	}	
 	
+	public String getFullName() {
+		return getCn() + " " + getSn();
+	}
+	
 	public String getDescription() {
 		return description;
 	}

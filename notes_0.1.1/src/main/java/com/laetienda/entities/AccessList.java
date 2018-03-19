@@ -16,7 +16,7 @@ import org.apache.logging.log4j.LogManager;
 
 public class AccessList extends Objeto implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private static Logger log4j = LogManager.getLogger(AccessList.class);
+	private static Logger log = LogManager.getLogger(AccessList.class);
 	
 	@Column(name="\"name\"", unique=true, nullable=false, length=254)
 	private String name;
@@ -79,5 +79,9 @@ public class AccessList extends Objeto implements Serializable{
 		
 		//TODO check if group had added before to the acl
 		groups.add(aclGroup);
+	}
+	
+	public static void main(String[] args) {
+		log.info("Hello " + AccessList.class.getName() + "!!!.");
 	}
 }

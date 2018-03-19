@@ -3,7 +3,8 @@ package com.laetienda.form;
 import java.io.File;
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,9 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 
+import com.laetienda.acl.Acl;
 import com.laetienda.db.Db;
 import com.laetienda.db.DbManager;
-import com.laetienda.entities.*;
+import com.laetienda.entities.Form;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -36,32 +38,54 @@ public class Servlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String servletName = request.getServletPath();
-		
+		Acl acl = (Acl)request.getSession().getAttribute("acl");
 		String[] pathParts = (String[])request.getAttribute("pathParts");
 				
-		//https://<server-name>:<port>/<context-path>/:ObjectName
-		//https://<server-name>:<port>/<context-path>/:ObjectName/create
-		//https://<server-name>:<port>/<context-path>/:ObjectName/show/:idUrlEncrypted
-		//https://<server-name>:<port>/<context-path>/:ObjectName/edit/:idUrlEncrypted
-		//https://<server-name>:<port>/<context-path>/:ObjectName/delete
+		//https://<server-name>:<port>/<context-path>/:formName
+		//https://<server-name>:<port>/<context-path>/:formName/create
+		//https://<server-name>:<port>/<context-path>/:formName/show/:idUrlEncrypted
+		//https://<server-name>:<port>/<context-path>/:formName/edit/:idUrlEncrypted
+		//https://<server-name>:<port>/<context-path>/:formName/delete
 		
 		try {
-			EntityObject entidad = findEntidad(pathParts[0]);
-			if(entidad != null) {
+			//EntityObject entidad = findEntidad(pathParts[0]);
+			
+			Form form = findForm(pathParts[0]);
+			
+			if( form != null) {
+				boolean flag = false;
 				switch (pathParts[1]) {
 				
-				case "create":
-				case "show":
-				case "edit":
-				case "delete":
-					Bean forma = new Bean(entidad, request, response);
+					case "create":
+					
+						if(acl.canWrite(form)){
+							flag = true;
+						}
+						break;
+						
+					case "edit":
+						
+						
+					case "delete":
+						break;
+						
+					case "show":	
+						break;
+						
+					default:
+						response.sendError(HttpServletResponse.SC_NOT_FOUND);
+						break;
+				}
+				
+				if(flag) {
+					Bean forma = new Bean(form, request);
+					forma.setAction(pathParts[1]);
 					request.setAttribute("forma", forma);
 					request.getRequestDispatcher("/WEB-INF/jsp" + servletName + "/crud.jsp").forward(request, response);
-					break;
-				default:
+				}else {
 					response.sendError(HttpServletResponse.SC_NOT_FOUND);
-					break;
 				}
+				
 			}
 		}catch(ArrayIndexOutOfBoundsException ex){
 			log4j2.warn("Index out of pathParts length", ex);
@@ -78,19 +102,20 @@ public class Servlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String[] pathParts = (String[])request.getAttribute("pathParts");
-		EntityObject entidad;
+		//EntityObject entidad;
+		Form form = findForm(pathParts[0]);
 		
-		try {
-			entidad = findEntidad(pathParts[0]);
+		//try {
+		//	entidad = findEntidad(pathParts[0]);
 			
-			if(entidad != null) {
+			if(form != null) {
 				
 			}
 			
-		} catch (FormException ex) {
+		/*} catch (FormException ex) {
 			log4j2.warn("Failed to process form", ex.getRootParent());
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		}
+		}*/
 	}
 	
 	@Override
@@ -104,6 +129,23 @@ public class Servlet extends HttpServlet {
 		log4j2.info("$directory: " + directory.getAbsolutePath());
 	}
 	
+	private Form findForm(String formName) {
+		Form result = null;
+		
+		Db db = dbManager.createTransaction();
+		
+		try {
+			result = db.getEm().createNamedQuery("Form.findByName", Form.class).setParameter("name", formName).getSingleResult();
+		}catch(NoResultException | NonUniqueResultException ex) {
+			log4j2.warn("Form required in URL does not exist");
+		}finally {
+			dbManager.closeTransaction(db);
+		}
+		
+		return result;
+	}
+	
+	/*
 	private EntityObject findEntidad(String entidad) throws FormException  {
 				
 		EntityObject result = null;
@@ -129,5 +171,6 @@ public class Servlet extends HttpServlet {
 		
 		return result;
 	}
+	*/
 	
 }

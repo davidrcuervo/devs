@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 
 public class AclUser implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private static Logger log4j = LogManager.getLogger(AclUser.class);
+	private static Logger log = LogManager.getLogger(AclUser.class);
 	
 	@Id
 	@SequenceGenerator(name = "acl_user_id_seq", sequenceName = "acl_user_id_seq", allocationSize=1)
@@ -46,5 +46,9 @@ public class AclUser implements Serializable{
 
 	public void setAcl(AccessList acl) {
 		this.acl = acl;
+	}
+	
+	public static void main(String[] args) {
+		log.info("Hello " + AclUser.class.getName() + "!!!.");
 	}
 }

@@ -93,6 +93,11 @@ public class Installer {
 		aclAll.addUser(allUser);
 		db.insert(aclAll);
 		
+		Form form = new Form("group", "com.laetienda.entities.Group", "/WEB-INF/jsp/email/signup.jsp", "/WEB-INF/jsp/thankyou/signup.jsp");
+		form.addInput(new Input(form, "name", "Group Name", "string", "Insert the group name", "glyphicon-user", true));
+		form.addInput(new Input(form, "description", "Description", "string", true));
+		db.insert(form);
+		
 		userStatus.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, aclAll);
 		//userUid.setOwner(tomcat, empty).setPermisions(acl, aclOwner, aclAll);
 		languages.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, aclAll);
@@ -109,6 +114,7 @@ public class Installer {
 		aclOwner.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		aclGroup.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		aclAll.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
+		form.setOwner(manager, managers).setPermisions(aclGroup, aclGroup, aclGroup);
 		
 		db.update();	
 		dbManager.closeTransaction(db);
