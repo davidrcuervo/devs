@@ -104,6 +104,16 @@
 		<url-pattern>/crud/*</url-pattern>
 	</filter-mapping>
 	<filter>
+		<filter-name>acl</filter-name>
+		<filter-class>com.laetienda.acl.AclFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>acl</filter-name>
+		<url-pattern>/</url-pattern>
+		<url-pattern>/home</url-pattern>
+		<url-pattern>/crud/*</url-pattern>
+	</filter-mapping>
+	<filter>
 		<filter-name>options</filter-name>
 		<filter-class>com.laetienda.options.OptionFilter</filter-class>
 	</filter>

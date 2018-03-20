@@ -1,10 +1,14 @@
 package com.laetienda.form;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import com.laetienda.acl.Acl;
 import com.laetienda.entities.EntityObject;
 import com.laetienda.entities.Form;
 import com.laetienda.entities.Input;
@@ -17,7 +21,8 @@ public class Bean {
 	private final static Logger log = LogManager.getLogger();
 	
 	private Form form;
-	private EntityObject entidad;
+//	private EntityObject entidad;
+	private Objeto entidad;
 	private HttpServletRequest request;
 	private Lang lang;
 	private String action;
@@ -33,8 +38,8 @@ public class Bean {
 		this.entidad = setEntidad(form);
 	}
 	
-	private EntityObject setEntidad(Form form) throws FormException {
-		EntityObject result = null;
+	private Objeto setEntidad(Form form) throws FormException {
+		Objeto result = null;
 		
 		Class<?> clazz;
 		try {
@@ -42,8 +47,8 @@ public class Bean {
 		
 			Object temp = clazz.newInstance();
 			
-			if(temp instanceof EntityObject) {
-				result = (EntityObject)temp;
+			if(temp instanceof Objeto) {
+				result = (Objeto)temp;
 			}else {
 				throw new FormException("Object Name in URL does not correspond to a valid object");
 			}
@@ -185,31 +190,38 @@ public class Bean {
 		String name = "owner";
 		String label = lang.out("Set Owner") + ":";
 		User user = (User)request.getSession().getAttribute("sessionUser");
-		Objeto objeto = action == "create" ? this.form : (action == "edit" ? (Objeto)this.entidad : null);
+		Acl acl = (Acl)request.getAttribute("acl");
+		//Objeto objeto;// = action == "create" ? this.form : (action == "edit" ? (Objeto)this.entidad : null);
+		List<User> editors = new ArrayList<User>();
 		
 		result = "<div class=\"form-group\">\n"
 			+ "<label for=\"" + id + "\">" + label + "</label>\n"
 			+ "<select id=\"" + id +  "\" name=\"" + name + "\" class=\"form-control\">\n";
 		
-		if(user == null || objeto == null) {
-			result += "<option value=\"none\" selected>" + lang.out("Select an option") + "</option>\n";
-		}else if(action == "create") {
+		result += "<option value=\"none\" selected>" + lang.out("Select an option") + "</option>\n";
+		
+		if(user == null) {
+			log.debug("No session user found.");
+		}else if(action.equals("create")) {
+			
 			result += "<option value=\"" + user.getId() + "\" selected>" + user.getFullName() + "</option>\n";
-			result += "<option value=\"" + form.getOwner().getId() + "\">" + form.getOwner().getFullName() + "</option>\n";
-		}else if(action == "edit"){
-			result += "<option value=\"" + objeto.getOwner().getId() + "\" selected>" + objeto.getOwner().getFullName() + "</option>\n";
+			//result += "<option value=\"" + form.getOwner().getId() + "\">" + form.getOwner().getFullName() + "</option>\n";
+			editors = acl.findUsersInAcl(form.getCanCreateAcl());
+		}else if(action.equals("edit")){
+			result += "<option value=\"" + entidad.getOwner().getId() + "\" selected>" + entidad.getOwner().getFullName() + "</option>\n";
 			result += "<option value=\"" + user.getId() + "\">" + user.getFullName() + "</option>\n";
+			editors = acl.findUsersInAcl(entidad.getWrite());
 		}
 		
-		if(objeto != null) {
-			for(User usuario : objeto.getGroup().getUsers()) {
-				if(usuario.getId() == user.getId() || usuario.getId() == objeto.getOwner().getId()) {
-					//Nothing to do. It does want to print the option twice
-				}else {
-					result += "<option value=\"" + usuario.getId() + "\">" + usuario.getFullName() + "</option>\n";
-				}
-			}
+		
+		for(User usuario : editors) {
+			/*if(usuario.getId() == user.getId() || usuario.getId() == objeto.getOwner().getId()) {
+				//Nothing to do. It does want to print the option twice
+			}else {*/
+				result += "<option value=\"" + usuario.getId() + "\">" + usuario.getFullName() + "</option>\n";
+			//}
 		}
+		
 		
 		result += "</select>\n";
 		result += "</div>\n";

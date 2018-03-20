@@ -31,13 +31,13 @@ public class AclFilter implements Filter {
 		
 		User user = (User)request.getSession().getAttribute("sessionUser");
 				
-		if(user != null) {
+		if(user == null) {
 			Db db = dbManager.createTransaction();
 			user = db.getEm().createNamedQuery("User.findByUid", User.class).setParameter("uid", "tomcat").getSingleResult();
 			dbManager.closeTransaction(db);
 		}
 		
-		Acl acl = new Acl(user);
+		Acl acl = new Acl(dbManager, user);
 		request.setAttribute("acl", acl);
 		arg2.doFilter(arg0, arg1);
 	}

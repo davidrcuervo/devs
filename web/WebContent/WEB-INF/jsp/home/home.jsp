@@ -20,6 +20,16 @@ ${page.addScript("<script src='/assets/home.js'></script>") }
 				<div class="text-center"><span class="glyphicon glyphicon-log-out" style="font-size: 150px;"></span></div>
 				<h3 class="text-center" style="margin-top: 0px;">${lang.out('Close Session') }</h3>
 			</div>
+			
+			<c:if test="${acl.isPartOf('managers') }">
+				<c:set var="tempUrl" scope="request" value="${page.getLinkFromRootUrl('/crud')}" />
+					<div class="${csshomecols}" onclick="jsLink('${tempUrl}')">
+						<div class="text-center"><span class="glyphicon glyphicon-cog" style="font-size: 150px;"></span></div>
+						<h3 class="text-center" style="margin-top: 0px;">${lang.out('Manage') }</h3>
+					</div>
+				<c:remove var="tempUrl" scope="request" />
+			</c:if>
+			
 		</c:if>
 		<div class="${csshomecols}" onclick="jsLink('${page.rootUrl}/media/video')">
 			<div class="text-center"><span class="glyphicon glyphicon-facetime-video" style="font-size: 150px;"></span></div>

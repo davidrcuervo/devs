@@ -38,7 +38,7 @@ public class Servlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String servletName = request.getServletPath();
-		Acl acl = (Acl)request.getSession().getAttribute("acl");
+		Acl acl = (Acl)request.getAttribute("acl");
 		String[] pathParts = (String[])request.getAttribute("pathParts");
 				
 		//https://<server-name>:<port>/<context-path>/:formName
@@ -58,7 +58,7 @@ public class Servlet extends HttpServlet {
 				
 					case "create":
 					
-						if(acl.canWrite(form)){
+						if(acl.hasPermission(form.getCanCreateAcl())){
 							flag = true;
 						}
 						break;

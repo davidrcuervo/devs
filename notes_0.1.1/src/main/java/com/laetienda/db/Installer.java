@@ -2,23 +2,30 @@ package com.laetienda.db;
 
 import java.io.File;
 import org.apache.logging.log4j.Logger;
+import org.python.jline.internal.Log;
 import org.apache.logging.log4j.LogManager;
 
+import com.laetienda.dap.Dap;
+import com.laetienda.dap.DapException;
+import com.laetienda.dap.DapManager;
 import com.laetienda.entities.*;
 
 public class Installer {
 	static final Logger log4j = LogManager.getLogger(Installer.class);
 	
 	DbManager dbManager;
+	DapManager dapManager;
 	File directory;
 	
-	private Installer(File directory) throws DbException {
+	private Installer(File directory) throws DbException, DapException {
 		dbManager = new DbManager(directory);
+		dapManager = new DapManager(directory); 
 		this.directory = directory;
 	}
 	
-	private void run() throws DbException {
+	private void run() throws DbException, DapException {
 		Db db = dbManager.createTransaction();
+		
 		
 		Variable userStatus = new Variable("user status", "Different options of status of the user withing the website");
 		userStatus.addOption("active", "User is active. It has been registered and password has been confirmed");
@@ -42,6 +49,7 @@ public class Installer {
 		db.insert(languages);
 
 		Option status = db.findOption("user status", "operative system");
+		Option userActiveStatus = db.findOption("user status", "active");
 		Option language = db.findOption("languages", "en");
 		
 		Group sysadmins = new Group("sysadmins", "This group contains all the sysadmin users.");
@@ -68,8 +76,13 @@ public class Installer {
 		User allUser = new User("all", "todos@mail.com", status, language, db);
 		db.insert(allUser);
 		
-		User manager = new User("manager", "manager@mail.com", status, language, db);
+		User manager = new User("manager", "manager@mail.com", userActiveStatus, language, db);
+		manager.setPassword("Welcome@1", "Welcome@1");
+		manager.setCn("Manager");
+		manager.setSn("Snless"); 
 		db.insert(manager);
+		
+		
 		
 		AccessList acl = new AccessList();
 		acl.addGroup(sysadmins);
@@ -77,6 +90,11 @@ public class Installer {
 		acl.setName("sysadmins");
 		acl.setDescription("Includes sysadmin user and sysadmin group");
 		db.insert(acl);
+		
+		AccessList aclManagers = new AccessList("managers", "It includes the managers of the site");
+		aclManagers.addUser(manager);
+		aclManagers.addGroup(managers);
+		db.insert(aclManagers);
 		
 		AccessList aclOwner = new AccessList("owner", "it includes only the owner of the object");
 		aclOwner.addGroup(empty);
@@ -93,7 +111,7 @@ public class Installer {
 		aclAll.addUser(allUser);
 		db.insert(aclAll);
 		
-		Form form = new Form("group", "com.laetienda.entities.Group", "/WEB-INF/jsp/email/signup.jsp", "/WEB-INF/jsp/thankyou/signup.jsp");
+		Form form = new Form("group", "com.laetienda.entities.Group", "/WEB-INF/jsp/email/signup.jsp", "/WEB-INF/jsp/thankyou/signup.jsp", aclManagers);
 		form.addInput(new Input(form, "name", "Group Name", "string", "Insert the group name", "glyphicon-user", true));
 		form.addInput(new Input(form, "description", "Description", "string", true));
 		db.insert(form);
@@ -102,7 +120,7 @@ public class Installer {
 		//userUid.setOwner(tomcat, empty).setPermisions(acl, aclOwner, aclAll);
 		languages.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, aclAll);
 		sysadmins.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
-		managers.setOwner(manager, managers).setPermisions(acl, aclGroup, aclGroup);
+		managers.addUser(manager).setOwner(manager, managers).setPermisions(acl, aclGroup, aclGroup);
 		empty.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		sysadmin.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		tomcat.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
@@ -111,13 +129,28 @@ public class Installer {
 		groupUser.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		allUser.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		acl.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
+		aclManagers.setOwner(manager, managers).setPermisions(acl, acl, acl);
 		aclOwner.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		aclGroup.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		aclAll.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		form.setOwner(manager, managers).setPermisions(aclGroup, aclGroup, aclGroup);
 		
 		db.update();	
-		dbManager.closeTransaction(db);
+		
+		
+		Dap dap = dapManager.createDap();
+		
+		try {
+			dap.insertUser(manager);
+		}catch(DapException ex) {
+			Log.error("Error while adding \"Owner\" user to LDAP", ex.getRootParent());
+			User temp = db.getEm().createNamedQuery("User.findByUid", User.class).setParameter("uid", "manager").getSingleResult();
+			db.remove(temp);
+		}finally {
+			dapManager.closeConnection(dap);
+			dbManager.closeTransaction(db);
+			dbManager.close();
+		}
 	}
 	
 	public static void main(String[] args){
@@ -130,7 +163,7 @@ public class Installer {
 			Installer installer = new Installer(directory);
 			installer.run();
 			log4j.info("Database has installed succesfully");
-		} catch (DbException ex) {
+		} catch (DbException | DapException ex) {
 			log4j.error("Failed to install database.",	ex.getRootParent());
 		}
 	}

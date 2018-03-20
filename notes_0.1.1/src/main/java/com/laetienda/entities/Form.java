@@ -38,6 +38,9 @@ public class Form extends Objeto implements Serializable {
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="form", orphanRemoval=true)
 	private List<Input> inputs = new ArrayList<Input>();
 	
+	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=false)
+	private AccessList canCreateAcl;
+	
 	public Form() {
 		super();
 	}
@@ -49,13 +52,14 @@ public class Form extends Objeto implements Serializable {
 		//this.submit = submit;
 	}
 
-	public Form(String name, String clase, /*String submit,*/ String email, String thankyou) {
+	public Form(String name, String clase, /*String submit,*/ String email, String thankyou, AccessList acl) {
 		super();
-		this.name = name;
-		this.clase = clase;
+		this.setName(name);
+		this.setClase(clase);
+		this.setEmail(email);
 		//this.submit = submit;
-		this.email = email;
-		this.thankyou = thankyou;
+		this.setThankyou(thankyou);
+		this.setCanCreateAcl(acl);
 	}
 
 	public String getName() {
@@ -126,6 +130,14 @@ public class Form extends Objeto implements Serializable {
 		inputs.add(input);
 		
 		return this;
+	}
+
+	public AccessList getCanCreateAcl() {
+		return canCreateAcl;
+	}
+
+	public void setCanCreateAcl(AccessList acl) {
+		this.canCreateAcl = acl;
 	}
 
 	public static void main(String[] args) {

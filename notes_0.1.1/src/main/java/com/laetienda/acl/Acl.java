@@ -1,36 +1,83 @@
 package com.laetienda.acl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+//import java.util.List;
+
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+
+import com.laetienda.db.DbManager;
+import com.laetienda.db.Db;
 import com.laetienda.entities.AccessList;
-import com.laetienda.entities.AclGroup;
-import com.laetienda.entities.AclUser;
+//import com.laetienda.entities.AclGroup;
+//import com.laetienda.entities.AclUser;
 import com.laetienda.entities.Objeto;
 import com.laetienda.entities.User;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Acl {
+	private static final Logger log = LogManager.getLogger(Acl.class);
 	
 	private User user;
+	private DbManager dbManager;
 	
-	public Acl(User user) {
-
+	public Acl(DbManager dbManager, User user) {
+		this.setUser(user);
+		this.dbManager = dbManager;
 	}
 	
 	public boolean canRead(Objeto objeto) {
-		return compare(objeto.getRead());
+		return hasPermission(objeto.getRead());
 	}
 	
 	public boolean canWrite(Objeto objeto) {
-		return compare(objeto.getWrite());
+		return hasPermission(objeto.getWrite());
 	}
 	
 	public boolean canDelete(Objeto objeto) {
-		return compare(objeto.getDelete());
+		return hasPermission(objeto.getDelete());
 	}
 	
-	private boolean compare(AccessList aList) {
-		boolean result = false;
+	public boolean isPartOf(String aclName) {
+		log.debug("Validating if user has access to $aclName: " + aclName);
+		Db db = dbManager.createTransaction();
+		AccessList temp = null;
 		
+		try {
+			temp = db.getEm().createNamedQuery("AccessList.findByName", AccessList.class).setParameter("name", aclName).getSingleResult();
+		}catch( NoResultException | NonUniqueResultException e) {
+			log.debug("No result found. \"" + aclName + "\" does not exist", e);
+		}finally {
+			dbManager.closeTransaction(db);
+		}
+		
+		return hasPermission(temp);
+	}
+	
+	public boolean hasPermission(AccessList aList) {
+		
+		AccessList result = null;
+		
+		Db db = dbManager.createTransaction();
+		
+		try {
+			//User tempUser = db.getEm().find(User.class, user.getId());
+			//log.debug("$tempUser: " + tempUser.getUid());
+			//AccessList tempAcl = db.getEm().find(AccessList.class, aList.getId());
+			//log.debug("$tempAcl: " + tempAcl.getName());
+			result = db.getEm().createNamedQuery("AccessList.findUserInAcl", AccessList.class).setParameter("user", user).setParameter("acl", aList).getSingleResult();
+		}catch( NoResultException | NonUniqueResultException e) {
+			log.debug("No result find, then user does not have enough privileges", e);
+		}finally {
+			dbManager.closeTransaction(db);
+		}
+		
+		return result == null ? false : true; 
+		
+		/*
 		List<AclUser> users = aList.getUsers();
 		
 		for(AclUser user : users) {
@@ -54,9 +101,17 @@ public class Acl {
 				}
 			}
 		}
-		
-		return result;
+		*/
 	}
+	
+	public List<User> findUsersInAcl(AccessList acl){
+		Db db = dbManager.createTransaction();
+		List<User> result = db.getEm().createNamedQuery("AccessList.findUsers", User.class).setParameter("acl", acl).getResultList();
+		dbManager.closeTransaction(db);
+		
+		return result != null ? result : new ArrayList<User>();
+	}
+
 
 	public User getUser() {
 		return user;
