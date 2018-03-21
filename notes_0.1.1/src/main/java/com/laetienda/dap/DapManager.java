@@ -109,16 +109,16 @@ public class DapManager {
 	
 	public synchronized void closeConnection(LdapConnection connection){
 		try{
+			if(connection.isConnected() || connection.isAuthenticated()) {
+				connection.unBind();
+			}
+			
 			if(connection != null && connection.isConnected()){
 				connection.close();
 			}
 			
-			if(connection.isAuthenticated()){
-				//TODO
-			}
-			
 			connections.remove(connection);
-		}catch(IOException ex){
+		}catch(IOException | LdapException ex){
 			log4j.error("Failed to close connection", ex);
 		}
 	}

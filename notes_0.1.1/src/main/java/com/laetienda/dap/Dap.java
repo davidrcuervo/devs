@@ -46,7 +46,7 @@ public class Dap {
 			connection.bind(tomcatDn, tomcat.getPassword());
 			
 			search = connection.search(peopleDn, 
-					"(|(uid=" + newUser.getUid() + ")(cn=" + newUser.getEmail() + "))", 
+					"(|(uid=" + newUser.getUid() + ")(mail=" + newUser.getEmail() + "))", 
 					SearchScope.ONELEVEL);
 			
 			for(Entry entry : search) {
@@ -163,7 +163,7 @@ public class Dap {
 		}
 	}
 	
-	public boolean checkPassword (String uid, String password) {
+	public Dap checkPassword (String uid, String password) {
 		boolean result = false;
 		
 		try {
@@ -172,7 +172,7 @@ public class Dap {
 			
 			if(connection.isConnected() && connection.isAuthenticated()) {
 				result = true;
-				connection.unBind();
+				//connection.unBind();
 			}
 			
 		} catch (LdapException e) {
@@ -181,7 +181,40 @@ public class Dap {
 
 		}
 		
-		return result;
+		return result ? this : null;
 	}
 	
+	public User userSyncDbAndLdap(User user) throws DapException {
+		
+		EntryCursor cursor = null;
+		
+		try {
+			log4j.info("Synchronizing db user and LDAP. $uid: " + user.getUid());
+			Dn userDn = new Dn("uid=" + user.getUid(), "ou=People", baseDn.getName());
+			cursor = connection.search(userDn, "(objectclass=*)", SearchScope.OBJECT);
+			
+			for(Entry entry : cursor) {
+				log4j.debug("$entry: " + entry);
+				if(entry.get("uid").getString().equals(user.getUid())) {
+					log4j.debug("User found in LDAP. $cn: " + entry.get("cn").getString() + " $sn: " + entry.get("sn").getString());
+					user.setCn(entry.get("Cn").getString());
+					user.setSn(entry.get("sn").getString());
+				}
+			}
+		
+		}catch(NullPointerException | LdapException ex) {
+			throw new DapException("Failed to sync db and LDAP user objects", ex);
+		}finally {
+			
+			try {
+				if(cursor != null && !cursor.isClosed())
+					cursor.close();
+			} catch (IOException e) {
+				throw new DapException("Failed to close LDAP EntryCursor", e);
+			}
+
+		}
+		
+		return user;
+	}
 }

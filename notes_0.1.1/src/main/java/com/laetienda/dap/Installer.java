@@ -189,8 +189,8 @@ public class Installer {
 	
 	public static void main(String[] args) {
 		
-		File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
+		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
 		
 		try {
 			Installer installer = new Installer(directory);

@@ -84,6 +84,11 @@ public class Servlet extends HttpServlet {
 				if(request.getSession().getAttribute("sessionUser") == null) {
 					response.sendError(HttpServletResponse.SC_NOT_FOUND);
 				}else {
+					
+					Dap dap = (Dap)request.getSession().getAttribute("sessionDap");
+					dapManager.closeConnection(dap);
+					
+					request.getSession().removeAttribute("sessionDap");
 					request.getSession().removeAttribute("sessionUser");
 					request.getSession().setMaxInactiveInterval(30 * 60);
 					response.sendRedirect(page.getRootUrl() + "/home");
@@ -259,7 +264,7 @@ public class Servlet extends HttpServlet {
 			
 			if(username.equals(page.simpleDecrypt(pathParts[1])) && username.equals(user.getUid())) {
 					
-				if(dap.checkPassword(username, request.getParameter("password"))) {
+				if(dap.checkPassword(username, request.getParameter("password")) != null) {
 					Option option = db.findOption("user status", "active");
 					user.setStatus(option);
 					db.update();
@@ -307,18 +312,21 @@ public class Servlet extends HttpServlet {
 			
 			if(!user.getStatus().getName().equals(active.getName())) {
 				user.addError("user", "User has not verifed her/his email");
-			}else if(!dap.checkPassword(user.getUid(), request.getParameter("password"))){
+			}else if(dap.checkPassword(user.getUid(), request.getParameter("password")) == null){
 				user.addError("password", "Wrong password");
+			}else {
+				user = dap.userSyncDbAndLdap(user);
 			}
 			
 		}catch(NoResultException | NonUniqueResultException ex) {
+			dapManager.closeConnection(dap);
 			user.addError("uid", "This username or email address has not been registered yet.");
 		}catch(DapException | DbException ex) {
+			dapManager.closeConnection(dap);
 			user.addError("user", "Internal error while logining user");
 			log4j.error("Failed to login user", ex.getRootParent());
 		}finally {
 			dbManager.closeTransaction(db);
-			dapManager.closeConnection(dap);
 			
 			if(user.getErrors().size() > 0) {
 				log4j.info("User \"" + input + "\" failed to login");
@@ -327,6 +335,7 @@ public class Servlet extends HttpServlet {
 			}else {
 				log4j.info("User \"" + input + "\" has logged in successfully");
 				request.getSession().setAttribute("sessionUser", user);
+				request.getSession().setAttribute("sessionDap", dap);
 				request.getSession().setMaxInactiveInterval(-1);
 				//TODO check session previous page then redirect to it. So far, it will redirect to home page
 				response.sendRedirect(page.getRootUrl() + "/home");

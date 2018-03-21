@@ -144,8 +144,7 @@ public class Installer {
 			dap.insertUser(manager);
 		}catch(DapException ex) {
 			Log.error("Error while adding \"Owner\" user to LDAP", ex.getRootParent());
-			User temp = db.getEm().createNamedQuery("User.findByUid", User.class).setParameter("uid", "manager").getSingleResult();
-			db.remove(temp);
+			//db.remove(manager);
 		}finally {
 			dapManager.closeConnection(dap);
 			dbManager.closeTransaction(db);
@@ -155,8 +154,8 @@ public class Installer {
 	
 	public static void main(String[] args){
 		
-		File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
+		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
 		
 		try {
 			log4j.info("DATABASE IS BEING INSTALLED");

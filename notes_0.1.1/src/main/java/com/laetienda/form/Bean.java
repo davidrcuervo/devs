@@ -198,12 +198,13 @@ public class Bean {
 			+ "<label for=\"" + id + "\">" + label + "</label>\n"
 			+ "<select id=\"" + id +  "\" name=\"" + name + "\" class=\"form-control\">\n";
 		
-		result += "<option value=\"none\" selected>" + lang.out("Select an option") + "</option>\n";
+		
 		
 		if(user == null) {
 			log.debug("No session user found.");
+			result += "<option value=\"none\" selected>" + lang.out("Select an option") + "</option>\n";
 		}else if(action.equals("create")) {
-			
+			result += "<option value=\"none\">" + lang.out("Select an option") + "</option>\n";
 			result += "<option value=\"" + user.getId() + "\" selected>" + user.getFullName() + "</option>\n";
 			//result += "<option value=\"" + form.getOwner().getId() + "\">" + form.getOwner().getFullName() + "</option>\n";
 			editors = acl.findUsersInAcl(form.getCanCreateAcl());
