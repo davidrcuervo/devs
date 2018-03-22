@@ -114,6 +114,14 @@
 		<url-pattern>/crud/*</url-pattern>
 	</filter-mapping>
 	<filter>
+		<filter-name>dap</filter-name>
+		<filter-class>com.laetienda.dap.DapFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>dap</filter-name>
+		<url-pattern>/crud/*</url-pattern>
+	</filter-mapping>
+	<filter>
 		<filter-name>options</filter-name>
 		<filter-class>com.laetienda.options.OptionFilter</filter-class>
 	</filter>

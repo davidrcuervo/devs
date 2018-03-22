@@ -146,7 +146,7 @@ public class AccessList extends Objeto implements Serializable{
 		
 		log.info("RESULT2: ");
 		for(User usuario : result2) {
-			log.info(usuario.getUid() + " \t " + usuario.getFullName());
+			log.info(usuario.getUid() + " \t " + usuario.getFullName(null));
 		}
 		
 		log.info("GAME OVER!!!");

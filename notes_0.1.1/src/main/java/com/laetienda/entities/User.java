@@ -7,8 +7,11 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.persistence.*;
 import org.apache.logging.log4j.Logger;
+import org.python.jline.internal.Log;
 import org.apache.logging.log4j.LogManager;
 
+import com.laetienda.dap.Dap;
+import com.laetienda.dap.DapException;
 import com.laetienda.db.Db;
 
 /**
@@ -184,7 +187,15 @@ public class User extends Objeto implements Serializable{
 	}	
 	
 	public String getSn() {
-		return sn;
+		String result = new String();
+		
+		if(sn == null || sn.equals("Snless")) {
+			Log.debug("sn is null or Snless. $sn: " + sn);
+		}else {
+			result = sn;
+		}
+		
+		return result;
 	}
 
 	public void setPassword(String password, String password2) {
@@ -223,8 +234,15 @@ public class User extends Objeto implements Serializable{
 		}
 	}	
 	
-	public String getFullName() {
-		return getCn() + " " + getSn();
+	public String getFullName(Dap dap) {
+		User temp = this;
+		try {
+			temp = dap.userSyncDbAndLdap(temp);
+		} catch (NullPointerException | DapException e) {
+			Log.error("Failed to get First Name and Last Name from LDAP", e);
+		}
+		
+		return temp.getCn() + " " + temp.getSn();
 	}
 	
 	public String getDescription() {

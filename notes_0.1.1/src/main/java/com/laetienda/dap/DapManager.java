@@ -56,23 +56,21 @@ public class DapManager {
 	}
 	*/
 	
-	public void stopDapServer(){
+	public synchronized void stopDapServer(){
 		
-		synchronized(connections) {
-			
-			Iterator<LdapConnection> iter = connections.iterator();
-			while(iter.hasNext()) {
-				LdapConnection connection = iter.next();
-				if(connection != null && connection.isConnected()) {
-					try {
-						connection.close();
-					}catch(IOException ex) {
-						log4j.error("Failed to close LDAP connection", ex);
-					}
+		Iterator<LdapConnection> iter = connections.iterator();
+		while(iter.hasNext()) {
+			LdapConnection connection = iter.next();
+			if(connection != null && connection.isConnected()) {
+				try {
+					connection.close();
+				}catch(IOException ex) {
+					log4j.error("Failed to close LDAP connection", ex);
 				}
 			}
-			connections.removeAll(connections);
 		}
+		connections.removeAll(connections);
+		
 	}
 	
 	public synchronized LdapConnection createConnection() throws DapException{
@@ -82,8 +80,9 @@ public class DapManager {
 		try{
 			connection = connectionPool.getConnection();
 			if(connection != null) {
-				connections.add(connection);
-				log4j.debug("LDAP Connection has been created succesfully");
+				
+					connections.add(connection);
+					log4j.debug("LDAP Connection has been created succesfully");
 			}
 			
 		}catch(LdapException ex){
@@ -109,15 +108,17 @@ public class DapManager {
 	
 	public synchronized void closeConnection(LdapConnection connection){
 		try{
-			if(connection.isConnected() || connection.isAuthenticated()) {
-				connection.unBind();
-			}
 			
-			if(connection != null && connection.isConnected()){
-				connection.close();
-			}
+				if(connection.isConnected() || connection.isAuthenticated()) {
+					connection.unBind();
+				}
+				
+				if(connection != null && connection.isConnected()){
+					connection.close();
+				}
 			
-			connections.remove(connection);
+				connections.remove(connection);
+			
 		}catch(IOException | LdapException ex){
 			log4j.error("Failed to close connection", ex);
 		}

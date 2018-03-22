@@ -191,10 +191,20 @@ public class Dap {
 		try {
 			log4j.info("Synchronizing db user and LDAP. $uid: " + user.getUid());
 			Dn userDn = new Dn("uid=" + user.getUid(), "ou=People", baseDn.getName());
+			log4j.debug("$dap: "+ this);
+			log4j.debug("$connection.isConnected: " + (connection.isConnected() ? "true" : "false"));
+			log4j.debug("$connection.isAuthenticated: " + (connection.isAuthenticated() ? "true" : "false"));
+			
+			//if(!connection.isAuthenticated()){
+				Dn tomcatDn = new Dn("uid=" + tomcat.getUid(), "ou=People", baseDn.getName());
+				log4j.debug("$tomcatDn: " + tomcatDn.getName());
+				connection.bind(tomcatDn, tomcat.getPassword());
+		//	}
+			
 			cursor = connection.search(userDn, "(objectclass=*)", SearchScope.OBJECT);
 			
 			for(Entry entry : cursor) {
-				log4j.debug("$entry: " + entry);
+				log4j.debug("$entry: " + entry.get("uid").getString());
 				if(entry.get("uid").getString().equals(user.getUid())) {
 					log4j.debug("User found in LDAP. $cn: " + entry.get("cn").getString() + " $sn: " + entry.get("sn").getString());
 					user.setCn(entry.get("Cn").getString());

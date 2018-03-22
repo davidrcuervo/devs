@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.acl.Acl;
+import com.laetienda.dap.Dap;
 import com.laetienda.entities.EntityObject;
 import com.laetienda.entities.Form;
 import com.laetienda.entities.Input;
@@ -190,9 +191,11 @@ public class Bean {
 		String name = "owner";
 		String label = lang.out("Set Owner") + ":";
 		User user = (User)request.getSession().getAttribute("sessionUser");
+		Dap sessionDap = (Dap)request.getSession().getAttribute("sessionDap");
 		Acl acl = (Acl)request.getAttribute("acl");
 		//Objeto objeto;// = action == "create" ? this.form : (action == "edit" ? (Objeto)this.entidad : null);
 		List<User> editors = new ArrayList<User>();
+		Dap dap = (Dap)request.getAttribute("dap");
 		
 		result = "<div class=\"form-group\">\n"
 			+ "<label for=\"" + id + "\">" + label + "</label>\n"
@@ -205,22 +208,23 @@ public class Bean {
 			result += "<option value=\"none\" selected>" + lang.out("Select an option") + "</option>\n";
 		}else if(action.equals("create")) {
 			result += "<option value=\"none\">" + lang.out("Select an option") + "</option>\n";
-			result += "<option value=\"" + user.getId() + "\" selected>" + user.getFullName() + "</option>\n";
+			result += "<option value=\"" + user.getId() + "\" selected>" + user.getFullName(sessionDap) + "</option>\n";
 			//result += "<option value=\"" + form.getOwner().getId() + "\">" + form.getOwner().getFullName() + "</option>\n";
 			editors = acl.findUsersInAcl(form.getCanCreateAcl());
 		}else if(action.equals("edit")){
-			result += "<option value=\"" + entidad.getOwner().getId() + "\" selected>" + entidad.getOwner().getFullName() + "</option>\n";
-			result += "<option value=\"" + user.getId() + "\">" + user.getFullName() + "</option>\n";
+			result += "<option value=\"" + entidad.getOwner().getId() + "\" selected>" + entidad.getOwner().getFullName(dap) + "</option>\n";
+			result += "<option value=\"" + user.getId() + "\">" + user.getFullName(dap) + "</option>\n";
 			editors = acl.findUsersInAcl(entidad.getWrite());
 		}
 		
 		
 		for(User usuario : editors) {
-			/*if(usuario.getId() == user.getId() || usuario.getId() == objeto.getOwner().getId()) {
+			if(usuario.getId() == user.getId()) {
 				//Nothing to do. It does want to print the option twice
-			}else {*/
-				result += "<option value=\"" + usuario.getId() + "\">" + usuario.getFullName() + "</option>\n";
-			//}
+			}else {
+				log.debug("$usuario.id: " + usuario.getId() + " and $usuario.fullName: " + usuario.getFullName(dap));
+				result += "<option value=\"" + usuario.getId() + "\">" + usuario.getFullName(dap) + "</option>\n";
+			}
 		}
 		
 		
