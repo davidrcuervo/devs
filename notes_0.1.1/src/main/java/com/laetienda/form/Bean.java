@@ -1,7 +1,9 @@
 package com.laetienda.form;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.acl.Acl;
 import com.laetienda.dap.Dap;
+import com.laetienda.entities.AccessList;
 import com.laetienda.entities.EntityObject;
 import com.laetienda.entities.Form;
 import com.laetienda.entities.Input;
@@ -244,12 +247,104 @@ public class Bean {
 		return result;
 	}
 	
+	public boolean hasError(Input input) {
+		return entidad.getErrors().containsKey(input.getName());
+	}
+	
+	public String getSubmitText() {
+		return action.toUpperCase() + " " + form.getName().toUpperCase();
+	}
+	
+	public List<Map<String, Object>> getAdvanced() {
+		
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+		Acl acl = (Acl)request.getAttribute("acl");
+		User u = ((User)request.getSession().getAttribute("sessionUser"));
+		Dap dap = (Dap)request.getAttribute("dap");
+		
+		Map<String, Object> owner = new HashMap<String, Object>();
+		owner.put("label", new String("Set Owner"));
+		owner.put("id", new String("id_form_" + form.getName() + "_input_permission_owner"));
+		
+		Map<String, Object> group = new HashMap<String, Object>();
+		group.put("label", new String("Set Group"));
+		group.put("id", new String("id_form_" + form.getName() + "_input_permission_group"));	
+		
+		Map<String, Object> write = new HashMap<String, Object>();
+		write.put("label", new String("Write permissions"));
+		write.put("id", new String("id_form_" + form.getName() + "_input_permission_write"));	
+		
+		Map<String, Object> read = new HashMap<String, Object>();
+		read.put("label", new String("Read Permissions"));
+		read.put("id", new String("id_form_" + form.getName() + "_input_permission_read"));	
+		
+		Map<String, Object> delete = new HashMap<String, Object>();
+		delete.put("label", new String("Delete permissions"));
+		delete.put("id", new String("id_form_" + form.getName() + "_input_permission_delete"));	
+		
+		switch(action) {
+			case "create":
+				owner.put("selected", u.getId());
+				owner.put("options", acl.findUsersInAcl(form.getCanCreateAcl()));
+				group.put("selected", u.getGroup().getId());
+				write.put("selected", form.getCanCreateAcl().getId());
+				read.put("selected", form.getCanCreateAcl().getId());
+				delete.put("selected", form.getCanCreateAcl().getId());
+				break;
+				
+			case "edit":
+				owner.put("selected", entidad.getOwner().getId());
+				owner.put("options", acl.findUsersInAcl(entidad.getWrite()));
+				group.put("selected", entidad.getGroup().getId());
+				write.put("selected", entidad.getWrite().getId());
+				read.put("selected", entidad.getRead().getId());
+				delete.put("selected", entidad.getDelete().getId());
+				break;
+				
+			default:
+				break;
+		}
+		
+		Object ob = owner.get("options");
+		if(ob instanceof List<?>) {
+			List<?> items = (List<?>)ob;
+			
+			for(Object item : items) {
+				if(item instanceof User) {
+					User r = (User)item;
+					log.debug("$fullName: " + r.getFullName(dap));
+				}
+			}
+		}
+		
+		group.put("options", acl.findGroupsByUser(u));
+		write.put("options", acl.findAclsByUser());
+		read.put("options", acl.findAclsByUser());
+		delete.put("options", acl.findAclsByUser());
+		
+		result.add(owner);
+		result.add(group);
+		result.add(delete);
+		result.add(write);
+		result.add(read);
+		
+		return result;
+	}
+	
 	public String getAction() {
 		return action;
 	}
 
 	public void setAction(String action) {
 		this.action = action;
+	}
+
+	public Form getForm() {
+		return form;
+	}
+
+	public Objeto getEntidad() {
+		return entidad;
 	}
 
 	public static void main(String[] args) {

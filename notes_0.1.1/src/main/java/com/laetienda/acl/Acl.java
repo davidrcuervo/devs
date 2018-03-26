@@ -11,6 +11,7 @@ import javax.persistence.NonUniqueResultException;
 import com.laetienda.db.DbManager;
 import com.laetienda.db.Db;
 import com.laetienda.entities.AccessList;
+import com.laetienda.entities.Group;
 //import com.laetienda.entities.AclGroup;
 //import com.laetienda.entities.AclUser;
 import com.laetienda.entities.Objeto;
@@ -110,6 +111,22 @@ public class Acl {
 		dbManager.closeTransaction(db);
 		
 		return result != null ? result : new ArrayList<User>();
+	}
+	
+	public List<Group> findGroupsByUser(User u){
+		Db db = dbManager.createTransaction();
+		List<Group> result = db.getEm().createNamedQuery("Group.findByUser", Group.class).setParameter("user", u).getResultList();
+		dbManager.closeTransaction(db);
+		
+		return result;
+	}
+	
+	public List<AccessList> findAclsByUser(){
+		Db db = dbManager.createTransaction();
+		List<AccessList> result = db.getEm().createNamedQuery("AccessList.findAclsByUser", AccessList.class).setParameter("user", user).getResultList();
+		dbManager.closeTransaction(db);
+		
+		return result;
 	}
 
 

@@ -41,6 +41,16 @@ import org.apache.logging.log4j.LogManager;
 					+ "JOIN acl.users aclu  "
 					+ "JOIN aclu.user u1 "
 					+ "WHERE acl = :acl AND (u1 = :user OR u2 = :user)"
+			),
+	@NamedQuery(
+			name="AccessList.findAclsByUser", 
+			query="SELECT acl FROM AccessList acl "
+					+ "JOIN acl.groups aclg "
+					+ "JOIN aclg.group g "
+					+ "JOIN g.users u2 "
+					+ "JOIN acl.users aclu "
+					+ "JOIN aclu.user u1 "
+					+ "WHERE u1 = :user OR u2 = :user"
 			)
 })
 

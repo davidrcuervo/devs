@@ -82,8 +82,6 @@ public class Installer {
 		manager.setSn("Snless"); 
 		db.insert(manager);
 		
-		
-		
 		AccessList acl = new AccessList();
 		acl.addGroup(sysadmins);
 		acl.addUser(sysadmin);

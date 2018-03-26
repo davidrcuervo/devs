@@ -11,7 +11,8 @@ import org.apache.logging.log4j.LogManager;
 @Entity
 @Table(name="grupos")
 @NamedQueries({
-	@NamedQuery(name="Group.findall", query="SELECT g FROM Group g")
+	@NamedQuery(name="Group.findall", query="SELECT g FROM Group g"),
+	@NamedQuery(name="Group.findByUser", query="SELECT g FROM Group g WHERE :user MEMBER OF g.users")
 })
 public class Group extends Objeto implements Serializable {
 	private static final long serialVersionUID = 1L;

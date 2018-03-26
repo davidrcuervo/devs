@@ -135,4 +135,6 @@ public abstract class Objeto extends EntityObject implements Serializable{
 		this.setRead(read);
 		return this;
 	}
+	
+	public abstract String getName();
 }

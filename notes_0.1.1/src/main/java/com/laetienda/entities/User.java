@@ -234,17 +234,34 @@ public class User extends Objeto implements Serializable{
 		}
 	}	
 	
+	public String getName() {
+		return getCn() + " " + getSn();
+	}
+	
 	public String getFullName(Dap dap) {
+		
 		User temp = this;
-		try {
-			temp = dap.userSyncDbAndLdap(temp);
-		} catch (NullPointerException | DapException e) {
-			Log.error("Failed to get First Name and Last Name from LDAP", e);
-		}
+		
+		
+			try {
+				temp = dap.userSyncDbAndLdap(temp);
+				
+			} catch (NullPointerException | DapException e) {
+				Log.error("Failed to get First Name and Last Name from LDAP", e);
+			}
+		
 		
 		return temp.getCn() + " " + temp.getSn();
 	}
-	
+	/*
+	public String getFullName(Object dap) {
+		String result = new String();
+		if(dap instanceof Dap) {
+			result = getFullName((Dap)dap);
+		}
+		return result;
+	}
+	*/
 	public String getDescription() {
 		return description;
 	}

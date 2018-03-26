@@ -106,7 +106,7 @@ public class Input implements Serializable {
 
 
 	public String getType() {
-		return type;
+		return type.toLowerCase();
 	}
 
 
