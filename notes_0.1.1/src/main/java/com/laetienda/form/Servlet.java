@@ -37,9 +37,9 @@ public class Servlet extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String servletName = request.getServletPath();
-		Acl acl = (Acl)request.getAttribute("acl");
-		String[] pathParts = (String[])request.getAttribute("pathParts");
+		//String servletName = request.getServletPath();
+		//Acl acl = (Acl)request.getAttribute("acl");
+		//String[] pathParts = (String[])request.getAttribute("pathParts");
 				
 		//https://<server-name>:<port>/<context-path>/:formName
 		//https://<server-name>:<port>/<context-path>/:formName/create
@@ -47,54 +47,26 @@ public class Servlet extends HttpServlet {
 		//https://<server-name>:<port>/<context-path>/:formName/edit/:idUrlEncrypted
 		//https://<server-name>:<port>/<context-path>/:formName/delete
 		
-		try {
-			//EntityObject entidad = findEntidad(pathParts[0]);
-			
-			Form form = findForm(pathParts[0]);
-			
-			if( form != null) {
-				boolean flag = false;
-				switch (pathParts[1]) {
+		Bean forma = (Bean)request.getAttribute("forma");
+		
+		switch (forma.getAction()) {
+		
+			case "create":
 				
-					case "create":
-					
-						if(acl.hasPermission(form.getCanCreateAcl())){
-							flag = true;
-						}
-						break;
-						
-					case "edit":
-						
-						
-					case "delete":
-						break;
-						
-					case "show":	
-						break;
-						
-					default:
-						response.sendError(HttpServletResponse.SC_NOT_FOUND);
-						break;
-				}
 				
-				if(flag) {
-					Bean forma = new Bean(form, request);
-					forma.setAction(pathParts[1]);
-					request.setAttribute("forma", forma);
-					request.getRequestDispatcher("/WEB-INF/jsp" + servletName + "/crud.jsp").forward(request, response);
-				}else {
-					response.sendError(HttpServletResponse.SC_NOT_FOUND);
-				}
 				
-			}
-		}catch(ArrayIndexOutOfBoundsException ex){
-			log4j2.warn("Index out of pathParts length", ex);
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		}catch(FormException ex) {
-			log4j2.warn("Failed to process form servlet", ex.getRootParent());
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		}finally {
-			
+			case "edit":
+				
+				
+			case "delete":
+				
+				
+			case "show":	
+				
+				
+			default:
+				request.getRequestDispatcher("/WEB-INF/jsp/crud/crud.jsp").forward(request, response);
+				break;
 		}
 	}
 	
