@@ -50,14 +50,7 @@
 		<servlet-name>thankyou</servlet-name>
 		<url-pattern>/thankyou/*</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>crud</servlet-name>
-		<servlet-class>com.laetienda.form.Servlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>crud</servlet-name>
-		<url-pattern>/crud/*</url-pattern>
-	</servlet-mapping>
+	
 	<listener>
 		<listener-class>
   			com.laetienda.tomcat.Load
@@ -104,6 +97,7 @@
 		<url-pattern>/crud/*</url-pattern>
 	</filter-mapping>
 	<filter>
+		<description>This filter enables ACL to validate user access to resources</description>
 		<filter-name>acl</filter-name>
 		<filter-class>com.laetienda.acl.AclFilter</filter-class>
 	</filter>
@@ -121,6 +115,19 @@
 		<filter-name>dap</filter-name>
 		<url-pattern>/crud/*</url-pattern>
 	</filter-mapping>
+	<servlet>
+		<servlet-name>crud</servlet-name>
+		<servlet-class>com.laetienda.form.Servlet</servlet-class>
+		<init-param>
+			<description>/crud/$formName/new: used new instead of create</description>
+			<param-name>create</param-name>
+			<param-value>new</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>crud</servlet-name>
+		<url-pattern>/crud/*</url-pattern>
+	</servlet-mapping>
 	<filter>
 		<filter-name>options</filter-name>
 		<filter-class>com.laetienda.options.OptionFilter</filter-class>

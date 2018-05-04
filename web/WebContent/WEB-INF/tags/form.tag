@@ -47,7 +47,6 @@
 			</c:otherwise>
 		</c:choose>
 	</c:forEach>	
-	
 	<c:forEach var="row" items="${forma.advanced}">
 		<div class="form-group form-group-sm">
 			<label for="${row.id}">${lang.out(row.label) }</label>
