@@ -177,6 +177,7 @@ public class Dap {
 			
 		} catch (LdapException e) {
 			log4j.info("Failed to bind checkPassword for user. $username: " + uid);
+			log4j.debug("Failed to bind checkPassword for user. $username: " + uid, e);
 		}finally {
 
 		}

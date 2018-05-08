@@ -56,6 +56,8 @@ public class FormFilter implements Filter {
 	public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2)
 			throws IOException, ServletException {
 		
+		log4j2.info("Running doFilter of FromFilter");
+		
 		HttpServletRequest request = (HttpServletRequest)arg0;
 		HttpServletResponse response = (HttpServletResponse)arg1;
 		String[] pathParts = (String[])request.getAttribute("pathParts");

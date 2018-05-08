@@ -10,13 +10,19 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class PageFilter implements Filter{
+	
+	public final Logger log = LogManager.getLogger(PageFilter.class);
 	
 	public void init(FilterConfig fConfig) throws ServletException{
 		
 	}
 	
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		log.info("Running doFilter from " + PageFilter.class.getName());
 		
 		HttpServletRequest httpReq = (HttpServletRequest)request;
 		HttpServletResponse httpRes = (HttpServletResponse)response;
