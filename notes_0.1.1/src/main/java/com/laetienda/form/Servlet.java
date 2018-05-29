@@ -51,18 +51,25 @@ public class Servlet extends HttpServlet {
 		
 		switch (forma.getAction()) {
 		
+			case "menu":
+				request.getRequestDispatcher("/WEB-INF/jsp/crud/menu.jsp").forward(request, response);
+				break;
+		
+			case "all":
+				request.getRequestDispatcher("/WEB-INF/jsp/crud/all.jsp").forward(request, response);
+				break;
+			
 			case "create":
-				
-				
-				
 			case "edit":
 				
+				request.getRequestDispatcher("/WEB-INF/jsp/crud/addoredit.jsp").forward(request, response);
+				break;
 				
 			case "delete":
 				
-				
 			case "show":	
 				
+			
 				
 			default:
 				request.getRequestDispatcher("/WEB-INF/jsp/crud/crud.jsp").forward(request, response);

@@ -20,6 +20,7 @@ import com.laetienda.acl.Acl;
 import com.laetienda.db.Db;
 import com.laetienda.db.DbManager;
 import com.laetienda.entities.Form;
+import com.laetienda.tomcat.Page;
 
 public class FormFilter implements Filter {
 	private final Logger log4j2 = LogManager.getLogger();
@@ -29,6 +30,8 @@ public class FormFilter implements Filter {
 	private String show;
 	private String edit;
 	private String delete;
+	private String all;
+	private String menu;
 	
 	@Override
 	public void init(FilterConfig arg0) throws ServletException {
@@ -37,11 +40,15 @@ public class FormFilter implements Filter {
 		String show = arg0.getInitParameter("show");
 		String edit = arg0.getInitParameter("edit");
 		String delete = arg0.getInitParameter("delete");
+		String all = arg0.getInitParameter("all");
+		String menu = arg0.getInitParameter("menu");
 		
 		this.create = create == null ? "create" : create;
 		this.show = show == null ? "show" : show;
 		this.edit = edit == null ? "edit" : edit;
 		this.delete = delete == null ? "delete" : delete;
+		this.all = all == null ? "all" : all;
+		this.menu = menu == null ? "menu" : menu;
 		
 		this.dbManager = (DbManager)arg0.getServletContext().getAttribute("dbManager");
 	}
@@ -62,10 +69,18 @@ public class FormFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse)arg1;
 		String[] pathParts = (String[])request.getAttribute("pathParts");
 		Acl acl = (Acl)request.getAttribute("acl");
+		Page page = (Page)request.getAttribute("page");
 		Form form = findForm(pathParts[0]);
 		
 		try {
-			if(form == null) {
+			
+			if(pathParts.length == 1 && pathParts[0].length() <= 0) {
+				response.sendRedirect(page.getUrlWithPattern() + "/" + menu);
+				
+			}else if(pathParts.length == 1 && pathParts[0].length() > 0) {
+				response.sendRedirect(page.getUrlWithPattern() + "/" + all);
+				
+			}else if(form == null) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			
 			}else if(pathParts[1] != create &&  
@@ -83,7 +98,9 @@ public class FormFilter implements Filter {
 				
 				String action = create == pathParts[1] ? "create" :
 					(show == pathParts[1] ? "show" :
-						(edit == pathParts[1] ? "edit" : "delete"));
+						(edit == pathParts[1] ? "edit" : 
+							(all == pathParts[1] ? "all" : 
+								(menu == pathParts[1] ? "menu" : "delete"))));
 				
 				Bean forma = new Bean(form, request);
 				forma.setAction(action);

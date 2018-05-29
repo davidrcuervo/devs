@@ -144,7 +144,7 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>forms</filter-name>
-		<url-pattern>/curd/*</url-pattern>
+		<url-pattern>/crud/*</url-pattern>
 	</filter-mapping>
 	
 	<filter>

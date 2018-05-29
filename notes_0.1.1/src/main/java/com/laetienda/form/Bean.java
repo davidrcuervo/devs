@@ -349,5 +349,7 @@ public class Bean {
 
 	public static void main(String[] args) {
 		log.info("Hello Form Bean World!!!");
+		
+		
 	}
 }
