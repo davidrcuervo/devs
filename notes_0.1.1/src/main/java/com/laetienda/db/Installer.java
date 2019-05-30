@@ -2,7 +2,7 @@ package com.laetienda.db;
 
 import java.io.File;
 import org.apache.logging.log4j.Logger;
-import org.python.jline.internal.Log;
+//import org.python.jline.internal.Log;
 import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.dap.Dap;
@@ -141,7 +141,7 @@ public class Installer {
 		try {
 			dap.insertUser(manager);
 		}catch(DapException ex) {
-			Log.error("Error while adding \"Owner\" user to LDAP", ex.getRootParent());
+			log4j.error("Error while adding \"Owner\" user to LDAP", ex);
 			//db.remove(manager);
 		}finally {
 			dapManager.closeConnection(dap);

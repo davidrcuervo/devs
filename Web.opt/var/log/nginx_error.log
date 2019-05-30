@@ -1,2 +1,0 @@
-2017/03/30 02:48:31 [error] 12203#12203: *725 client intended to send too large body: 539138029 bytes, client: 192.168.2.101, server: www.la-etienda.com, request: "POST /media/video HTTP/1.1", host: "www.la-etienda.com", referrer: "https://www.la-etienda.com/media/video"
-2017/03/30 02:52:06 [error] 12202#12202: *755 client intended to send too large body: 10878509 bytes, client: 192.168.2.101, server: www.la-etienda.com, request: "POST /media/video HTTP/1.1", host: "www.la-etienda.com", referrer: "https://www.la-etienda.com/media/video"
