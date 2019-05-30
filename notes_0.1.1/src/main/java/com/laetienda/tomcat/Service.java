@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
-import javax.servlet.ServletException;
+//import javax.servlet.ServletException;
 
 import java.net.Socket;
 import org.apache.logging.log4j.Logger;
@@ -51,8 +51,8 @@ public class Service {
 			tomcat.getServer().setPort(shutdownPort);
 			tomcat.getServer().setShutdown(shutdown);
 			tomcat.start();
-		}catch(ServletException ex){
-			throw new TomcatException("Failed to start tomcat", ex);
+//		}catch(ServletException ex){
+//			throw new TomcatException("Failed to start tomcat", ex);
 		}catch(LifecycleException ex){
 			throw new TomcatException("Failed to start tomcat", ex);
 		}
