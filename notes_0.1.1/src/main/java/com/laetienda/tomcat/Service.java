@@ -38,15 +38,16 @@ public class Service {
 	}
 	
 	public void start() throws TomcatException{
+		
 		tomcat.setPort(port);
-		tomcat.setBaseDir(directory.getAbsolutePath());
-		tomcat.getHost().setAppBase(directory.getAbsolutePath());
+//		tomcat.setBaseDir(directory.getAbsolutePath());
+//		tomcat.getHost().setAppBase(directory.getAbsolutePath());
 		tomcat.getHost().setAutoDeploy(true);
 		tomcat.getHost().setDeployOnStartup(true);
-		tomcat.getHost().setAppBase(directory.getAbsolutePath() + File.separator + "WebContent");
+//		tomcat.getHost().setAppBase(directory.getAbsolutePath() + File.separator + "WebContent");
 		
 		try{
-			Context context = tomcat.addWebapp("", directory.getAbsolutePath() + File.separator + "WebContent");
+			Context context = tomcat.addWebapp("", directory.getAbsolutePath());
 			context.addParameter("directory", directory.getAbsolutePath());
 			tomcat.getServer().setPort(shutdownPort);
 			tomcat.getServer().setShutdown(shutdown);
