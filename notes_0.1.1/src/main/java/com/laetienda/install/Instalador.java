@@ -9,10 +9,20 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.laetienda.dap.DapException;
-
+//import com.laetienda.logger.Log4j;
+/**
+ * 
+ * @author MySelf
+ * This class has the basic configuration required to run the web framework.
+ *
+ */
 public class Instalador {
+	
+	private final static Logger log = LogManager.getLogger();
 	
 	private static final Options OPTIONS = new Options()
 			.addOption(new Option("u", "user", true, "Admin user DN with priviledges to create domain settings."))
@@ -23,6 +33,10 @@ public class Instalador {
 	private File directory;
 	private CommandLine line;
 	
+	/**
+	 * 
+	 * @param directory Requires application directory, it will look at configuration files in etc folder.
+	 */
 	public Instalador(File directory){
 		this.directory = directory;
 	}
@@ -54,7 +68,7 @@ public class Instalador {
 			
 			installer.install(line.getOptionValue("user"), line.getOptionValue("password"));
 		}else{
-			System.err.println("User dn and password of a priviledged user must be provided");
+			log.error("User dn and password of a priviledged user must be provided");
 		}	
 	}
 }

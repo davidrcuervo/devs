@@ -7,16 +7,22 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 public class Run {
+	
+	final static File DIRECTORY = new File(Run.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+	
+	static {
+		System.setProperty("logFilePath", new File(DIRECTORY, "var" + File.separator + "log").getAbsolutePath());
+	}
 		
 	public static void main(String[] args) {
+
 		Logger log4j2 = LogManager.getLogger(Run.class);
 		log4j2.info("Starting website");
 
-		File directory2 = new File(Run.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-		log4j2.debug("$direcotry2: " + directory2.getAbsolutePath());
+		log4j2.debug("Application path. $DIRECTORY: " + DIRECTORY.getAbsolutePath());
 		
 		try{
-			Controller tomcat  = new Controller(directory2);
+			Controller tomcat  = new Controller(new File(DIRECTORY.getAbsolutePath()));
 			tomcat.parseArguments(args);
 			
 		}catch(TomcatException ex){

@@ -8,6 +8,7 @@ import com.laetienda.dap.Dap;
 import com.laetienda.dap.DapException;
 import com.laetienda.dap.DapManager;
 import com.laetienda.entities.*;
+//import com.laetienda.web.bin.Installer;
 
 public class Installer {
 	static final Logger log4j = LogManager.getLogger(Installer.class);
@@ -16,13 +17,13 @@ public class Installer {
 	DapManager dapManager;
 	File directory;
 	
-	private Installer(File directory) throws DbException, DapException {
+	public Installer(File directory) throws DbException, DapException {
 		dbManager = new DbManager(directory);
 		dapManager = new DapManager(directory); 
 		this.directory = directory;
 	}
 	
-	private void run() throws DbException, DapException {
+	public void run() throws DbException, DapException {
 		Db db = dbManager.createTransaction();
 		
 		
@@ -43,7 +44,7 @@ public class Installer {
 		Variable languages = new Variable("languages", "Languages availables in the system");
 		languages.addOption("none", "Select a language");
 		languages.addOption("en", "English");
-		languages.addOption("es", "Español");
+		languages.addOption("es", "Espanol");
 		languages.addOption("fr", "Francais");
 		db.insert(languages);
 
@@ -152,7 +153,8 @@ public class Installer {
 	public static void main(String[] args){
 		
 		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		File directory = new File(Installer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		
 		try {
 			log4j.info("DATABASE IS BEING INSTALLED");
