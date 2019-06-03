@@ -13,6 +13,9 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import org.apache.logging.log4j.Logger;
+
+import com.laetienda.app.Aes;
+
 import org.apache.logging.log4j.LogManager;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.*;
@@ -42,8 +45,8 @@ public class DbManager {
 		this.directory = directory;
 		defaults = setDefaultSettings();
 		settings = loadConfFile(directory);
-    		ems = new ArrayList<EntityManager>();
-    		open();	
+		ems = new ArrayList<EntityManager>();
+		open();	
 	}
 	/**
 	 * 
@@ -149,6 +152,8 @@ public class DbManager {
 		FileInputStream conf;
 		Map<String, String> result = new HashMap<String, String>();
 		Properties settings = new Properties(defaults);
+		Aes aes = new Aes();
+		String password;
 		String path = directory.getAbsolutePath() 
 				+ File.separator + "etc"
 				+ File.separator + "database.conf.xml";
@@ -163,7 +168,8 @@ public class DbManager {
 					result.put(key, settings.getProperty(key));
 				}
 				
-				log4j.debug("");
+				password = aes.decrypt(result.get("javax.persistence.jdbc.password"), result.get("javax.persistence.jdbc.user"));
+				result.put("javax.persistence.jdbc.password", password);
 				result.put(JDBC_URL, "jdbc:postgresql://" + result.get("db_host") + ":" + result.get("db_port") + "/" + result.get("database"));
 				/*
 				if(result.get("javax.persistence.schema-generation.scripts.create-target") != null){
