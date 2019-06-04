@@ -22,7 +22,7 @@ import com.laetienda.dap.DapException;
  */
 public class Instalador {
 	
-	private final static Logger log = LogManager.getLogger();
+	private final static Logger log = LogManager.getLogger(Instalador.class);
 	
 	private static final Options OPTIONS = new Options()
 			.addOption(new Option("u", "user", true, "Admin user DN with priviledges to create domain settings."))
@@ -59,6 +59,7 @@ public class Instalador {
 	public void dap() throws DapException{
 	
 		if(line.hasOption("user") && line.hasOption("password")){
+			log.debug("$user: " + line.getOptionValue("user"));
 			
 			com.laetienda.dap.Installer installer = new com.laetienda.dap.Installer(directory);
 			
@@ -66,9 +67,19 @@ public class Instalador {
 				installer.setRootPassword(line.getOptionValue("rootPassword"));
 			}
 			
-			installer.install(line.getOptionValue("user"), line.getOptionValue("password"));
+			try {
+				installer.setConnection();
+				installer.bind(line.getOptionValue("user"), line.getOptionValue("password"));
+				installer.install();
+				installer.unBind();
+			}catch(DapException ex) {
+				throw ex;
+			}finally {
+				installer.closeConnection();
+			}
+//			installer.install(line.getOptionValue("user"), line.getOptionValue("password"));
 		}else{
-			log.error("User dn and password of a priviledged user must be provided");
+			throw new DapException("Username or password missing. User \"--help\" for more information");
 		}	
 	}
 }

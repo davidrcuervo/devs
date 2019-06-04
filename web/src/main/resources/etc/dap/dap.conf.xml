@@ -5,7 +5,8 @@
 	<entry key="app_name">la-etienda</entry>
 	<entry key="domain">la-etienda.com</entry>
 	<entry key="server_address">localhost</entry>
-	<entry key="service_port">10389</entry>
+	<entry key="service_port">10636</entry>
+	<entry key="use_tls">true</entry>
 	<!-- <entry key="user_password">12345</entry> -->
 	<entry key="tomcatpassword">j6OXJrTYDFdncvEYIDqWzSSqSrlYBXoTGUCUZ7EbuPRMmDZNY1akG4F//kXlcRCYwgGyCg==</entry>
 </properties>

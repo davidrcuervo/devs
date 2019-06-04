@@ -30,7 +30,7 @@ public class Installer {
 			
 			installer.parseCommand(args);
 			
-			
+			//Install Directory Access Structure 
 			installer.dap();
 			log.info("Apache Active directory has been installed succesfully");
 			

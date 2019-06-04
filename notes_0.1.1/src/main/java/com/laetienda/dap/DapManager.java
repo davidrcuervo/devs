@@ -133,6 +133,10 @@ public class DapManager {
 		try{
 			config.setLdapHost(settings.getProperty("server_address"));
 			config.setLdapPort(Integer.parseInt(settings.getProperty("service_port")));
+			config.setUseTls(Boolean.parseBoolean(settings.getProperty("use_tls")));
+			config.setUseSsl(Boolean.parseBoolean(settings.getProperty("use_ssl")));
+			log4j.debug("$use_tls: " + Boolean.parseBoolean(settings.getProperty("use_tls")));
+			log4j.debug("ssl protocol: " + config.getSslProtocol());
 			//config.setName(String.format(Ldif.TOMCAT_USER_DN().toString()));
 			//config.setCredentials(String.format(settings.getProperty("user_password")));
 		}catch(NumberFormatException ex){

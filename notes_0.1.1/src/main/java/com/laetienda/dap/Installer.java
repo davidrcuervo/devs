@@ -34,10 +34,23 @@ public class Installer {
 		rootPassword = password;
 	}
 	
-	public void setConnection(String address, int port) {
+	public void setConnection() throws DapException {
+		try {
+			setConnection(
+				dapManager.getSetting("server_address"),
+				Integer.parseInt(dapManager.getSetting("service_port"))
+				);
+		}catch(NumberFormatException ex) {
+			throw new DapException(ex.getMessage(), ex);
+		}
+	}
+	
+	public void setConnection(String address, int port) throws DapException {
 		log4j.info("Connecting to LDAP server...");
 		log4j.debug("LDAP Server address: " + address + ":" + port); 
-		connection = new LdapNetworkConnection(address, port);
+		
+		boolean useSsl = Boolean.parseBoolean(dapManager.getSetting("use_tls"));
+		connection = new LdapNetworkConnection(address, port, useSsl);
 		
 		if(connection.isConnected()){
 			log4j.info("... it has connected to LDAP server succesfully");
@@ -46,27 +59,28 @@ public class Installer {
 		}
 	}
 	
-	public void closeConnection() throws IOException {
+	public void closeConnection() throws DapException {
 		log4j.info("Closing connection with the LDAP server...");
 		
 		try {
 			connection.close();
 			log4j.info("... connection with LDAP server has closed succesfully");
 		} catch (IOException ex) {
-			throw ex;
+			throw new DapException(ex);
 		}
 	}
 	
 	public void bind(String username, String password) throws DapException {
 		log4j.info("Binding with the LDAP service...");
 		log4j.debug("Binding username: " + username);
-		
+				
 		try {
 			connection.bind(username, password);
 			log4j.info("... it has binded succesfully");
 		}catch(LdapException ex) {
-			log4j.error("Failed to bind to LDAP service", ex);
-			throw new DapException("Failed to bind to LDAP service ", ex);
+			
+			//log4j.error("Failed to bind to LDAP service", ex);
+			throw new DapException(ex);
 		}
 	}
 	
@@ -204,8 +218,8 @@ public class Installer {
 			}finally {
 				try {
 					installer.closeConnection();
-				} catch (IOException e) {
-					log4j.error("Failed to close connection", e);
+				} catch (DapException e) {
+					log4j.error(e.getMessage(), e);
 				}
 			}
 				
