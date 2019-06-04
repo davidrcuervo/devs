@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.laetienda.install.InstallerException;
+
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.BadPaddingException;
@@ -31,6 +32,8 @@ import javax.crypto.BadPaddingException;
  * 
  */
 public class Aes {
+	
+	private final static Logger log = LogManager.getLogger(Aes.class);
 	
 	/**
 	 * 
@@ -102,7 +105,8 @@ public class Aes {
 	 * @throws AppException
 	 */
 	public String decrypt(String encryptedText, String hashPhrasse) throws AppException {
-	    
+	    log.debug("$encryptedText: " + encryptedText);
+		
 	    byte[] decryptedTextBytes = null;
 	    
 	    try {
@@ -145,10 +149,9 @@ public class Aes {
 	
 	public static void main(String[] args) {
 	    
-		final Logger log = LogManager.getLogger();
-		final String USERNAME = "";
-		String password = "www.myself.com";
-		
+		final String USERNAME = "tomcat";
+		String password;
+		/*
 		//Example of hashing a password
 	    Aes en=new Aes();
 	    String encryptedWord;
@@ -158,17 +161,17 @@ public class Aes {
 		} catch (AppException e1) {
 			log.error(e1.getMessage(), e1.getParent());
 		} 
-	    
+	    */
 		
-		/*
+		
 		//Example of decipher text 
 	    Aes de =new Aes();
 	    try {
-	    	password = de.decrypt("8MMvevWMY3qQ3O+u4wYTqCfQ/B4nQbKY91iMDtjwdDYUld8jqrs3HgktwNyXUwKPPlPanQ==", USERNAME);
+	    	password = de.decrypt("j6OXJrTYDFdncvEYIDqWzSSqSrlYBXoTGUCUZ7EbuPRMmDZNY1akG4F//kXlcRCYwgGyCg==", USERNAME);
 			System.out.println("Decrypted word is : " + password);
 		} catch (AppException e) {
 			log.error(e.getMessage(), e.getParent());
 		}
-		*/
+		
 	  }
 }

@@ -30,16 +30,16 @@ public class Installer {
 			
 			installer.parseCommand(args);
 			
-			/*
+			
 			installer.dap();
 			log.info("Apache Active directory has been installed succesfully");
-			*/
 			
+			/*
 			log.info("Installing database structure");
 			com.laetienda.db.Installer dbInstaler = new com.laetienda.db.Installer(new File(DIRECTORY.getAbsolutePath()));
 			dbInstaler.run();
 			log.info("Database structure has been installed succesfully");
-			
+			*/
 		}catch(AppException ex){
 			log.error(ex.getMessage(), ex);	
 		}

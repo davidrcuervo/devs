@@ -2,19 +2,17 @@ package com.laetienda.dap;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.InvalidPropertiesFormatException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-//import javax.persistence.NoResultException;
-
 import org.apache.directory.ldap.client.api.LdapConnectionConfig;
 import org.apache.directory.ldap.client.api.LdapConnectionPool;
 
+import com.laetienda.app.Aes;
+import com.laetienda.app.AppException;
 import com.laetienda.entities.User;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -167,16 +165,22 @@ public class DapManager {
 		
 		Properties result = new Properties(defaults);
 		String path = directory.getAbsolutePath() + File.separator + "etc" + File.separator + "dap" + File.separator + "dap.conf.xml";
+		Aes aes = new Aes();
+		String pass;
 		
 		try{
 			FileInputStream conf = new FileInputStream(new File(path));
 			result.loadFromXML(conf);
-		}catch(FileNotFoundException ex){
-			throw new DapException("Failed to read conf file. $file: " + path, ex);
-		}catch(InvalidPropertiesFormatException ex){
-			throw new DapException("Failed to read properties from conf file. $file: " + path, ex);
-		}catch(IOException ex){
-			throw new DapException("Failed to read properties from conf file. $file: " + path, ex);
+			
+			//Pass recovered password by Aes class to decipher passwords
+			log4j.debug("$tomcatpassword: " + result.getProperty("tomcatpassword"));
+			pass = aes.decrypt(result.getProperty("tomcatpassword"), "tomcat");
+			result.setProperty("tomcatpassword", pass);
+//			pass = aes.decrypt(result.getProperty("user_password"), "user");
+//			result.setProperty("user_password", pass);
+			
+		}catch(IOException | AppException ex){
+			throw new DapException(ex.getMessage(), ex);
 		}
 		
 		return result;
