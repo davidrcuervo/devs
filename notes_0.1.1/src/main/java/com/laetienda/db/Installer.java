@@ -1,6 +1,8 @@
 package com.laetienda.db;
 
 import java.io.File;
+import java.util.List;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -8,7 +10,7 @@ import com.laetienda.dap.Dap;
 import com.laetienda.dap.DapException;
 import com.laetienda.dap.DapManager;
 import com.laetienda.entities.*;
-//import com.laetienda.web.bin.Installer;
+
 
 public class Installer {
 	static final Logger log4j = LogManager.getLogger(Installer.class);
@@ -24,9 +26,36 @@ public class Installer {
 	}
 	
 	public void run() throws DbException, DapException {
+		dbManager.setCreateDatabaseVariable();
+		dbManager.open();
 		Db db = dbManager.createTransaction();
+		log4j.info("Database should be created at this point, now it will add application rows");
 		
 		
+		List<Variable> vars = db.getEm().createNamedQuery("Variable.findall", Variable.class).getResultList();
+		if(vars.size() > 0) {
+			throw new DbException("Variables table is not empty");
+		}
+		
+		List<Option> opts = db.getEm().createNamedQuery("Option.findall", Option.class).getResultList();
+		if(opts.size() > 0) {
+			throw new DbException("Options table is not empty");
+		}
+		
+		List<Group> gps = db.getEm().createNamedQuery("Option.findall", Group.class).getResultList();
+		if(gps.size() > 0) {
+			throw new DbException("Groups table is not empty");
+		}
+		
+		List<User> users = db.getEm().createNamedQuery("Option.findall", User.class).getResultList();
+		if(users.size() > 0) {
+			throw new DbException("Users table is not empty");
+		}
+		
+		//TODO create test for other tables: Access_control_list, forms, inputs, objects
+		
+		
+		//Start installing components 
 		Variable userStatus = new Variable("user status", "Different options of status of the user withing the website");
 		userStatus.addOption("active", "User is active. It has been registered and password has been confirmed");
 		userStatus.addOption("blocked", "User has been blocked to use the application");

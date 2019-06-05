@@ -15,7 +15,6 @@ public class Installer {
 	 
 	private final static File DIRECTORY = new File(Installer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 	
-	//Set logger
 	static {
 		System.setProperty("logFilePath", new File(DIRECTORY, "var" + File.separator + "log").getAbsolutePath());
 	}
@@ -25,22 +24,12 @@ public class Installer {
 		
 		Instalador installer = new Instalador(new File(DIRECTORY.getAbsolutePath()));
 	
-		log.info("Installing Apache Active directory");
 		try{
-			
-			installer.parseCommand(args);
-			
-			//Install Directory Access Structure 
+			installer.parseCommand(args); 
 			installer.dap();
-			log.info("Apache Active directory has been installed succesfully");
-			
-			log.info("Installing database structure");
-			com.laetienda.db.Installer dbInstaler = new com.laetienda.db.Installer(new File(DIRECTORY.getAbsolutePath()));
-			dbInstaler.run();
-			log.info("Database structure has been installed succesfully");
-			
+			installer.database();			
 		}catch(AppException ex){
-			log.error(ex.getMessage(), ex);	
+			log.error(ex.getMessage(), ex.getParent());	
 		}
 	}
 }

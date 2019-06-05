@@ -10,7 +10,7 @@
 	<entry key="javax.persistence.jdbc.user">web</entry>
 	<entry key="javax.persistence.jdbc.password">8MMvevWMY3qQ3O+u4wYTqCfQ/B4nQbKY91iMDtjwdDYUld8jqrs3HgktwNyXUwKPPlPanQ==</entry>
 	
-	<entry key="javax.persistence.schema-generation.database.action">create</entry>
+	<entry key="javax.persistence.schema-generation.database.action">none</entry>
 	<entry key="javax.persistence.schema-generation.create-source">metadata</entry>
 	<!-- 
 	<entry key="javax.persistence.schema-generation.drop-source">script</entry>

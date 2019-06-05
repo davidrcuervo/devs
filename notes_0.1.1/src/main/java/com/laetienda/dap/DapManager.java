@@ -84,7 +84,7 @@ public class DapManager {
 			}
 			
 		}catch(LdapException ex){
-			throw new DapException("Error while creating connection" ,ex);
+			throw new DapException(ex);
 		}finally{
 
 		}
@@ -98,7 +98,7 @@ public class DapManager {
 		try {
 			result = new Dap(createConnection(), getTomcat(), new Dn(Ldif.getDomain()), settings.getProperty("domain"));
 		}catch(LdapInvalidDnException ex) {
-			throw new DapException("Failed to create Dap object", ex);
+			throw new DapException(ex);
 		}
 			
 		return result;

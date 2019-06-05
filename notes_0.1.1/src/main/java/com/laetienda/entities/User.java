@@ -7,7 +7,6 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.persistence.*;
 import org.apache.logging.log4j.Logger;
-import org.python.jline.internal.Log;
 import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.dap.Dap;
@@ -190,7 +189,7 @@ public class User extends Objeto implements Serializable{
 		String result = new String();
 		
 		if(sn == null || sn.equals("Snless")) {
-			Log.debug("sn is null or Snless. $sn: " + sn);
+			log4j.debug("sn is null or Snless. $sn: " + sn);
 		}else {
 			result = sn;
 		}
@@ -247,7 +246,7 @@ public class User extends Objeto implements Serializable{
 				temp = dap.userSyncDbAndLdap(temp);
 				
 			} catch (NullPointerException | DapException e) {
-				Log.error("Failed to get First Name and Last Name from LDAP", e);
+				log4j.error("Failed to get First Name and Last Name from LDAP", e);
 			}
 		
 		

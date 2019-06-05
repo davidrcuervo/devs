@@ -13,6 +13,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.laetienda.dap.DapException;
+import com.laetienda.db.DbException;
+import com.laetienda.db.Installer;
 //import com.laetienda.logger.Log4j;
 /**
  * 
@@ -72,7 +74,9 @@ public class Instalador {
 				installer.bind(line.getOptionValue("user"), line.getOptionValue("password"));
 				installer.install();
 				installer.unBind();
+				log.info("Apache Active directory has been installed succesfully");
 			}catch(DapException ex) {
+				log.error("Apache Active Directory (DAP) failed to install.");
 				throw ex;
 			}finally {
 				installer.closeConnection();
@@ -81,5 +85,13 @@ public class Instalador {
 		}else{
 			throw new DapException("Username or password missing. User \"--help\" for more information");
 		}	
+	}
+	
+
+	public void database() throws DbException, DapException {
+		log.info("Installing database structure");
+		Installer dbInstaller = new Installer(new File(directory.getAbsolutePath()));
+		dbInstaller.run();
+		log.info("Database has been installed succesfully");
 	}
 }

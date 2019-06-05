@@ -46,8 +46,9 @@ public class DbManager {
 		defaults = setDefaultSettings();
 		settings = loadConfFile(directory);
 		ems = new ArrayList<EntityManager>();
-		open();	
+//		open();	
 	}
+	
 	/**
 	 * 
 	 * @return Db instance
@@ -91,8 +92,13 @@ public class DbManager {
     	
     	return result;
     }
+    
+    protected DbManager setCreateDatabaseVariable() {
+    	settings.put("javax.persistence.schema-generation.database.action", "create");
+    	return this;
+    }
 	
-	public synchronized void open() throws DbException{
+	protected synchronized DbManager open() throws DbException{
 		    
 		try{ 
 		   		
@@ -114,12 +120,11 @@ public class DbManager {
     				settings.get("PERSISTENCE_UNIT_NAME"),
     				settings
 				);
-    	}catch (IllegalStateException ex){
-    		ex.printStackTrace();	
-    		throw new DbException(ex);
-    	}catch(PersistenceException ex){
+    	}catch (IllegalStateException | PersistenceException ex){
     		throw new DbException(ex);
     	}
+		
+		return this;
  }
 	
 	public void close(){
