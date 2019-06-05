@@ -21,8 +21,8 @@ public class Language extends EntityObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name = "langLanguages_id_seq", sequenceName = "langLanguages_id_seq", allocationSize=1)
 	@GeneratedValue(generator = "langLanguages_id_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "langLanguages_id_seq", sequenceName = "langLanguages_id_seq", allocationSize=1)
 	@Column(name="\"id\"", updatable=false, nullable=false, unique=true)
 	private Integer id;
 	

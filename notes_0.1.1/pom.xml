@@ -24,7 +24,14 @@
   		<groupId>org.eclipse.persistence</groupId>
   		<artifactId>eclipselink</artifactId>
   		<version>2.7.4</version>
+  		<exclusions>
+  			<exclusion>
+  				<groupId>org.eclipse.persistence</groupId>
+  				<artifactId>jakarta.persistence</artifactId>
+  			</exclusion>
+  		</exclusions>
   	</dependency>
+  	
   	<dependency>
   		<groupId>com.google.code.gson</groupId>
   		<artifactId>gson</artifactId>
@@ -83,11 +90,6 @@
   		<version>1.4</version>
   	</dependency>
   	<dependency>
-  		<groupId>org.eclipse.persistence</groupId>
-  		<artifactId>javax.persistence</artifactId>
-  		<version>2.2.1</version>
-  	</dependency>
-  	<dependency>
   		<groupId>javax.mail</groupId>
   		<artifactId>mail</artifactId>
   		<version>1.5.0-b01</version>
@@ -116,6 +118,11 @@
   		<groupId>jstl</groupId>
   		<artifactId>jstl</artifactId>
   		<version>1.2</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>javax.persistence</groupId>
+  		<artifactId>javax.persistence-api</artifactId>
+  		<version>2.2</version>
   	</dependency>
   </dependencies>
   <properties>
