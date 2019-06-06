@@ -98,7 +98,7 @@ public class DbManager {
     	return this;
     }
 	
-	protected synchronized DbManager open() throws DbException{
+	public synchronized DbManager open() throws DbException{
 		    
 		try{ 
 		   		
@@ -135,7 +135,9 @@ public class DbManager {
     		}
     	}
     	
-    	emfactory.close();
+	    if(emfactory != null) {
+	    	emfactory.close();
+	    }
     }
 	 
 	 private Properties setDefaultSettings(){

@@ -8,10 +8,15 @@ import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 import javax.persistence.TransactionRequiredException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.laetienda.entities.*;
 
+
+
 public class Db {
+	private final static Logger log = LogManager.getLogger(Db.class);
 	
 	private EntityManager em;
 	
@@ -185,23 +190,24 @@ public class Db {
 				em.getTransaction().commit();
 			}
 			
-		}catch(IllegalStateException ex){
-			em.clear();
-			throw new DbException(ex.getMessage(), ex);
-		}catch(EntityExistsException ex){
-			em.clear();
-			throw new DbException(ex.getMessage(), ex);
-		}catch(IllegalArgumentException ex){
-			em.clear();
-			throw new DbException(ex.getMessage(), ex);
-		}catch(TransactionRequiredException ex){
-			em.clear();
-			throw new DbException(ex.getMessage(), ex);
-		}catch(RollbackException ex){
+		}catch(Exception ex){
+			log.error("Failed to persist object in database. $exception: " + ex.getMessage());
 			rollback();
 			throw new DbException(ex.getMessage(), ex);
+//		}catch(EntityExistsException ex){
+//			em.clear();
+//			throw new DbException(ex.getMessage(), ex);
+//		}catch(IllegalArgumentException ex){
+//			em.clear();
+//			throw new DbException(ex.getMessage(), ex);
+//		}catch(TransactionRequiredException ex){
+//			em.clear();
+//			throw new DbException(ex.getMessage(), ex);
+//		}catch(RollbackException ex){
+//			rollback();
+//			throw new DbException(ex.getMessage(), ex);
 		}finally{
-			//em.clear();
+			em.clear();
 		}
 	}
 
@@ -234,7 +240,9 @@ public class Db {
 	
 	private void rollback() throws DbException{
 		try{
-			em.getTransaction().rollback();
+			if(em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
 			
 		}catch(IllegalStateException ex){
 			throw new DbException("Invalid em state to rollback", ex);

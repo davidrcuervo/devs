@@ -30,7 +30,7 @@ import org.apache.logging.log4j.LogManager;
 
 public class DapManager {
 	
-	final static Logger log4j = LogManager.getLogger(DapManager.class);
+	private final static Logger log4j = LogManager.getLogger(DapManager.class);
 	
 	private Properties settings;
 	private LdapConnectionPool connectionPool;
@@ -117,8 +117,8 @@ public class DapManager {
 			
 				connections.remove(connection);
 			
-		}catch(IOException | LdapException ex){
-			log4j.error("Failed to close connection", ex);
+		}catch(IOException | LdapException | NullPointerException ex){
+			log4j.error("Failed to close connection. ERROR CODE: " + ex.getMessage());
 		}
 	}
 	
@@ -137,8 +137,8 @@ public class DapManager {
 			config.setUseSsl(Boolean.parseBoolean(settings.getProperty("use_ssl")));
 			log4j.debug("$use_tls: " + Boolean.parseBoolean(settings.getProperty("use_tls")));
 			log4j.debug("ssl protocol: " + config.getSslProtocol());
-			//config.setName(String.format(Ldif.TOMCAT_USER_DN().toString()));
-			//config.setCredentials(String.format(settings.getProperty("user_password")));
+			config.setName(String.format(Ldif.TOMCAT_USER_DN().toString()));
+			config.setCredentials(String.format(settings.getProperty("tomcatpassword")));
 		}catch(NumberFormatException ex){
 			throw new DapException("It was not able to connect to the server", ex);
 		}
@@ -151,7 +151,7 @@ public class DapManager {
 		return new LdapConnectionPool(new DefaultPoolableLdapConnectionFactory(factory), poolConfig);
 	}
 	
-	protected String getSetting(String key){
+	public String getSetting(String key){
 		return settings.getProperty(key);
 	}
 	
@@ -184,6 +184,7 @@ public class DapManager {
 //			result.setProperty("user_password", pass);
 			
 		}catch(IOException | AppException ex){
+			log4j.error("Failed to load DAP configuration file. $exception: " + ex.getMessage());
 			throw new DapException(ex.getMessage(), ex);
 		}
 		
@@ -194,58 +195,43 @@ public class DapManager {
 		tomcat = new User("tomcat", getSetting("tomcatpassword"));
 	}
 	
-	protected User getTomcat() {
+	public User getTomcat() {
 		return tomcat;
 	}
 	
 	public static void main(String[] args){
 		
 		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
+		File directory = new File("C:\\Users\\i849921\\git\\devs\\web\\target\\classes"); //SAP lenovo
+		log4j.info("Starting LDAP module");
+		
+		DapManager dapManager = null;
+		LdapConnection connection = null;
 		
 		try{
-			log4j.info("Starting LDAP module");
-			DapManager dapManager = new DapManager(directory);
-			log4j.info("LDAP module has started succesfully");
 			
-			LdapConnection connection = dapManager.createConnection();
-		
-			try {
-				log4j.info("Binding with dap server");
-				connection.bind("uid=1,ou=people,dc=la-etienda,dc=com", "secret");
-				log4j.info("it has binded with dap server succesfully");
+			dapManager = new DapManager(directory);
+			connection = dapManager.createConnection();
+			connection.bind("uid=sysadmin,ou=people,dc=la-etienda,dc=com", "secret");
+							
+//			Example to search entries of a master entry
+								
+			EntryCursor cursor = connection.search("ou=People,dc=la-etienda,dc=com", "(|(cn=tomcat)(cn=sysadmin))", SearchScope.ONELEVEL);
 				
-				/**
-				 * Example to search entries of a master entry
-				 */
-				
-				EntryCursor cursor = connection.search("ou=People,dc=la-etienda,dc=com", "(|(cn=tomcat)(cn=sysadmin))", SearchScope.ONELEVEL);
-				
-				
-				for(Entry entry : cursor) {
-					if(entry != null) {
-						log4j.debug("entry: " + entry.get("uid").getString());
-					}
+			for(Entry entry : cursor) {
+				if(entry != null) {
+					log4j.debug("entry: " + entry.get("uid").getString());
 				}
-				cursor.close();
-				
-				connection.unBind();
-			}catch(LdapException ex) {
-				log4j.error("Failed to bind/search with dap server", ex);
-			} catch (IOException ex) {
-				log4j.error("Failed to close cursor", ex);
-
-			}finally {
-				dapManager.closeConnection(connection);
 			}
-		
-			log4j.info("Stoping LDAP module");
-			dapManager.stopDapServer();
-			log4j.info("LDAP Module has stopped succesfully");
-			
-		}catch(DapException ex){
-			log4j.fatal("Failed to load LDAP module", ex);
+			cursor.close();	
+			connection.unBind();
+		}catch(DapException ex) {
+			log4j.error(ex.getMessage(), ex.getParent());
+		}catch(LdapException | IOException ex) {
+			log4j.error(ex);
 		}finally{
+			dapManager.closeConnection(connection);
+			dapManager.stopDapServer();
 			log4j.info("Game Over");
 		}
 	}
