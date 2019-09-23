@@ -7,7 +7,8 @@ import javax.persistence.*;
 @Table(name="options")
 @NamedQueries({
 	@NamedQuery(name="Option.findall", query="SELECT o FROM Option o"),
-	@NamedQuery(name="Option.findByName", query="SELECT o FROM Option o where o.name = :name and o.variable = :variable")
+	@NamedQuery(name="Option.findByName", query="SELECT o FROM Option o where o.name = :name and o.variable = :variable"),
+	@NamedQuery(name="Option.findByOptionAndVariable", query="SELECT o FROM Option o WHERE o.name = :option and o.variable.name = :variable")
 })
 
 public class Option implements Serializable {

@@ -4,7 +4,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
-import javax.persistence.PersistenceException;
+//import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 import javax.persistence.TransactionRequiredException;
 
@@ -207,7 +207,7 @@ public class Db {
 //			rollback();
 //			throw new DbException(ex.getMessage(), ex);
 		}finally{
-			em.clear();
+//			em.clear();
 		}
 	}
 
@@ -219,20 +219,20 @@ public class Db {
 			em.remove(entity);
 			em.getTransaction().commit();
 			result = true;
-		}catch(IllegalArgumentException ex){
-			em.clear();
-			throw new DbException("The entity to remove is not an entity or is a detached entity", ex);
-		}catch(IllegalStateException ex){
-			em.clear();
+		}catch(Exception ex){
+			rollback();
 			throw new DbException(ex.getMessage(), ex);
-		}catch(TransactionRequiredException ex){
-			em.clear();
-			throw new DbException(ex.getMessage(), ex);
-		}catch(RollbackException ex){
-			em.getTransaction().rollback();
-			//rollback();
+//		}catch(IllegalStateException ex){
+//			em.clear();
+//			throw new DbException(ex.getMessage(), ex);
+//		}catch(TransactionRequiredException ex){
+//			em.clear();
+//			throw new DbException(ex.getMessage(), ex);
+//		}catch(RollbackException ex){
+//			em.getTransaction().rollback();
+//			//rollback();
 		}finally{
-			
+//			em.clear();
 		}
 		
 		return result;
@@ -244,13 +244,14 @@ public class Db {
 				em.getTransaction().rollback();
 			}
 			
-		}catch(IllegalStateException ex){
-			throw new DbException("Invalid em state to rollback", ex);
-		}catch(PersistenceException ex){
-			throw new DbException("Unexpected error while rolling back transaction", ex);
-		}finally{
-			em.clear();
+		}catch(Exception ex){
+			throw new DbException(ex.getMessage(), ex);
+//		}catch(PersistenceException ex){
+//			throw new DbException("Unexpected error while rolling back transaction", ex);
 		}
+//		finally{
+//			em.clear();
+//		}
 	}
 	/**
 	 * 

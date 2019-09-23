@@ -43,6 +43,7 @@ public class DapManager {
 		Ldif.setDomain(settings.getProperty("domain"));
 		connectionPool = startLdapConnectionPool();
 		setTomcat();
+		testConnection();
 	}
 	
 
@@ -197,6 +198,19 @@ public class DapManager {
 	
 	public User getTomcat() {
 		return tomcat;
+	}
+	
+	private void testConnection() throws DapException{
+		LdapConnection conn = createConnection();
+		try {
+			conn.bind();
+			conn.unBind();
+		} catch (LdapException e) {
+			log4j.error("Connectoin test failed. $Exception: " + e.getMessage());
+			throw new DapException(e.getMessage(), e);
+		}finally {
+			closeConnection(conn);
+		}
 	}
 	
 	public static void main(String[] args){

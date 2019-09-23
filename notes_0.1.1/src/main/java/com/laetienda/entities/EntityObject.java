@@ -37,7 +37,7 @@ public abstract class EntityObject {
 		
 		errorList.add(error);
 		errors.put(list, errorList);
-		log4j.info("Adding error message to hashmap. $list: " + list + " - $error: " + error);
+		log4j.debug("Adding error message to hashmap. $list: " + list + " - $error: " + error);
 	}
 	
 	public HashMap<String, List<String>> getErrors(){

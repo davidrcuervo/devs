@@ -78,6 +78,35 @@ public class Dap {
 		}
 	}
 	
+	public Entry getUser(String username, String password) throws DapException {
+		
+		EntryCursor search;
+		Entry result = null;
+		int c = 0;
+		
+		if(checkPassword(username, password) == null) {
+			throw new DapException("Username and password not correct");
+		}else {
+			try {
+				Dn peopleDn = new Dn("ou=people", baseDn.getName());
+				search = connection.search(peopleDn, "(uid=" + username + ")", SearchScope.ONELEVEL);
+				
+				for(Entry entry : search) {
+					result = entry;
+					c++;
+				}
+				if(c > 1) {
+					throw new DapException("Search find more than one entry with same username");
+				}
+				
+			} catch (LdapException e) {
+				throw new DapException(e.getMessage(), e);	
+			} 
+		}
+		
+		return result;
+	}
+	
 	public void deleteUser(User user) {
 		//TODO implement method that deletes user frod LDAP directory for testing proposes we can remove it manually.
 	}
@@ -163,7 +192,7 @@ public class Dap {
 		}
 	}
 	
-	public Dap checkPassword (String uid, String password) {
+	public Dap checkPassword (String uid, String password) throws DapException {
 		boolean result = false;
 		
 		try {
@@ -177,14 +206,14 @@ public class Dap {
 			
 		} catch (LdapException e) {
 			log4j.info("Failed to bind checkPassword for user. $username: " + uid);
-			log4j.debug("Failed to bind checkPassword for user. $username: " + uid, e);
+			throw new DapException(e.getMessage(), e);
 		}finally {
 
 		}
 		
 		return result ? this : null;
 	}
-	
+	@Deprecated
 	public User userSyncDbAndLdap(User user) throws DapException {
 		
 		EntryCursor cursor = null;

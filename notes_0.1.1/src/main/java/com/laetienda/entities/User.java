@@ -35,11 +35,11 @@ public class User extends Objeto implements Serializable{
 	@Column(name="\"email\"", length=254, unique=true, nullable=false)
 	private String email;
 	
-	@OneToOne(cascade=CascadeType.PERSIST)
+	@OneToOne(cascade= {CascadeType.REFRESH})
 	@JoinColumn(name="\"status_option_id\"", nullable=false, unique=false)
 	private Option status;
 	
-	@OneToOne(cascade=CascadeType.PERSIST)
+	@OneToOne(cascade= {CascadeType.REFRESH})
 	@JoinColumn(name="\"language_option_id\"", nullable=false, unique=false)
 	private Option language;
 	
@@ -79,8 +79,12 @@ public class User extends Objeto implements Serializable{
 	public String getUid() {
 		return uid;
 	}
-
+	
 	public void setUid(String uid, Db db) {
+		setUid(uid, db.getEm());
+	}
+
+	public void setUid(String uid, EntityManager em) {
 		this.uid = uid;
 		
 		if(uid == null || uid.isEmpty()) {
@@ -94,20 +98,23 @@ public class User extends Objeto implements Serializable{
 				addError("uid", "Username can't have more than 64 characters");
 			}
 			
-			List<User> test = db.getEm().createNamedQuery("User.findByUid", User.class).setParameter("uid", uid).getResultList();
+			List<User> test = em.createNamedQuery("User.findByUid", User.class).setParameter("uid", uid).getResultList();
 			
 			if(test != null && test.size() > 0) {
 				addError("uid", "This username has already been registered");
 			}
-			
 		}
 	}
 
 	public String getEmail() {
 		return email;
 	}
-
+	
 	public void setEmail(String email, Db db) {
+		setEmail(email, db.getEm());
+	}
+
+	public void setEmail(String email, EntityManager em) {
 		this.email = email;
 		
 		if(email == null || email.isEmpty()) {
@@ -117,7 +124,7 @@ public class User extends Objeto implements Serializable{
 				addError("email", "The mail can't have more than 255 charcters");
 			}
 			
-			List<User> test = db.getEm().createNamedQuery("User.findByEmail", User.class).setParameter("email", email).getResultList();
+			List<User> test = em.createNamedQuery("User.findByEmail", User.class).setParameter("email", email).getResultList();
 			
 			if(test != null && test.size() > 0) {
 				addError("email", "This email address has already been registered");
@@ -152,7 +159,10 @@ public class User extends Objeto implements Serializable{
 			addError("language", "Select a valid language");
 		}
 	}
-	
+	/**
+	 * 
+	 * @param cn CN DAP Direcotory entry, common used for the First Name
+	 */
 	public void setCn(String cn) {
 		this.cn = cn;
 		
@@ -171,6 +181,10 @@ public class User extends Objeto implements Serializable{
 		return cn;
 	}
 	
+	/**
+	 * 
+	 * @param sn SN (SureName) LDAP entry, common used for last name
+	 */
 	public void setSn(String sn) {
 		this.sn = sn;
 		
