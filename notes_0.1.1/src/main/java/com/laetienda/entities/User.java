@@ -1,29 +1,21 @@
 package com.laetienda.entities;
 
 import java.io.Serializable;
-import java.util.List;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.persistence.*;
 import org.apache.logging.log4j.Logger;
-import org.apache.directory.api.ldap.model.cursor.CursorException;
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.entry.DefaultEntry;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
-import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.logging.log4j.LogManager;
 
-import com.laetienda.dap.Dap;
 import com.laetienda.dap.DapException;
 import com.laetienda.dap.DapManager;
 import com.laetienda.dap.Ldap;
-import com.laetienda.db.Db;
 
 /**
  * @author I849921
@@ -34,8 +26,8 @@ import com.laetienda.db.Db;
 @NamedQueries({
 	@NamedQuery(name="User.findall", query="SELECT u FROM User u"),
 	@NamedQuery(name="User.findByUid", query="SELECT u FROM User u WHERE u.uid = :uid"),
-	@NamedQuery(name="User.findByEmail", query="SELECT u FROM User u WHERE u.email = :email"),
-	@NamedQuery(name="User.findByUidOrEmail", query="SELECT u FROM User u WHERE u.email = :input OR u.uid = :input")
+//	@NamedQuery(name="User.findByEmail", query="SELECT u FROM User u WHERE u.email = :email"),
+//	@NamedQuery(name="User.findByUidOrEmail", query="SELECT u FROM User u WHERE u.email = :input OR u.uid = :input")
 })
 public class User extends Objeto implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -58,6 +50,9 @@ public class User extends Objeto implements Serializable{
 	
 	@Transient
 	private Entry ldapEntry;
+	
+	@Transient
+	private Ldap ldap;
 	/*
 	@Transient
 	private String cn;
@@ -72,7 +67,7 @@ public class User extends Objeto implements Serializable{
 	private String description;
 	*/
 	public User() {
-		
+		ldap = new Ldap();
 	}
 	
 	/**
@@ -81,16 +76,52 @@ public class User extends Objeto implements Serializable{
 	 * @throws DapException 
 	 */
 	public User(String uid/*, String password*/) throws DapException {
+		ldap = new Ldap();
 		this.uid = uid;
 		
 	}
 	
 	public User(String uid, String email, Option status, Option language, DapManager dapManager) throws DapException {
-		ldapEntry = new DefaultEntry();
+		ldap = new Ldap();
+		ldapEntry = setLdapEntry(uid, dapManager);
+		
 		setUid(uid, dapManager);
 		setEmail(email, dapManager);
 		setStatus(status);
 		setLanguage(language);
+	}
+
+	private Entry setLdapEntry(String uid2, DapManager dapManager) throws DapException {
+		
+		LdapConnection conn = dapManager.createLdap();
+		Entry result = ldap.searchDn(uid2, conn);
+		
+		try {
+			if(result == null) {
+				Dn dn = new Dn(uid2);
+				result = new DefaultEntry(dn);
+				result.add("objectclass", "person")
+					.add("objectclass", "inetOrgPerson")
+					.add("uid", dn.getRdn(0).getValue());
+//					.add("objectClass", "krb5KDCEntry")
+//					.add("objectClass", "krb5Principal")
+//					.add("objectclass", "organizationalPerson")
+//					.add("objectclass", "top")
+//					.add("uid",user.getUid())
+//					.add("cn", user.getCn())
+//					.add("krb5KeyVersionNumber", "1")
+//					.add("sn", user.getSn())
+//					.add("krb5PrincipalName", user.getUid() + "@" + domain.toUpperCase())
+//					.add("userpassword", user.getPassword())
+					//.add("description", "")
+//					.add("ou", "People");
+			}
+		} catch (LdapException e) {
+			throw new DapException(e);
+		} finally {
+			dapManager.closeConnection(conn);			
+		}
+		return result;
 	}
 
 	public String getUid() {
@@ -115,9 +146,6 @@ public class User extends Objeto implements Serializable{
 			if(uid.length() > 64) {
 				addError("uid", "Username can't have more than 64 characters");
 			}
-			
-			
-			
 		}
 	}
 	
@@ -142,17 +170,17 @@ public class User extends Objeto implements Serializable{
 			if(email == null || email.isEmpty()) {
 				addError("email", "The email can't be empty");
 			}else if(email.length() > 254) {
-					addError("email", "The mail can't have more than 255 charcters");
+				addError("email", "The mail can't have more than 255 charcters");
 			}else {	
 			
 				ldap = dapManager.createLdap();
 				EntryCursor search = ldap.search(dapManager.getPeople().getDn(), "(mail=" + email + ")", SearchScope.ONELEVEL);
 			
-				if(search.next()) {
+				if(search.iterator().hasNext()) {
 					addError("email", "This email address has already been registered");
 				}
 			}
-		} catch (DapException | LdapException | CursorException e) {
+		} catch (DapException | LdapException e) {
 			addError("email", "The application were not able to find out if email has been registered");
 			throw new DapException(e);
 		}finally {
@@ -209,23 +237,35 @@ public class User extends Objeto implements Serializable{
 	/**
 	 * 
 	 * @param cn CN DAP Direcotory entry, common used for the First Name
+	 * @throws DapException 
 	 */
 	public void setCn(String cn) {
-		this.cn = cn;
 		
-		if(cn == null || cn.isEmpty()) {
-			addError("cn", "First Name can't be empty");
-		}else {
-			if(cn.length() > 254) {
-				addError("cn", "The name can't have more than 255 charcters");
+		try {
+			ldapEntry.add("cn", cn);
+	
+			if(cn == null || cn.isEmpty()) {
+				addError("cn", "First Name can't be empty");
+			}else {
+				if(cn.length() > 254) {
+					addError("cn", "The name can't have more than 255 charcters");
+				}
+				
+				//TODO validate that cn has only letters, no numbers or special characters
 			}
-			
-			//TODO validate that cn has only letters, no numbers or special characters
+		} catch (LdapException e) {
+			addError("cn", "The name is not valid");
 		}
 	}
 
-	public String getCn() {
-		return cn;
+	public String getCn() throws DapException {
+		String result = null;
+		try {
+			result = ldapEntry.get("cn").getString();
+		} catch (LdapInvalidAttributeValueException e) {
+			throw new DapException(e);
+		}
+		return result;
 	}
 	
 	/**
@@ -233,71 +273,107 @@ public class User extends Objeto implements Serializable{
 	 * @param sn SN (SureName) LDAP entry, common used for last name
 	 */
 	public void setSn(String sn) {
-		this.sn = sn;
 		
-		if(sn == null || sn.isEmpty()) {
-			addError("sn", "Last name can't be empty");
-		}else {
-			if(sn.length() > 254) {
-				addError("sn", "The last name can't have more than 255 charcters");
-			}
+		try {
+			ldapEntry.add("sn", sn);
 			
-			//TODO validate that sn has only letters, no numbers or special characters
+			if(sn == null || sn.isEmpty()) {
+				addError("sn", "Last name can't be empty");
+			}else {
+				if(sn.length() > 254) {
+					addError("sn", "The last name can't have more than 255 charcters");
+				}
+				
+				//TODO validate that sn has only letters, no numbers or special characters
+			}
+		} catch (LdapException e) {
+			addError("sn", "The last name is not valid");
+			log4j.debug("Exception adding sn to ldap entry." + e.getMessage());
 		}
 	}	
 	
-	public String getSn() {
+	public String getSn() throws DapException {
 		String result = new String();
+		String sn;
 		
-		if(sn == null || sn.equals("Snless")) {
-			log4j.debug("sn is null or Snless. $sn: " + sn);
-		}else {
-			result = sn;
+		try {
+			sn = ldapEntry.get("sn").getString();
+		
+			if(sn == null || sn.equals("Snless")) {
+				log4j.debug("sn is null or Snless. $sn: " + sn);
+			}else {
+				result = sn;
+			}
+		
+		} catch (LdapInvalidAttributeValueException e) {
+			throw new DapException(e);
 		}
-		
 		return result;
 	}
 
 	public void setPassword(String password, String password2) {
-		this.password = password;
 		
-		if(password == null || password.isEmpty()) {
-			addError("password", "The password can't be empty");
-		}else {
-			if(!password.equals(password2)) {
-				addError("password", "The password and confirmation should be identical");
+		try {
+			ldapEntry.add("userPassword", password);
+
+			if(password == null || password.isEmpty()) {
+				addError("password", "The password can't be empty");
+			}else {
+				if(!password.equals(password2)) {
+					addError("password", "The password and confirmation should be identical");
+				}
+				
+				if(password.length() < 8) {
+					addError("password", "The password must have at least 8 characters");
+				}
+				
+				if(password.length() > 255) {
+					addError("password", "The password can't have more than 255 characters");
+				}
 			}
-			
-			if(password.length() < 8) {
-				addError("password", "The password must have at least 8 characters");
-			}
-			
-			if(password.length() > 255) {
-				addError("password", "The password can't have more than 255 characters");
-			}
+		} catch (LdapException e) {
+			addError("password", "Password is not valid");
+			log4j.debug("Exception adding description to ldap entry." + e.getMessage());
 		}
 	}	
 	
+	/*
 	public String getPassword() {
-		return password;
+		
 	}
+	*/
 
 	public void setDescription(String description) {
-		this.description = description;
 		
-		if(description == null || description.isEmpty()) {
-			addError("description", "Description can't be empty");
-		}else {
-			if(description.length() > 254) {
-				addError("description", "The description can't have more than 255 charcters");
+		try {
+			ldapEntry.add("description", description);
+			if(description == null || description.isEmpty()) {
+				addError("description", "Description can't be empty");
+			}else {
+				if(description.length() > 254) {
+					addError("description", "The description can't have more than 255 charcters");
+				}
 			}
+		} catch (LdapException e) {
+			addError("description", "This not a valid description");
+			log4j.debug(e.getMessage());
 		}
 	}	
 	
 	public String getName() {
-		return getCn() + " " + getSn();
+		String result = null;
+		
+		try {
+			result = ldapEntry.get("cn").getString() + " " + ldapEntry.get("sn").getString();
+		} catch (LdapInvalidAttributeValueException e) {
+			result = new String();
+			log4j.debug("EXCEPTION: while getting name from person ldap attribute. " + e.getMessage());
+		}
+		
+		return result;
 	}
 	
+	/*
 	public String getFullName(Dap dap) {
 		
 		User temp = this;
@@ -313,7 +389,7 @@ public class User extends Objeto implements Serializable{
 		
 		return temp.getCn() + " " + temp.getSn();
 	}
-	/*
+	
 	public String getFullName(Object dap) {
 		String result = new String();
 		if(dap instanceof Dap) {
@@ -322,8 +398,16 @@ public class User extends Objeto implements Serializable{
 		return result;
 	}
 	*/
+	
 	public String getDescription() {
-		return description;
+		String result = new String();
+		try {
+			result = ldapEntry.get("description").getString();
+		} catch (LdapInvalidAttributeValueException e) {
+			result = new String();
+			log4j.debug("EXCEPTION: while getting description from person ldap attribute. " + e.getMessage());
+		}
+		return result;
 	}
 	
 }

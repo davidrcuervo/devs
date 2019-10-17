@@ -4,11 +4,7 @@ import java.io.IOException;
 
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.entry.DefaultEntry;
-import org.apache.directory.api.ldap.model.entry.DefaultModification;
 import org.apache.directory.api.ldap.model.entry.Entry;
-import org.apache.directory.api.ldap.model.entry.Modification;
-import org.apache.directory.api.ldap.model.entry.ModificationOperation;
-import org.apache.directory.api.ldap.model.exception.LdapAuthenticationException;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
@@ -23,15 +19,16 @@ public class Dap {
 	private final static Logger log4j = LogManager.getLogger(Dap.class);
 	
 	private LdapConnection connection;
-	private DefaultEntry base;
-	private DefaultEntry tomcat;
+	private Entry base;
+	private Entry tomcat;
 	private String domain;
 	
-	public Dap(LdapConnection connection, DefaultEntry tomcat, DefaultEntry baseDn, String domain){
+	public Dap(LdapConnection connection, Entry tomcat, Entry base, String domain){
 		this.connection = connection;
 		this.tomcat = tomcat;
 		this.domain = domain;
-		setBase(baseDn);
+		this.base = base;
+//		setBase(baseDn);
 	}
 	
 	@Deprecated
@@ -40,11 +37,12 @@ public class Dap {
 		EntryCursor search = null;
 		
 		try {
-			log4j.debug("tomcat uid: " + tomcat.getUid());
-			Dn peopleDn = new Dn("ou=People", baseDn.getName());
-			Dn tomcatDn = new Dn("uid=" + tomcat.getUid(), "ou=People", baseDn.getName());
 			
-			connection.bind(tomcatDn, tomcat.getPassword());
+			log4j.debug("tomcat uid: " + tomcat.getDn().getName());
+			Dn peopleDn = new Dn("ou=people," + base.getDn().getName());
+//			Dn tomcatDn = new Dn("uid=" + tomcat.getUid(), "ou=People", baseDn.getName());
+			
+//			connection.bind(tomcat.getDn(), tomcat.getPassword());
 			
 			search = connection.search(peopleDn, 
 					"(|(uid=" + newUser.getUid() + ")(mail=" + newUser.getEmail() + "))", 
@@ -90,7 +88,7 @@ public class Dap {
 			throw new DapException("Username and password not correct");
 		}else {
 			try {
-				Dn peopleDn = new Dn("ou=people", baseDn.getName());
+				Dn peopleDn = new Dn("ou=people", base.getDn().getName());
 				search = connection.search(peopleDn, "(uid=" + username + ")", SearchScope.ONELEVEL);
 				
 				for(Entry entry : search) {
@@ -108,7 +106,7 @@ public class Dap {
 		
 		return result;
 	}
-	
+	/*
 	@Deprecated
 	public void changeUserPassword(User user) throws DapException {
 		if(user != null && user.getPassword() != null && !user.getPassword().isEmpty()) {
@@ -141,11 +139,12 @@ public class Dap {
 			throw new DapException("User or password was null or empty");
 		}
 	}
+	*/
 	
 	public Entry getDapUserEntry(User user) throws DapException  {
 		Entry result = null;
 		try {
-			Dn userDn = new Dn("uid=" + user.getUid(), "ou=People", baseDn.getName());
+			Dn userDn = new Dn("uid=" + user.getUid(), "ou=People", base.getDn().getName());
 			result = new DefaultEntry(userDn);
 			result.add("objectclass", "person")
 				.add("objectclass", "inetOrgPerson")
@@ -158,7 +157,7 @@ public class Dap {
 				.add("krb5KeyVersionNumber", "1")
 				.add("sn", user.getSn())
 				.add("krb5PrincipalName", user.getUid() + "@" + domain.toUpperCase())
-				.add("userpassword", user.getPassword())
+//				.add("userpassword", user.getPassword())
 				//.add("description", "")
 				.add("ou", "People");
 		} catch (LdapException e) {
@@ -167,7 +166,7 @@ public class Dap {
 		return result;
 	}
 	
-	public DefaultEntry getBase() {
+	public Entry getBase() {
 		return base;
 	}
 
@@ -196,7 +195,7 @@ public class Dap {
 		boolean result = false;
 		
 		try {
-			Dn userDn = new Dn("uid=" + uid, "ou=People", baseDn.getName());
+			Dn userDn = new Dn("uid=" + uid, "ou=People", base.getDn().getName());
 			connection.bind(userDn, password);
 			
 			if(connection.isConnected() && connection.isAuthenticated()) {
@@ -220,15 +219,14 @@ public class Dap {
 		
 		try {
 			log4j.info("Synchronizing db user and LDAP. $uid: " + user.getUid());
-			Dn userDn = new Dn("uid=" + user.getUid(), "ou=People", baseDn.getName());
+			Dn userDn = new Dn("uid=" + user.getUid(), "ou=People", base.getDn().getName());
 			log4j.debug("$dap: "+ this);
 			log4j.debug("$connection.isConnected: " + (connection.isConnected() ? "true" : "false"));
 			log4j.debug("$connection.isAuthenticated: " + (connection.isAuthenticated() ? "true" : "false"));
 			
 			//if(!connection.isAuthenticated()){
-				Dn tomcatDn = new Dn("uid=" + tomcat.getUid(), "ou=People", baseDn.getName());
-				log4j.debug("$tomcatDn: " + tomcatDn.getName());
-				connection.bind(tomcatDn, tomcat.getPassword());
+				log4j.debug("$tomcatDn: " + tomcat.getDn().getName());
+//				connection.bind(tomcat, tomcat.getPassword());
 		//	}
 			
 			cursor = connection.search(userDn, "(objectclass=*)", SearchScope.OBJECT);

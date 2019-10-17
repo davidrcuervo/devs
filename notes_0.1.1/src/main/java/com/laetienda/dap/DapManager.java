@@ -14,13 +14,13 @@ import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 
 import com.laetienda.app.Aes;
 import com.laetienda.app.AppException;
-import com.laetienda.entities.User;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.entry.DefaultEntry;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.name.Dn;
@@ -38,21 +38,35 @@ public class DapManager {
 	private LdapConnectionPool connectionPool;
 	private List<LdapConnection> connections;
 	private Entry people;
+	private Entry tomcat;
+	private Entry base;
 	
+	/*
 	public Entry getPeople() {
 		return people;
 	}
-
+	*/
 
 	public DapManager(File directory) throws DapException{
 		connections = new ArrayList<LdapConnection>();
 		settings = loadSettings(directory);
 		Ldif.setDomain(settings.getProperty("domain"));
-		connectionPool = startLdapConnectionPool();
-		people = setPeopleLdapEntry();
+		setTomcatAndBase();
+//		connectionPool = startLdapConnectionPool();
+//		people = setPeopleLdapEntry();
 		testConnection();
 	}
 	
+
+	private void setTomcatAndBase() throws DapException {
+		try {
+			base = new DefaultEntry(Ldif.getDomain());
+			tomcat = new DefaultEntry("uid=tomcat,ou=people" + base.getDn().getName());
+		} catch (LdapException e) {
+			throw new DapException(e);
+		}
+	}
+
 
 	/*
 	public void startDapServer() throws DapException{
@@ -78,7 +92,7 @@ public class DapManager {
 		connections.removeAll(connections);
 		
 	}
-	
+	/*
 	public synchronized LdapConnection createConnection() throws DapException{
 		log4j.debug("Creating LDAP connection from pool");
 		LdapConnection connection = null;
@@ -87,8 +101,8 @@ public class DapManager {
 			connection = connectionPool.getConnection();
 			if(connection != null) {
 				
-					connections.add(connection);
-					log4j.debug("LDAP Connection has been created succesfully");
+				connections.add(connection);
+				log4j.debug("LDAP Connection has been created succesfully");
 			}
 			
 		}catch(LdapException ex){
@@ -99,13 +113,17 @@ public class DapManager {
 		
 		return connection;
 	}
+	*/
 	
 	public synchronized Dap createDap() throws DapException {
 		Dap result = null;
 		
 		try {
-			result = new Dap(createConnection(), getTomcat(), new Dn(Ldif.getDomain()), settings.getProperty("domain"));
-		}catch(LdapInvalidDnException ex) {
+			Dn baseDn = new Dn(Ldif.getDomain());
+			DefaultEntry ldapTomcat = new DefaultEntry("uid=tomcat,ou=people", baseDn);
+			DefaultEntry ldapBaseDit = new DefaultEntry(baseDn);
+			result = new Dap(createLdap(), ldapTomcat, ldapBaseDit, settings.getProperty("domain"));
+		}catch(LdapException ex) {
 			throw new DapException(ex);
 		}
 			
@@ -113,10 +131,11 @@ public class DapManager {
 	}
 	
 	public synchronized LdapConnection createLdap() throws DapException {
-		
+		log4j.debug("Connection to {}:{}", getSetting("server_address"), Integer.parseInt(getSetting("service_port")));
 		LdapConnection conn = new LdapNetworkConnection(getSetting("server_address"), Integer.parseInt(getSetting("service_port")) ,true);
 		try {
-			conn.bind("tomcat", getSetting("tomcatpassword"));
+			conn.bind(tomcat.getDn(), getSetting("tomcatpassword"));
+//			conn.bind()
 		} catch (LdapException e) {
 			closeConnection(conn);
 			throw new DapException(e);
@@ -127,25 +146,28 @@ public class DapManager {
 	public synchronized void closeConnection(LdapConnection connection) throws DapException{
 		try{
 			
+			if(connection != null) {
 				if(connection.isConnected() || connection.isAuthenticated()) {
 					connection.unBind();
 				}
 				
-				if(connection != null && connection.isConnected()){
+				if(connection.isConnected()){
 					connection.close();
 				}
-			
-				connections.remove(connection);
+			}
+		
+			connections.remove(connection);
 			
 		}catch(IOException | LdapException | NullPointerException ex){
 			throw new DapException(ex);
 		}
 	}
 	
-	public void closeConnection(Dap dap) {
+	public void closeConnection(Dap dap) throws DapException {
 		if(dap != null && dap.getConnection() != null) closeConnection(dap.getConnection());
 	}
 	
+	/*
 	private LdapConnectionPool startLdapConnectionPool() throws DapException{
 		
 		LdapConnectionConfig config = new LdapConnectionConfig();
@@ -170,7 +192,7 @@ public class DapManager {
 		
 		return new LdapConnectionPool(new DefaultPoolableLdapConnectionFactory(factory), poolConfig);
 	}
-	
+	*/
 	public String getSetting(String key){
 		return settings.getProperty(key);
 	}
@@ -210,7 +232,7 @@ public class DapManager {
 		
 		return result;
 	}
-	
+	/*
 	private Entry setPeopleLdapEntry() throws DapException {
 		
 		int c=0;
@@ -237,21 +259,23 @@ public class DapManager {
 		
 		return result;
 	}
+	*/
 	
 	private void testConnection() throws DapException{
-		LdapConnection conn = createConnection();
-		try {
-			conn.bind();
-			conn.unBind();
-		} catch (LdapException e) {
-			log4j.error("Connectoin test failed. $Exception: " + e.getMessage());
-			throw new DapException(e.getMessage(), e);
-		}finally {
-			closeConnection(conn);
+		Ldap ldap = new Ldap();
+		LdapConnection conn = createLdap();
+
+		Entry result = ldap.searchDn(base.getDn().getName(), conn);
+			
+		if(result == null) {
+			throw new DapException("Failed to connect and read database");				
+		}else {
+			log4j.debug("Application has connected to LDAP service succesfully");
 		}
+		closeConnection(conn);
 	}
 	
-	public static void main(String[] args){
+	public static void main(String[] args) throws DapException{
 		
 		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
 		File directory = new File("C:\\Users\\i849921\\git\\devs\\web\\target\\classes"); //SAP lenovo
@@ -259,28 +283,40 @@ public class DapManager {
 		
 		DapManager dapManager = null;
 		LdapConnection connection = null;
+		Ldap ldap = new Ldap();
 		
 		try{
 			
 			dapManager = new DapManager(directory);
-			connection = dapManager.createConnection(); 
-			connection.bind("uid=sysadmin,ou=people,dc=la-etienda,dc=com", "secret");
+			connection = dapManager.createLdap();
+//			connection = new LdapNetworkConnection("homeServer3.la-etienda.com", 636, true); 
+//			connection.bind("cn=admin,dc=la-etienda,dc=com", "mcee19de");
 							
 //			Example to search entries of a master entry
-								
-			EntryCursor cursor = connection.search("ou=People,dc=la-etienda,dc=com", "(|(cn=tomcat)(cn=sysadmin))", SearchScope.ONELEVEL);
+//			EntryCursor cursor = connection.search("ou=People,dc=la-etienda,dc=com", "(|(cn=tomcat)(cn=sysadmin))", SearchScope.ONELEVEL);
 				
+			Entry result = ldap.searchDn("cn=admin,dc=la-etienda,dc=com", connection);
+			
+			if(result == null) {
+				log4j.debug("Nothing found");				
+			}else {
+				log4j.debug("Object found in OpenLDAP");
+				log4j.debug("dn: {}", result.getDn().getName());
+				log4j.debug("Attribute cn: {}", result.get("description").getString());
+			}
+
+			/*
 			for(Entry entry : cursor) {
 				if(entry != null) {
 					log4j.debug("entry: " + entry.get("uid").getString());
 				}
 			}
-			cursor.close();	
-			connection.unBind();
-		}catch(DapException ex) {
-			log4j.error(ex.getMessage(), ex.getParent());
-		}catch(LdapException | IOException ex) {
-			log4j.error(ex);
+			cursor.close();
+			*/	
+//			connection.unBind();
+		}catch(DapException | LdapException e) {
+			log4j.error(e);
+			e.printStackTrace();
 		}finally{
 			dapManager.closeConnection(connection);
 			dapManager.stopDapServer();

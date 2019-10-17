@@ -77,8 +77,8 @@ public class TestUsuario {
 		TestUsuario test;
 		try {
 			test = new TestUsuario();
-//			test.testSave();
-			test.testFindUser();
+			test.testSave();
+//			test.testFindUser();
 		} catch (AppException e) {
 			log.error(e.getMessage(), e.getParent());
 		}

@@ -4,8 +4,8 @@
 	<comment>Configuration properties for Directory Access Protocol (DAP)</comment>
 	<entry key="app_name">la-etienda</entry>
 	<entry key="domain">la-etienda.com</entry>
-	<entry key="server_address">localhost</entry>
-	<entry key="service_port">10636</entry>
+	<entry key="server_address">homeServer3.la-etienda.com</entry>
+	<entry key="service_port">636</entry>
 	<entry key="use_tls">true</entry>
 	<entry key="use_ssl">true</entry>
 	<!-- <entry key="user_password">12345</entry> -->
