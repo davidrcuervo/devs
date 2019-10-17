@@ -144,7 +144,7 @@ public class Installer {
 			if(!connection.exists(Ldif.PEOPLE_DN())){
 				connection.add(Ldif.PEOPLE_ENTRY());
 			}
-			
+			/*
 			if(!connection.exists(Ldif.SYSADMIN_DN())){
 				connection.add(Ldif.SYSADMIN_ENTRY(rootPassword));
 			}
@@ -152,11 +152,11 @@ public class Installer {
 			if(!connection.exists(Ldif.TOMCAT_USER_DN())){
 				connection.add(Ldif.TOMCAT_USER_ENTRY(dapManager.getSetting("tomcatpassword")));
 			}
-			
+			*/
 			if(!connection.exists(Ldif.GROUPS_DN())){
 				connection.add(Ldif.GROUPS_ENTRY());
 			}
-			
+			/*
 			if(!connection.exists(Ldif.SYSADMINS_DN())){
 				connection.add(Ldif.SYSADMINS_ENTRY());
 			}
@@ -164,7 +164,7 @@ public class Installer {
 			if(!connection.exists(Ldif.MANAGERS_DN())){
 				connection.add(Ldif.MAANGERS_ENTRY());
 			}
-			
+			*/
 			if(!connection.exists(Ldif.SERVICES_DN())) {
 				connection.add(Ldif.SERVICES_ENTRY());
 			}
@@ -176,7 +176,7 @@ public class Installer {
 			if(!connection.exists(Ldif.KRBTGT_DN())) {
 				connection.add(Ldif.KRBTGT_ENTRY());
 			}
-			
+			/*
 			if(!connection.exists(Ldif.ACI_SYSADMIN_DN())){
 				connection.add(Ldif.ACI_SYSADMIN());
 			}
@@ -192,7 +192,7 @@ public class Installer {
 			if(!connection.exists(Ldif.ACI_TOMCAT_DN())){
 				connection.add(Ldif.ACI_TOMCAT_SUBENTRY());
 			}
-			
+			*/
 			log4j.info("... LDAP entries to LDAP directory has been added succesfully");
 			
 		}catch(LdapException ex){

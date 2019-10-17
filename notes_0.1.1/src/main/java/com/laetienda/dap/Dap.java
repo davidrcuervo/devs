@@ -23,17 +23,18 @@ public class Dap {
 	private final static Logger log4j = LogManager.getLogger(Dap.class);
 	
 	private LdapConnection connection;
-	private Dn baseDn;
-	private User tomcat;
+	private DefaultEntry base;
+	private DefaultEntry tomcat;
 	private String domain;
 	
-	public Dap(LdapConnection connection, User tomcat, Dn baseDn, String domain){
+	public Dap(LdapConnection connection, DefaultEntry tomcat, DefaultEntry baseDn, String domain){
 		this.connection = connection;
 		this.tomcat = tomcat;
 		this.domain = domain;
-		setBaseDn(baseDn);
+		setBase(baseDn);
 	}
 	
+	@Deprecated
 	public void insertUser(User newUser) throws DapException {
 		
 		EntryCursor search = null;
@@ -78,6 +79,7 @@ public class Dap {
 		}
 	}
 	
+	@Deprecated
 	public Entry getUser(String username, String password) throws DapException {
 		
 		EntryCursor search;
@@ -107,10 +109,7 @@ public class Dap {
 		return result;
 	}
 	
-	public void deleteUser(User user) {
-		//TODO implement method that deletes user frod LDAP directory for testing proposes we can remove it manually.
-	}
-	
+	@Deprecated
 	public void changeUserPassword(User user) throws DapException {
 		if(user != null && user.getPassword() != null && !user.getPassword().isEmpty()) {
 			try {
@@ -168,16 +167,16 @@ public class Dap {
 		return result;
 	}
 	
-	public Dn getBaseDn() {
-		return baseDn;
+	public DefaultEntry getBase() {
+		return base;
 	}
 
 	protected LdapConnection getConnection() {
 		return connection;
 	}
 
-	public void setBaseDn(Dn baseDn) {
-		this.baseDn = baseDn;
+	public void setBase(DefaultEntry base) {
+		this.base = base;
 	}
 	
 	public static void main (String[] args) {
@@ -192,6 +191,7 @@ public class Dap {
 		}
 	}
 	
+	@Deprecated
 	public Dap checkPassword (String uid, String password) throws DapException {
 		boolean result = false;
 		

@@ -7,10 +7,22 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.persistence.*;
 import org.apache.logging.log4j.Logger;
+import org.apache.directory.api.ldap.model.cursor.CursorException;
+import org.apache.directory.api.ldap.model.cursor.EntryCursor;
+import org.apache.directory.api.ldap.model.entry.DefaultEntry;
+import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
+import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
+import org.apache.directory.api.ldap.model.message.SearchScope;
+import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.dap.Dap;
 import com.laetienda.dap.DapException;
+import com.laetienda.dap.DapManager;
+import com.laetienda.dap.Ldap;
 import com.laetienda.db.Db;
 
 /**
@@ -32,9 +44,10 @@ public class User extends Objeto implements Serializable{
 	@Column(name="\"uid\"", length=254, unique=true, nullable=false)
 	private String uid;
 	
+	/*
 	@Column(name="\"email\"", length=254, unique=true, nullable=false)
 	private String email;
-	
+	*/
 	@OneToOne(cascade= {CascadeType.REFRESH})
 	@JoinColumn(name="\"status_option_id\"", nullable=false, unique=false)
 	private Option status;
@@ -43,6 +56,9 @@ public class User extends Objeto implements Serializable{
 	@JoinColumn(name="\"language_option_id\"", nullable=false, unique=false)
 	private Option language;
 	
+	@Transient
+	private Entry ldapEntry;
+	/*
 	@Transient
 	private String cn;
 	
@@ -54,7 +70,7 @@ public class User extends Objeto implements Serializable{
 
 	@Transient
 	private String description;
-	
+	*/
 	public User() {
 		
 	}
@@ -62,16 +78,17 @@ public class User extends Objeto implements Serializable{
 	/**
 	 * This constructor has been made for tomcat, the password will not be validated.
 	 * @param uid
-	 * @param password
+	 * @throws DapException 
 	 */
-	public User(String uid, String password) {
+	public User(String uid/*, String password*/) throws DapException {
 		this.uid = uid;
-		this.password = password;
+		
 	}
 	
-	public User(String uid, String email, Option status, Option language, Db db) {
-		setUid(uid, db);
-		setEmail(email, db);
+	public User(String uid, String email, Option status, Option language, DapManager dapManager) throws DapException {
+		ldapEntry = new DefaultEntry();
+		setUid(uid, dapManager);
+		setEmail(email, dapManager);
 		setStatus(status);
 		setLanguage(language);
 	}
@@ -80,11 +97,12 @@ public class User extends Objeto implements Serializable{
 		return uid;
 	}
 	
+	/*
 	public void setUid(String uid, Db db) {
 		setUid(uid, db.getEm());
 	}
-
-	public void setUid(String uid, EntityManager em) {
+	*/
+	public void setUid(String uid, DapManager dapManager) {
 		this.uid = uid;
 		
 		if(uid == null || uid.isEmpty()) {
@@ -98,24 +116,53 @@ public class User extends Objeto implements Serializable{
 				addError("uid", "Username can't have more than 64 characters");
 			}
 			
-			List<User> test = em.createNamedQuery("User.findByUid", User.class).setParameter("uid", uid).getResultList();
 			
-			if(test != null && test.size() > 0) {
-				addError("uid", "This username has already been registered");
-			}
+			
 		}
 	}
-
-	public String getEmail() {
-		return email;
+	
+	public String getEmail() throws DapException {
+		try {
+			return ldapEntry.get("email").getString();
+		} catch (LdapInvalidAttributeValueException e) {
+			throw new DapException(e);
+		}
 	}
 	
+	/*
 	public void setEmail(String email, Db db) {
 		setEmail(email, db.getEm());
 	}
+	*/
+	public void setEmail(String email, DapManager dapManager) throws DapException {
+		
+		LdapConnection ldap = null;
+		try {
+			ldapEntry.add("email", email);
+			if(email == null || email.isEmpty()) {
+				addError("email", "The email can't be empty");
+			}else if(email.length() > 254) {
+					addError("email", "The mail can't have more than 255 charcters");
+			}else {	
+			
+				ldap = dapManager.createLdap();
+				EntryCursor search = ldap.search(dapManager.getPeople().getDn(), "(mail=" + email + ")", SearchScope.ONELEVEL);
+			
+				if(search.next()) {
+					addError("email", "This email address has already been registered");
+				}
+			}
+		} catch (DapException | LdapException | CursorException e) {
+			addError("email", "The application were not able to find out if email has been registered");
+			throw new DapException(e);
+		}finally {
+			dapManager.closeConnection(ldap);
+		}
+	}
 
+	/*
 	public void setEmail(String email, EntityManager em) {
-		this.email = email;
+		//this.email = email;
 		
 		if(email == null || email.isEmpty()) {
 			addError("email", "The email can't be empty");
@@ -139,7 +186,7 @@ public class User extends Objeto implements Serializable{
 			}
 		}
 	}
-
+	*/
 	public Option getStatus() {
 		return status;
 	}
