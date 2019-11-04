@@ -22,14 +22,15 @@ public class Installer {
 	
 	public static void main(String[] args) {
 		
+		log.debug("Application Root Directory is: {}", DIRECTORY.getAbsolutePath());
 		Instalador installer = new Instalador(new File(DIRECTORY.getAbsolutePath()));
 	
 		try{
 			installer.parseCommand(args); 
 			installer.dap();
-			installer.database();			
+//			installer.database();			
 		}catch(AppException ex){
-			log.error(ex.getMessage(), ex.getParent());	
+			log.error(ex.getMessage(), ex);	
 		}
 	}
 }

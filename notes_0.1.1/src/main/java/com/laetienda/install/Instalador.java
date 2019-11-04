@@ -29,8 +29,8 @@ public class Instalador {
 	private static final Options OPTIONS = new Options()
 			.addOption(new Option("u", "user", true, "Admin user DN with priviledges to create domain settings."))
 			.addOption(new Option("h", "help", false, "Help"))
-			.addOption(new Option("p", "password", true, "Password of the admin user to connecto to Apacheds Directory"))
-			.addOption(new Option("r", "rootPassword", true, "Password of the "));
+			.addOption(new Option("p", "password", true, "Password of the admin user to connecto to LDAP"))
+			.addOption(new Option("r", "rootPassword", true, "Password of root operative system"));
 	
 	private File directory;
 	private CommandLine line;
@@ -43,6 +43,10 @@ public class Instalador {
 		this.directory = directory;
 	}
 	
+	/**
+	 * @param args 
+	 * @throws InstallerException Exception thrown when option does not exist
+	 */
 	public void parseCommand(String[] args) throws InstallerException{
 		
 		try{
