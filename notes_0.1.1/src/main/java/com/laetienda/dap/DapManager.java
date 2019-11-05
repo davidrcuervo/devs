@@ -54,7 +54,7 @@ public class DapManager {
 		setTomcatAndBase();
 //		connectionPool = startLdapConnectionPool();
 //		people = setPeopleLdapEntry();
-		testConnection();
+//		testConnection();
 	}
 	
 
@@ -275,7 +275,7 @@ public class DapManager {
 		closeConnection(conn);
 	}
 	
-	public static void main(String[] args) throws DapException{
+	public static void main(String[] args) throws DapException, IOException{
 		
 		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
 		File directory = new File("C:\\Users\\i849921\\git\\devs\\web\\target\\classes"); //SAP lenovo
@@ -287,22 +287,23 @@ public class DapManager {
 		
 		try{
 			
-			dapManager = new DapManager(directory);
-			connection = dapManager.createLdap();
-//			connection = new LdapNetworkConnection("homeServer3.la-etienda.com", 636, true); 
-//			connection.bind("cn=admin,dc=la-etienda,dc=com", "mcee19de");
+//			dapManager = new DapManager(directory);
+//			connection = dapManager.createLdap();
+			connection = new LdapNetworkConnection("homeServer3.la-etienda.com", 636, true); 
+			connection.bind("cn=admin,dc=example,dc=com", "Welcome1");
 							
 //			Example to search entries of a master entry
 //			EntryCursor cursor = connection.search("ou=People,dc=la-etienda,dc=com", "(|(cn=tomcat)(cn=sysadmin))", SearchScope.ONELEVEL);
 				
-			Entry result = ldap.searchDn("cn=admin,dc=la-etienda,dc=com", connection);
+			Entry result = ldap.searchDn("cn=admin,dc=example,dc=com", connection);
 			
 			if(result == null) {
 				log4j.debug("Nothing found");				
 			}else {
 				log4j.debug("Object found in OpenLDAP");
 				log4j.debug("dn: {}", result.getDn().getName());
-				log4j.debug("Attribute cn: {}", result.get("description").getString());
+				log4j.debug("cn: {}", result.get("cn").getString());
+				log4j.debug("description: {}", result.get("description").getString());
 			}
 
 			/*
@@ -318,8 +319,9 @@ public class DapManager {
 			log4j.error(e);
 			e.printStackTrace();
 		}finally{
-			dapManager.closeConnection(connection);
-			dapManager.stopDapServer();
+			connection.close();
+//			dapManager.closeConnection(connection);
+//			dapManager.stopDapServer();
 			log4j.info("Game Over");
 		}
 	}

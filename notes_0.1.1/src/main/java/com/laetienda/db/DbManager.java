@@ -93,7 +93,7 @@ public class DbManager {
     	return result;
     }
     
-    protected DbManager setCreateDatabaseVariable() {
+    public DbManager setCreateDatabaseVariable() {
     	settings.put("javax.persistence.schema-generation.database.action", "create");
     	return this;
     }

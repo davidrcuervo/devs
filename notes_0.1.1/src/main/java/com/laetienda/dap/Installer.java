@@ -168,7 +168,7 @@ public class Installer {
 			if(!connection.exists(Ldif.SERVICES_DN())) {
 				connection.add(Ldif.SERVICES_ENTRY());
 			}
-			
+			/*
 			if(!connection.exists(Ldif.LDAP_DN())) {
 				connection.add(Ldif.LDAP_ENTRY());
 			}
@@ -176,7 +176,7 @@ public class Installer {
 			if(!connection.exists(Ldif.KRBTGT_DN())) {
 				connection.add(Ldif.KRBTGT_ENTRY());
 			}
-			/*
+			
 			if(!connection.exists(Ldif.ACI_SYSADMIN_DN())){
 				connection.add(Ldif.ACI_SYSADMIN());
 			}

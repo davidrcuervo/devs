@@ -9,11 +9,15 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.laetienda.dap.DapException;
+import com.laetienda.dap.DapManager;
+import com.laetienda.db.Db;
 import com.laetienda.db.DbException;
+import com.laetienda.db.DbManager;
 import com.laetienda.db.Installer;
 //import com.laetienda.logger.Log4j;
 /**
@@ -93,9 +97,22 @@ public class Instalador {
 	
 
 	public void database() throws DbException, DapException {
+		
 		log.info("Installing database structure");
-		Installer dbInstaller = new Installer(new File(directory.getAbsolutePath()));
-		dbInstaller.run();
+
+		DapManager dap = new DapManager(directory);
+		DbManager dbManager = new DbManager(directory);
+		dbManager.setCreateDatabaseVariable();
+		dbManager.open();
+					
+//		Installer dbInstaller = new Installer(new File(directory.getAbsolutePath()));
+		Installer dbInstaller = new Installer();
+		Db db = dbManager.createTransaction();
+		LdapConnection ldap = dap.createLdap();		
+		dbInstaller.run(ldap, db);
+		dap.closeConnection(ldap);
+		dbManager.closeTransaction(db);
+		dbManager.close();
 		log.info("Database has been installed succesfully");
 	}
 }

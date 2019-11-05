@@ -3,7 +3,10 @@ package com.laetienda.db;
 import java.io.File;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import org.apache.logging.log4j.Logger;
+import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.dap.Dap;
@@ -15,20 +18,26 @@ import com.laetienda.entities.*;
 public class Installer {
 	static final Logger log4j = LogManager.getLogger(Installer.class);
 	
-	DbManager dbManager;
-	DapManager dapManager;
-	File directory;
+//	DbManager dbManager;
+//	DapManager dapManager;
+//	File directory;
 	
+	/*
 	public Installer(File directory) throws DbException, DapException {
 		dbManager = new DbManager(directory);
 		dapManager = new DapManager(directory); 
 		this.directory = directory;
 	}
+	*/
 	
-	public void run() throws DbException, DapException {
-		dbManager.setCreateDatabaseVariable();
-		dbManager.open();
-		Db db = dbManager.createTransaction();
+	public Installer() {
+		
+	}
+	
+	public void run(LdapConnection ldap, Db db) throws DbException, DapException {
+//		dbManager.setCreateDatabaseVariable();
+//		dbManager.open();
+//		Db db = dbManager.createTransaction();
 		log4j.info("Database should be created at this point, now it will add application rows");
 		
 		

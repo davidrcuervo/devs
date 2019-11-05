@@ -2,8 +2,8 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 	<comment>Configuration properties for Directory Access Protocol (DAP)</comment>
-	<entry key="app_name">la-etienda</entry>
-	<entry key="domain">la-etienda.com</entry>
+	<entry key="app_name">example</entry>
+	<entry key="domain">example.com</entry>
 	<entry key="server_address">homeServer3.la-etienda.com</entry>
 	<entry key="service_port">636</entry>
 	<entry key="use_tls">true</entry>

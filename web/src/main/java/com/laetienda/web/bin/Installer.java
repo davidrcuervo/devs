@@ -28,7 +28,7 @@ public class Installer {
 		try{
 			installer.parseCommand(args); 
 			installer.dap();
-//			installer.database();			
+			installer.database();			
 		}catch(AppException ex){
 			log.error(ex.getMessage(), ex);	
 		}
