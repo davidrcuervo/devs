@@ -6,10 +6,14 @@ import org.apache.directory.api.ldap.model.cursor.CursorException;
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
+import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.laetienda.entities.User;
 
 public class Ldap {
 	private final static Logger log4j = LogManager.getLogger(Ldap.class);
@@ -17,8 +21,20 @@ public class Ldap {
 	public Ldap() {
 	}
 	
+	public Entry searchDn(String dnstr, LdapConnection conn) throws DapException {
+		Entry result = null;
+		
+		try {
+			Dn dn = new Dn(dnstr);
+			result = searchDn(dn,conn);
+		} catch (LdapInvalidDnException e) {
+			throw new DapException(e);
+		}
+		
+		return result;
+	}
 	
-	public Entry searchDn(String dn, LdapConnection conn) throws DapException {
+	public Entry searchDn(Dn dn, LdapConnection conn) throws DapException {
 		Entry result = null;
 		EntryCursor cursor = null;;
 		try {
@@ -38,6 +54,28 @@ public class Ldap {
 			log4j.debug(e.getMessage());
 		} finally {
 			closeCursor(cursor);
+		}
+		
+		return result;
+	}
+	
+	public void insertUser(User user, LdapConnection conn) throws DapException {
+		
+		try {
+			conn.add(user.getLdapEntry());
+		} catch (LdapException e) {
+			throw new DapException(e);
+		}
+	}
+	
+	public Entry getPeopleLdapEntry(LdapConnection conn) throws DapException {
+		Entry result = null;
+		
+		try {
+			Dn peopleDn = new Dn("ou=People", Ldif.getDomain());
+			result=searchDn(peopleDn, conn);
+		} catch (LdapInvalidDnException e) {
+			throw new DapException(e);
 		}
 		
 		return result;

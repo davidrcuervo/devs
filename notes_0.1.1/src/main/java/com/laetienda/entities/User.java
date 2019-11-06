@@ -14,11 +14,14 @@ import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.dap.DapException;
-import com.laetienda.dap.DapManager;
 import com.laetienda.dap.Ldap;
 
 /**
  * @author I849921
+ *
+ */
+/**
+ * @author myself
  *
  */
 @Entity
@@ -50,7 +53,7 @@ public class User extends Objeto implements Serializable{
 	
 	@Transient
 	private Entry ldapEntry;
-	
+
 	@Transient
 	private Ldap ldap;
 	/*
@@ -81,19 +84,20 @@ public class User extends Objeto implements Serializable{
 		
 	}
 	
-	public User(String uid, String email, Option status, Option language, DapManager dapManager) throws DapException {
+//	public User(String uid, String email, Option status, Option language, DapManager dapManager) throws DapException {
+	public User(String uid, String email, Option stuatus, Option language, LdapConnection conn) throws DapException {
 		ldap = new Ldap();
-		ldapEntry = setLdapEntry(uid, dapManager);
+		ldapEntry = setLdapEntry(uid, conn);
 		
-		setUid(uid, dapManager);
-		setEmail(email, dapManager);
+		setUid(uid, conn);
+		setEmail(email, conn);
 		setStatus(status);
 		setLanguage(language);
 	}
 
-	private Entry setLdapEntry(String uid2, DapManager dapManager) throws DapException {
+	private Entry setLdapEntry(String uid2, LdapConnection conn) throws DapException {
 		
-		LdapConnection conn = dapManager.createLdap();
+//		LdapConnection conn = dapManager.createLdap();
 		Entry result = ldap.searchDn(uid2, conn);
 		
 		try {
@@ -119,7 +123,7 @@ public class User extends Objeto implements Serializable{
 		} catch (LdapException e) {
 			throw new DapException(e);
 		} finally {
-			dapManager.closeConnection(conn);			
+//			dapManager.closeConnection(conn);			
 		}
 		return result;
 	}
@@ -133,7 +137,7 @@ public class User extends Objeto implements Serializable{
 		setUid(uid, db.getEm());
 	}
 	*/
-	public void setUid(String uid, DapManager dapManager) {
+	public void setUid(String uid, LdapConnection conn) throws DapException {
 		this.uid = uid;
 		
 		if(uid == null || uid.isEmpty()) {
@@ -145,6 +149,10 @@ public class User extends Objeto implements Serializable{
 			
 			if(uid.length() > 64) {
 				addError("uid", "Username can't have more than 64 characters");
+			}
+			
+			if(ldap.searchDn(uid, conn) != null) {
+				addError("uid", "Username already exists");
 			}
 		}
 	}
@@ -162,9 +170,9 @@ public class User extends Objeto implements Serializable{
 		setEmail(email, db.getEm());
 	}
 	*/
-	public void setEmail(String email, DapManager dapManager) throws DapException {
+	public void setEmail(String email, LdapConnection conn) throws DapException {
 		
-		LdapConnection ldap = null;
+//		LdapConnection ldap = null;
 		try {
 			ldapEntry.add("email", email);
 			if(email == null || email.isEmpty()) {
@@ -173,8 +181,8 @@ public class User extends Objeto implements Serializable{
 				addError("email", "The mail can't have more than 255 charcters");
 			}else {	
 			
-				ldap = dapManager.createLdap();
-				EntryCursor search = ldap.search(dapManager.getPeople().getDn(), "(mail=" + email + ")", SearchScope.ONELEVEL);
+//				ldap = dapManager.createLdap();
+				EntryCursor search = conn.search(ldap.getPeopleLdapEntry(conn).getDn(), "(mail=" + email + ")", SearchScope.ONELEVEL);
 			
 				if(search.iterator().hasNext()) {
 					addError("email", "This email address has already been registered");
@@ -184,7 +192,7 @@ public class User extends Objeto implements Serializable{
 			addError("email", "The application were not able to find out if email has been registered");
 			throw new DapException(e);
 		}finally {
-			dapManager.closeConnection(ldap);
+//			dapManager.closeConnection(ldap);
 		}
 	}
 
@@ -410,4 +418,7 @@ public class User extends Objeto implements Serializable{
 		return result;
 	}
 	
+	public Entry getLdapEntry() {
+		return ldapEntry;
+	}
 }

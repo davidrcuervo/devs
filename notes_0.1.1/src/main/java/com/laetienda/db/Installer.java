@@ -3,13 +3,12 @@ package com.laetienda.db;
 import java.io.File;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.logging.log4j.LogManager;
 
-import com.laetienda.dap.Dap;
+import com.laetienda.app.AppException;
+import com.laetienda.app.Usuario;
 import com.laetienda.dap.DapException;
 import com.laetienda.dap.DapManager;
 import com.laetienda.entities.*;
@@ -34,12 +33,11 @@ public class Installer {
 		
 	}
 	
-	public void run(LdapConnection ldap, Db db) throws DbException, DapException {
+	public void run(LdapConnection conn, Db db) throws AppException {
 //		dbManager.setCreateDatabaseVariable();
 //		dbManager.open();
 //		Db db = dbManager.createTransaction();
 		log4j.info("Database should be created at this point, now it will add application rows");
-		
 		
 		List<Variable> vars = db.getEm().createNamedQuery("Variable.findall", Variable.class).getResultList();
 		if(vars.size() > 0) {
@@ -99,57 +97,61 @@ public class Installer {
 		Group empty = new Group("empty", "This group will not have any users. if it does is a bug");
 		db.insert(empty);
 		
-		User sysadmin = new User("sysadmin", "sysadmin@la-etienda.com", status, language, db);
-		db.insert(sysadmin);
+		Usuario usuario = new Usuario();
+//		SYSADIN
+//		User sysadmin = new User("sysadmin", "sysadmin@la-etienda.com", status, language, db);
+//		db.insert(sysadmin);
+		User sysadmin = new User("uid=sysadmin", "sysadmin@la-etienda.com", status, language, conn);
 		
-		User tomcat = new User("tomcat", "tomcat@la-etienda.com", status, language, db);
-		db.insert(tomcat);
-		
-		User owner = new User("owner", "owner@mail.com", status, language, db);
-		db.insert(owner);
-		
-		User groupUser = new User("group", "group@mail.com", status, language, db);
-		db.insert(groupUser);
-		
-		User allUser = new User("all", "todos@mail.com", status, language, db);
-		db.insert(allUser);
-		
-		User manager = new User("manager", "manager@mail.com", userActiveStatus, language, db);
+//		User tomcat = new User("tomcat", "tomcat@la-etienda.com", status, language, db);
+//		db.insert(tomcat);
+		User tomcat = new User("uid=tomcat", "tomcat@la-etienda.com", status, language, conn);
+		User owner = new User("uid=owner", "owner@mail.com", status, language, conn);
+		User groupUser = new User("uid=group", "group@mail.com", status, language, conn);
+		User allUser = new User("all", "todos@mail.com", status, language, conn);
+
+		User manager = new User("uid=manager", "manager@mail.com", userActiveStatus, language, conn);
 		manager.setPassword("Welcome@1", "Welcome@1");
 		manager.setCn("Manager");
 		manager.setSn("Snless"); 
-		db.insert(manager);
+		usuario.save(manager, db, conn);
 		
 		AccessList acl = new AccessList();
 		acl.addGroup(sysadmins);
 		acl.addUser(sysadmin);
 		acl.setName("sysadmins");
 		acl.setDescription("Includes sysadmin user and sysadmin group");
-		db.insert(acl);
-		
+
 		AccessList aclManagers = new AccessList("managers", "It includes the managers of the site");
 		aclManagers.addUser(manager);
 		aclManagers.addGroup(managers);
-		db.insert(aclManagers);
 		
 		AccessList aclOwner = new AccessList("owner", "it includes only the owner of the object");
 		aclOwner.addGroup(empty);
 		aclOwner.addUser(owner);
-		db.insert(aclOwner);
-		
+
 		AccessList aclGroup = new AccessList("group", "it includes all the members of the object group");
 		aclGroup.addGroup(empty);
 		aclGroup.addUser(groupUser);
-		db.insert(aclGroup);
-		
+
 		AccessList aclAll = new AccessList("all", "it includes all the users");
 		aclAll.addGroup(empty);
 		aclAll.addUser(allUser);
-		db.insert(aclAll);
-		
+
 		Form form = new Form("group", "com.laetienda.entities.Group", "/WEB-INF/jsp/email/signup.jsp", "/WEB-INF/jsp/thankyou/signup.jsp", aclManagers);
 		form.addInput(new Input(form, "name", "Group Name", "string", "Insert the group name", "glyphicon-user", true));
 		form.addInput(new Input(form, "description", "Description", "string", true));
+				
+		usuario.save(sysadmin, db, conn);	
+		usuario.save(tomcat, db, conn);
+		usuario.save(groupUser, db, conn);		
+		usuario.save(allUser, db, conn);
+		
+		db.insert(acl);
+		db.insert(aclManagers);
+		db.insert(aclOwner);
+		db.insert(aclGroup);
+		db.insert(aclAll);
 		db.insert(form);
 		
 		userStatus.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, aclAll);
@@ -173,7 +175,7 @@ public class Installer {
 		
 		db.update();	
 		
-		
+		/*
 		Dap dap = dapManager.createDap();
 		
 		try {
@@ -186,6 +188,7 @@ public class Installer {
 			dbManager.closeTransaction(db);
 			dbManager.close();
 		}
+		*/
 	}
 	
 	public static void main(String[] args){
@@ -193,14 +196,33 @@ public class Installer {
 		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
 		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
 		File directory = new File(Installer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+		DapManager dapManager = null;
+		DbManager dbManager = null;		
+		LdapConnection conn = null;
+		Db db = null;
 		
 		try {
+			dapManager = new DapManager(directory);
+			conn = dapManager.createLdap();
+			dbManager = new DbManager(directory);
+			dbManager.open();
+			db = dbManager.createTransaction();
+			
 			log4j.info("DATABASE IS BEING INSTALLED");
-			Installer installer = new Installer(directory);
-			installer.run();
+			Installer installer = new Installer();
+			installer.run(conn,db);
 			log4j.info("Database has installed succesfully");
-		} catch (DbException | DapException ex) {
-			log4j.error("Failed to install database.",	ex.getRootParent());
+		} catch (AppException ex) {
+			log4j.error(ex.getMessage(), ex.getRootParent());
+		} finally {
+			dbManager.closeTransaction(db);
+			dbManager.close();
+			
+			try {
+				dapManager.closeConnection(conn);
+			} catch (DapException e) {
+				log4j.fatal(e.getMessage(), e.getRootParent());
+			}
 		}
 	}
 }

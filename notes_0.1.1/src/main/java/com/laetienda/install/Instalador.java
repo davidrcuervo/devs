@@ -13,10 +13,10 @@ import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.laetienda.app.AppException;
 import com.laetienda.dap.DapException;
 import com.laetienda.dap.DapManager;
 import com.laetienda.db.Db;
-import com.laetienda.db.DbException;
 import com.laetienda.db.DbManager;
 import com.laetienda.db.Installer;
 //import com.laetienda.logger.Log4j;
@@ -96,7 +96,7 @@ public class Instalador {
 	}
 	
 
-	public void database() throws DbException, DapException {
+	public void database() throws AppException {
 		
 		log.info("Installing database structure");
 
