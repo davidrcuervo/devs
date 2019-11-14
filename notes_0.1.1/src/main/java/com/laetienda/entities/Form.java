@@ -52,6 +52,14 @@ public class Form extends Objeto implements Serializable {
 		//this.submit = submit;
 	}
 
+	/**
+	 * 
+	 * @param name Name or identifier of the form, must be unique
+	 * @param clase the entity java class that will persist data into db
+	 * @param email path to jsp email format that will send on success completation form
+	 * @param thankyou path to jsp thank you html page that will be displayed on cusccess completation form
+	 * @param acl ACL object that describes the permsions of the form
+	 */
 	public Form(String name, String clase, /*String submit,*/ String email, String thankyou, AccessList acl) {
 		super();
 		this.setName(name);

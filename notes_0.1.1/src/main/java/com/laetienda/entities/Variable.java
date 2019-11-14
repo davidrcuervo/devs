@@ -66,12 +66,18 @@ public class Variable extends Objeto implements Serializable{
 		return options;
 	}
 	
-	public Option addOption(String name, String description) {
-		Option option = new Option(name, description);
-		option.setVariable(this);
+	public Option addOption(Option option) {
 		
+		option.setVariable(this);
 		//TODO Validate that option does not exist
 		options.add(option);
+		return option;
+	}
+	
+	public Option addOption(String name, String description) {
+		Option option = new Option(name, description);
+		addOption(option);
+		
 		return option;
 	}
 	

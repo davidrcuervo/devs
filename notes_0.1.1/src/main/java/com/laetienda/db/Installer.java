@@ -8,7 +8,6 @@ import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.logging.log4j.LogManager;
 
 import com.laetienda.app.AppException;
-import com.laetienda.app.Usuario;
 import com.laetienda.dap.DapException;
 import com.laetienda.dap.DapManager;
 import com.laetienda.entities.*;
@@ -63,58 +62,54 @@ public class Installer {
 		
 		
 		//Start installing components 
+		Option status = new Option("operative system", "This user belongs to the operative system of the website");
+		Option userActiveStatus = new Option("user status", "active");
+		Option language = new Option("en", "English");
+		
 		Variable userStatus = new Variable("user status", "Different options of status of the user withing the website");
-		userStatus.addOption("active", "User is active. It has been registered and password has been confirmed");
+		userStatus.addOption(userActiveStatus);
 		userStatus.addOption("blocked", "User has been blocked to use the application");
 		userStatus.addOption("deleted", "User has removed himself from the website");
 		userStatus.addOption("registered", "User has been registered but password has not been confirmed");
-		userStatus.addOption("operative system", "This user belongs to the operative system of the website");
-		db.insert(userStatus);
+		userStatus.addOption(status);
 		
 		/*
 		Variable userUid = new Variable("user uid", "This variable keeps the counting of uid. Starting at 101");
 		userUid.addOption("uid", "101");
-		db.insert(userUid);
 		*/
 		
 		Variable languages = new Variable("languages", "Languages availables in the system");
 		languages.addOption("none", "Select a language");
-		languages.addOption("en", "English");
+		languages.addOption(language);
 		languages.addOption("es", "Espanol");
 		languages.addOption("fr", "Francais");
-		db.insert(languages);
 
-		Option status = db.findOption("user status", "operative system");
-		Option userActiveStatus = db.findOption("user status", "active");
-		Option language = db.findOption("languages", "en");
+//		Option status = db.findOption("user status", "operative system");
+//		Option userActiveStatus = db.findOption("user status", "active");
+//		Option language = db.findOption("languages", "en");
 		
 		Group sysadmins = new Group("sysadmins", "This group contains all the sysadmin users.");
-		db.insert(sysadmins);
-		
-		Group managers = new Group("managers", "Group contains manager users");
-		db.insert(managers);
-		
+		Group managers = new Group("managers", "Group contains manager users");	
 		Group empty = new Group("empty", "This group will not have any users. if it does is a bug");
-		db.insert(empty);
-		
-		Usuario usuario = new Usuario();
-//		SYSADIN
+				
+//		SYSADMIN
+//		Usuario usuario = new Usuario();
 //		User sysadmin = new User("sysadmin", "sysadmin@la-etienda.com", status, language, db);
 //		db.insert(sysadmin);
-		User sysadmin = new User("uid=sysadmin", "sysadmin@la-etienda.com", status, language, conn);
 		
 //		User tomcat = new User("tomcat", "tomcat@la-etienda.com", status, language, db);
 //		db.insert(tomcat);
+
+		User sysadmin = new User("uid=sysadmin", "sysadmin@la-etienda.com", status, language, conn);
 		User tomcat = new User("uid=tomcat", "tomcat@la-etienda.com", status, language, conn);
 		User owner = new User("uid=owner", "owner@mail.com", status, language, conn);
 		User groupUser = new User("uid=group", "group@mail.com", status, language, conn);
-		User allUser = new User("all", "todos@mail.com", status, language, conn);
+		User allUser = new User("uid=all", "todos@mail.com", status, language, conn);
 
 		User manager = new User("uid=manager", "manager@mail.com", userActiveStatus, language, conn);
 		manager.setPassword("Welcome@1", "Welcome@1");
 		manager.setCn("Manager");
 		manager.setSn("Snless"); 
-		usuario.save(manager, db, conn);
 		
 		AccessList acl = new AccessList();
 		acl.addGroup(sysadmins);
@@ -142,18 +137,6 @@ public class Installer {
 		form.addInput(new Input(form, "name", "Group Name", "string", "Insert the group name", "glyphicon-user", true));
 		form.addInput(new Input(form, "description", "Description", "string", true));
 				
-		usuario.save(sysadmin, db, conn);	
-		usuario.save(tomcat, db, conn);
-		usuario.save(groupUser, db, conn);		
-		usuario.save(allUser, db, conn);
-		
-		db.insert(acl);
-		db.insert(aclManagers);
-		db.insert(aclOwner);
-		db.insert(aclGroup);
-		db.insert(aclAll);
-		db.insert(form);
-		
 		userStatus.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, aclAll);
 		//userUid.setOwner(tomcat, empty).setPermisions(acl, aclOwner, aclAll);
 		languages.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, aclAll);
@@ -173,7 +156,32 @@ public class Installer {
 		aclAll.setOwner(sysadmin, sysadmins).setPermisions(acl, acl, acl);
 		form.setOwner(manager, managers).setPermisions(aclGroup, aclGroup, aclGroup);
 		
-		db.update();	
+		/*
+		//VARIABLES
+		db.insert(userStatus);
+		db.insert(languages);
+		
+		//GROUPS
+		db.insert(sysadmins);
+		db.insert(managers);
+		db.insert(empty);
+		
+		//ACLs
+		db.insert(acl);
+		db.insert(aclManagers);
+		db.insert(aclOwner);
+		db.insert(aclGroup);
+		db.insert(aclAll);
+		db.insert(form);
+		
+		//USERS
+		usuario.save(sysadmin, db, conn);	
+		usuario.save(tomcat, db, conn);
+		usuario.save(groupUser, db, conn);		
+		usuario.save(allUser, db, conn);
+		usuario.save(manager, db, conn);
+		*/
+//		db.update();	
 		
 		/*
 		Dap dap = dapManager.createDap();
@@ -193,9 +201,12 @@ public class Installer {
 	
 	public static void main(String[] args){
 		
+//		File directory = new File(Installer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		//File directory = new File("/Users/davidrcuervo/git/devs/web"); //mac
-		//File directory = new File("C:/Users/i849921/git/devs/web"); //SAP lenovo
-		File directory = new File(Installer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+		log4j.info("DATABASE IS BEING INSTALLED");
+		File directory = new File("C:/Users/i849921/git/devs/web/target/classes"); //SAP lenovo
+		log4j.debug("Application Directori is {}", directory.getAbsolutePath());
+		
 		DapManager dapManager = null;
 		DbManager dbManager = null;		
 		LdapConnection conn = null;
@@ -208,7 +219,6 @@ public class Installer {
 			dbManager.open();
 			db = dbManager.createTransaction();
 			
-			log4j.info("DATABASE IS BEING INSTALLED");
 			Installer installer = new Installer();
 			installer.run(conn,db);
 			log4j.info("Database has installed succesfully");

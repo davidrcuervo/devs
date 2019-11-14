@@ -12,6 +12,8 @@
 	
 	<entry key="javax.persistence.schema-generation.database.action">none</entry>
 	<entry key="javax.persistence.schema-generation.create-source">metadata</entry>
+	<entry key="ssl">true</entry>
+	<entry key="allowAllSslCertificates">true</entry>
 	<!-- 
 	<entry key="javax.persistence.schema-generation.drop-source">script</entry>
 	<entry key="javax.persistence.schema-generation.scripts.create-target">META-INF/postgresql_create.sql

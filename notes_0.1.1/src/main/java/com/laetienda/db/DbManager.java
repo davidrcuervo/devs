@@ -159,6 +159,7 @@ public class DbManager {
 		FileInputStream conf;
 		Map<String, String> result = new HashMap<String, String>();
 		Properties settings = new Properties(defaults);
+		String jdbcSsl = new String();
 		Aes aes = new Aes();
 		String password;
 		String path = directory.getAbsolutePath() 
@@ -175,9 +176,17 @@ public class DbManager {
 					result.put(key, settings.getProperty(key));
 				}
 				
+				if(result.get("ssl") != null && result.get("ssl").equals("true")) {
+					jdbcSsl = "?ssl=true";
+					
+					if(result.get("allowAllSslCertificates") != null && result.get("allowAllSslCertificates").equals("true")) {
+						jdbcSsl += "&sslfactory=org.postgresql.ssl.NonValidatingFactory";
+					}
+				}
+				
 				password = aes.decrypt(result.get("javax.persistence.jdbc.password"), result.get("javax.persistence.jdbc.user"));
 				result.put("javax.persistence.jdbc.password", password);
-				result.put(JDBC_URL, "jdbc:postgresql://" + result.get("db_host") + ":" + result.get("db_port") + "/" + result.get("database"));
+				result.put(JDBC_URL, "jdbc:postgresql://" + result.get("db_host") + ":" + result.get("db_port") + "/" + result.get("database") + jdbcSsl);
 				/*
 				if(result.get("javax.persistence.schema-generation.scripts.create-target") != null){
 					File temp = new File(result.get("javax.persistence.schema-generation.scripts.create-target"));

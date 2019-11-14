@@ -73,7 +73,9 @@ public class Ldap {
 		
 		try {
 			Dn peopleDn = new Dn("ou=People", Ldif.getDomain());
+//			log4j.debug("peopleDn to be search. $peopleDn: {}", peopleDn.getName());
 			result=searchDn(peopleDn, conn);
+			log4j.debug("People Dn has been found. $peopleDn: {}", result.getDn().getName());
 		} catch (LdapInvalidDnException e) {
 			throw new DapException(e);
 		}

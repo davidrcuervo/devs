@@ -13,15 +13,24 @@ public class Ldif {
 	protected static String domain = new String();
 	
 	protected static void setDomain(String domain){
+		
+		if(Ldif.domain.isBlank()) {
+			log4j.debug("$domain string: {}", domain);
+			String[] domainParts = domain.split("\\.");
+			 
+			for(int c=0; c < (domainParts.length -1); c++){
+				Ldif.domain += String.format("dc=%s,", domainParts[c]);
+			}
+			 
+			Ldif.domain += String.format("dc=%s", domainParts[domainParts.length - 1]);
+			log4j.debug("domain: " + Ldif.domain);
+			
+		}else {
+			log4j.warn("LDAP domain has already beet setup");
+		}
 		 
-		 String[] domainParts = domain.split("\\.");
-		 
-		 for(int c=0; c < (domainParts.length -1); c++){
-			 Ldif.domain += String.format("dc=%s,", domainParts[c]);
-		 }
-		 
-		 Ldif.domain += String.format("dc=%s", domainParts[domainParts.length - 1]);
-		 log4j.debug("domain: " + Ldif.domain);
+		
+		
 	}
 	
 	public static String getDomain(){

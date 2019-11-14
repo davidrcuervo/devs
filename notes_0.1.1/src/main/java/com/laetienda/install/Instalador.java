@@ -108,7 +108,7 @@ public class Instalador {
 //		Installer dbInstaller = new Installer(new File(directory.getAbsolutePath()));
 		Installer dbInstaller = new Installer();
 		Db db = dbManager.createTransaction();
-		LdapConnection ldap = dap.createLdap();		
+		LdapConnection ldap = dap.createLdap(line.getOptionValue("user"), line.getOptionValue("password"));		
 		dbInstaller.run(ldap, db);
 		dap.closeConnection(ldap);
 		dbManager.closeTransaction(db);

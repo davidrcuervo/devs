@@ -167,7 +167,7 @@ public class Aes {
 		//Example of decipher text 
 	    Aes de =new Aes();
 	    try {
-	    	password = de.decrypt("j6OXJrTYDFdncvEYIDqWzSSqSrlYBXoTGUCUZ7EbuPRMmDZNY1akG4F//kXlcRCYwgGyCg==", USERNAME);
+	    	password = de.decrypt("8MMvevWMY3qQ3O+u4wYTqCfQ/B4nQbKY91iMDtjwdDYUld8jqrs3HgktwNyXUwKPPlPanQ==", USERNAME);
 			System.out.println("Decrypted word is : " + password);
 		} catch (AppException e) {
 			log.error(e.getMessage(), e.getParent());

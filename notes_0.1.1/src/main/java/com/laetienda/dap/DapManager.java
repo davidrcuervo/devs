@@ -130,17 +130,35 @@ public class DapManager {
 		return result;
 	}
 	
-	public synchronized LdapConnection createLdap() throws DapException {
+	public synchronized LdapConnection createLdap(Dn dn, String password) throws DapException {
 		log4j.debug("Connection to {}:{}", getSetting("server_address"), Integer.parseInt(getSetting("service_port")));
 		LdapConnection conn = new LdapNetworkConnection(getSetting("server_address"), Integer.parseInt(getSetting("service_port")) ,true);
+		
 		try {
-			conn.bind(tomcat.getDn(), getSetting("tomcatpassword"));
-//			conn.bind()
-		} catch (LdapException e) {
+			conn.bind(dn, password);
+		}catch (LdapException e) {
 			closeConnection(conn);
 			throw new DapException(e);
 		}
+		
 		return conn;
+	}
+	
+	public LdapConnection createLdap() throws DapException {		
+		return createLdap(tomcat.getDn(), getSetting("tomcatpassword"));
+	}
+	
+	public LdapConnection createLdap(String dnStr, String password) throws DapException {
+		
+		LdapConnection result;
+		try {
+			Dn dn = new Dn(dnStr);
+			result = createLdap(dn, password);
+		} catch (LdapInvalidDnException e) {
+			throw new DapException(e);
+		}
+		
+		return result;
 	}
 	
 	public synchronized void closeConnection(LdapConnection connection) throws DapException{

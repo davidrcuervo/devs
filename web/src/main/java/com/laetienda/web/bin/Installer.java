@@ -26,7 +26,7 @@ public class Installer {
 		Instalador installer = new Instalador(new File(DIRECTORY.getAbsolutePath()));
 	
 		try{
-			installer.parseCommand(args); 
+			installer.parseCommand(args);
 			installer.dap();
 			installer.database();			
 		}catch(AppException ex){
