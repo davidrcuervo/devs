@@ -180,6 +180,7 @@ public class DbManager {
 					jdbcSsl = "?ssl=true";
 					
 					if(result.get("allowAllSslCertificates") != null && result.get("allowAllSslCertificates").equals("true")) {
+						jdbcSsl += "&sslmode=verify-ca";
 						jdbcSsl += "&sslfactory=org.postgresql.ssl.NonValidatingFactory";
 					}
 				}

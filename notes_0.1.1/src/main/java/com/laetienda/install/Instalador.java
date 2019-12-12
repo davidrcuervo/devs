@@ -19,7 +19,7 @@ import com.laetienda.dap.DapManager;
 import com.laetienda.db.Db;
 import com.laetienda.db.DbManager;
 import com.laetienda.db.Installer;
-//import com.laetienda.logger.Log4j;
+
 /**
  * 
  * @author MySelf
@@ -109,7 +109,7 @@ public class Instalador {
 		Installer dbInstaller = new Installer();
 		Db db = dbManager.createTransaction();
 		LdapConnection ldap = dap.createLdap(line.getOptionValue("user"), line.getOptionValue("password"));		
-		dbInstaller.run(ldap, db);
+		dbInstaller.run(ldap, db.getEm());
 		dap.closeConnection(ldap);
 		dbManager.closeTransaction(db);
 		dbManager.close();

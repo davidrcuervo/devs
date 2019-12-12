@@ -85,7 +85,7 @@ public class User extends Objeto implements Serializable{
 	}
 	
 //	public User(String uid, String email, Option status, Option language, DapManager dapManager) throws DapException {
-	public User(String uid, String email, Option stuatus, Option language, LdapConnection conn) throws DapException {
+	public User(String uid, String email, Option status, Option language, LdapConnection conn) throws DapException {
 		ldap = new Ldap();
 		ldapEntry = setLdapEntry(uid, conn);
 		

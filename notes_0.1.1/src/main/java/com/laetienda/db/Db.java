@@ -116,62 +116,7 @@ public class Db {
 		
 		return result;
 	}
-/*	
-	public void insert(EntityObject entity) throws DbException {
 
-		insertNoCommit(entity);
-		commit();
-	}
-	
-	public void insertNoCommit(EntityObject entity) throws DbException{
-		em.clear();
-		
-		try{
-			
-			if(entity.getErrors().size() > 0){
-				//Better not to do anything if it has errors
-			}else{
-				
-				em.getTransaction().begin();
-				
-				if(entity.getIdentifierName() != null){
-					Identifier identifier = em.createNamedQuery("Identifier.findByName", Identifier.class).setParameter("name", entity.getIdentifierName()).getSingleResult();
-					Integer id = identifier.getValue();
-					id += 1;
-					identifier.setValue(id);
-					entity.setIdentifierValue(id);
-				}
-				
-				em.persist(entity);
-				
-			}
-			
-		}catch(IllegalStateException  ex){
-			throw new DbException("Failed to start db transaction", ex);
-		}catch(IllegalArgumentException ex){
-			throw new DbException("Failed to se arguments to query idenfier table object", ex);
-		}catch(NoResultException ex){
-			throw new DbException("No identifier found for object table", ex);
-		}catch(EntityExistsException ex){
-			throw new DbException("Object entity already exists", ex);
-		}catch(TransactionRequiredException ex){
-			throw new DbException("There is no active transaction", ex);
-		}
-	}
-	
-	public void commit() throws DbException{
-		try{
-			em.getTransaction().commit();
-		}catch(IllegalStateException ex){
-			throw new DbException("Failed to find db transaction", ex);
-		}catch(RollbackException ex){
-			rollback();
-			throw new DbException("Failed to commit transaction", ex);
-		}finally{
-			em.clear();
-		}
-	}
-*/	
 	/**
 	 * It inserts and instance of EntityObject into the database
 	 * @param entity Object should be instance of EntityObject
@@ -210,7 +155,7 @@ public class Db {
 //			em.clear();
 		}
 	}
-
+	
 	public boolean remove(EntityObject entity) throws DbException{
 		boolean result = false;
 		
@@ -271,24 +216,6 @@ public class Db {
 		
 		return result;
 	}
-	
-	/*
-	public synchronized Integer getNextUid() throws DbException {
-		Integer result = null;
-		
-		Option value = findOption("user uid", "uid");
-		
-		try {
-			result = Integer.parseInt(value.getDescription());
-			value.setDescription(Integer.toString(result + 1));
-			update();
-		}catch(NumberFormatException ex) {
-			throw new DbException("The uid is not a valid value", ex);
-		}
-		
-		return result;
-	}
-	*/
 	
 	@Deprecated
 	public void insert(/*EntityManager em,*/ EntityObject entity) throws DbException {

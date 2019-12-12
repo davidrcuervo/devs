@@ -35,6 +35,7 @@ public class Variable extends Objeto implements Serializable{
 	private String description;
 	
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="variable", orphanRemoval=true)
+	@JoinColumn(name="id")
 	private List<Option> options = new ArrayList<Option>();
 	
 	public Variable() {
