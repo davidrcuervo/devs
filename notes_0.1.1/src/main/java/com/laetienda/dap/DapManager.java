@@ -8,24 +8,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.directory.ldap.client.api.LdapConnectionConfig;
-import org.apache.directory.ldap.client.api.LdapConnectionPool;
 import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 
 import com.laetienda.app.Aes;
 import com.laetienda.app.AppException;
 
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.entry.DefaultEntry;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
-import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
-import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.name.Dn;
-import org.apache.directory.ldap.client.api.DefaultLdapConnectionFactory;
-import org.apache.directory.ldap.client.api.DefaultPoolableLdapConnectionFactory;
 import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -35,9 +27,7 @@ public class DapManager {
 	private final static Logger log4j = LogManager.getLogger(DapManager.class);
 	
 	private Properties settings;
-	private LdapConnectionPool connectionPool;
 	private List<LdapConnection> connections;
-	private Entry people;
 	private Entry tomcat;
 	private Entry base;
 	

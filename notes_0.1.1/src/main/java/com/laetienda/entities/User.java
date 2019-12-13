@@ -39,10 +39,6 @@ public class User extends Objeto implements Serializable{
 	@Column(name="\"uid\"", length=254, unique=true, nullable=false)
 	private String uid;
 	
-	/*
-	@Column(name="\"email\"", length=254, unique=true, nullable=false)
-	private String email;
-	*/
 	@OneToOne(cascade= {CascadeType.REFRESH})
 	@JoinColumn(name="\"status_option_id\"", nullable=false, unique=false)
 	private Option status;
@@ -56,19 +52,7 @@ public class User extends Objeto implements Serializable{
 
 	@Transient
 	private Ldap ldap;
-	/*
-	@Transient
-	private String cn;
-	
-	@Transient
-	private String sn;
 
-	@Transient
-	private String password;
-
-	@Transient
-	private String description;
-	*/
 	public User() {
 		ldap = new Ldap();
 	}
@@ -78,53 +62,54 @@ public class User extends Objeto implements Serializable{
 	 * @param uid
 	 * @throws DapException 
 	 */
-	public User(String uid/*, String password*/) throws DapException {
+	public User(String uid) throws DapException {
 		ldap = new Ldap();
 		this.uid = uid;
 		
 	}
 	
-//	public User(String uid, String email, Option status, Option language, DapManager dapManager) throws DapException {
-	public User(String uid, String email, Option status, Option language, LdapConnection conn) throws DapException {
+	/**
+	 * 
+	 * @param username Must be unique in ldap. It will be used to build uid.
+	 * @param name 
+	 * @param lastname
+	 * @param email
+	 * @param status
+	 * @param language
+	 * @param conn
+	 * @throws DapException
+	 */
+	public User(String username, String name, String lastname, String email, Option status, Option language, LdapConnection conn) throws DapException {
 		ldap = new Ldap();
-		ldapEntry = setLdapEntry(uid, conn);
 		
-		setUid(uid, conn);
+		String tempUid = "uid=" + username;		
+		setUid(tempUid, conn);
+		
+		ldapEntry = setLdapEntry(conn);
+		setCn(name);
+		setSn(lastname);
 		setEmail(email, conn);
 		setStatus(status);
 		setLanguage(language);
 	}
 
-	private Entry setLdapEntry(String uid2, LdapConnection conn) throws DapException {
+	private Entry setLdapEntry(LdapConnection conn) throws DapException {
 		
-//		LdapConnection conn = dapManager.createLdap();
-		Entry result = ldap.searchDn(uid2, conn);
+		Entry result = ldap.searchDn(uid, conn);
 		
 		try {
 			if(result == null) {
-				Dn dn = new Dn(uid2);
+				Dn dn = new Dn(uid, "ou=People", ldap.getDomainDn().getName());
 				result = new DefaultEntry(dn);
 				result.add("objectclass", "person")
 					.add("objectclass", "inetOrgPerson")
-					.add("uid", dn.getRdn(0).getValue());
-//					.add("objectClass", "krb5KDCEntry")
-//					.add("objectClass", "krb5Principal")
-//					.add("objectclass", "organizationalPerson")
-//					.add("objectclass", "top")
-//					.add("uid",user.getUid())
-//					.add("cn", user.getCn())
-//					.add("krb5KeyVersionNumber", "1")
-//					.add("sn", user.getSn())
-//					.add("krb5PrincipalName", user.getUid() + "@" + domain.toUpperCase())
-//					.add("userpassword", user.getPassword())
-					//.add("description", "")
-//					.add("ou", "People");
+					.add("uid", dn.getRdn(0).getValue())
+					.add("ou", "People");
 			}
 		} catch (LdapException e) {
 			throw new DapException(e);
-		} finally {
-//			dapManager.closeConnection(conn);			
-		}
+		} 
+		
 		return result;
 	}
 
@@ -165,23 +150,15 @@ public class User extends Objeto implements Serializable{
 		}
 	}
 	
-	/*
-	public void setEmail(String email, Db db) {
-		setEmail(email, db.getEm());
-	}
-	*/
 	public void setEmail(String email, LdapConnection conn) throws DapException {
 		
-//		LdapConnection ldap = null;
 		try {
-			ldapEntry.add("email", email);
+			ldapEntry.add("mail", email);
 			if(email == null || email.isEmpty()) {
 				addError("email", "The email can't be empty");
 			}else if(email.length() > 254) {
 				addError("email", "The mail can't have more than 255 charcters");
 			}else {	
-			
-//				ldap = dapManager.createLdap();
 				EntryCursor search = conn.search(ldap.getPeopleLdapEntry(conn).getDn(), "(mail=" + email + ")", SearchScope.ONELEVEL);
 			
 				if(search.iterator().hasNext()) {
@@ -191,38 +168,9 @@ public class User extends Objeto implements Serializable{
 		} catch (DapException | LdapException e) {
 			addError("email", "The application were not able to find out if email has been registered");
 			throw new DapException(e);
-		}finally {
-//			dapManager.closeConnection(ldap);
 		}
 	}
 
-	/*
-	public void setEmail(String email, EntityManager em) {
-		//this.email = email;
-		
-		if(email == null || email.isEmpty()) {
-			addError("email", "The email can't be empty");
-		}else {
-			if(email.length() > 254) {
-				addError("email", "The mail can't have more than 255 charcters");
-			}
-			
-			List<User> test = em.createNamedQuery("User.findByEmail", User.class).setParameter("email", email).getResultList();
-			
-			if(test != null && test.size() > 0) {
-				addError("email", "This email address has already been registered");
-			}
-			
-			try {
-				InternetAddress address = new InternetAddress(email);
-				address.validate();
-			} catch (AddressException ex) {
-				addError("email", "Please make sure you have typed a valid address");
-				log4j.debug("Email address not valid.", ex);
-			}
-		}
-	}
-	*/
 	public Option getStatus() {
 		return status;
 	}
@@ -345,12 +293,6 @@ public class User extends Objeto implements Serializable{
 		}
 	}	
 	
-	/*
-	public String getPassword() {
-		
-	}
-	*/
-
 	public void setDescription(String description) {
 		
 		try {
@@ -380,32 +322,6 @@ public class User extends Objeto implements Serializable{
 		
 		return result;
 	}
-	
-	/*
-	public String getFullName(Dap dap) {
-		
-		User temp = this;
-		
-		
-			try {
-				temp = dap.userSyncDbAndLdap(temp);
-				
-			} catch (NullPointerException | DapException e) {
-				log4j.error("Failed to get First Name and Last Name from LDAP", e);
-			}
-		
-		
-		return temp.getCn() + " " + temp.getSn();
-	}
-	
-	public String getFullName(Object dap) {
-		String result = new String();
-		if(dap instanceof Dap) {
-			result = getFullName((Dap)dap);
-		}
-		return result;
-	}
-	*/
 	
 	public String getDescription() {
 		String result = new String();

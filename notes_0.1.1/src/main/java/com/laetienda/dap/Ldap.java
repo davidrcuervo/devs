@@ -1,9 +1,11 @@
 package com.laetienda.dap;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.apache.directory.api.ldap.model.cursor.CursorException;
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
+import org.apache.directory.api.ldap.model.entry.Attribute;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
@@ -18,7 +20,19 @@ import com.laetienda.entities.User;
 public class Ldap {
 	private final static Logger log4j = LogManager.getLogger(Ldap.class);
 	
+	private Dn domainDn;
+	
 	public Ldap() {
+		try {
+			domainDn = new Dn(Ldif.getDomain());
+		} catch (LdapInvalidDnException e) {
+			log4j.error("Failed to find domain Dn. $error: {}", e.getMessage());
+			domainDn = null;
+		}
+	}
+	
+	public Dn getDomainDn() {
+		return domainDn;
 	}
 	
 	public Entry searchDn(String dnstr, LdapConnection conn) throws DapException {
@@ -62,6 +76,15 @@ public class Ldap {
 	public void insertUser(User user, LdapConnection conn) throws DapException {
 		
 		try {
+			log4j.debug("User Dn. $dn: {}", user.getLdapEntry().getDn().getName());
+			
+			if(log4j.isDebugEnabled()) {
+				Iterator<Attribute> iterator = user.getLdapEntry().getAttributes().iterator();
+				while(iterator.hasNext()) {
+					Attribute atr = iterator.next();
+					log4j.debug("$Attribute: {} -> $Value: {}", atr.getId(), atr.get());
+				}
+			}
 			conn.add(user.getLdapEntry());
 		} catch (LdapException e) {
 			throw new DapException(e);

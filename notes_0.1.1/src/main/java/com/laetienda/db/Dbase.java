@@ -3,6 +3,7 @@ package com.laetienda.db;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
+import javax.persistence.TransactionRequiredException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +28,19 @@ public class Dbase {
 			em.persist(o);
 			
 		}catch(PersistenceException | IllegalArgumentException e) {
+			throw new DbException(e);
+		}
+	}
+	
+	public void delete(Objeto o, EntityManager em) throws DbException {
+		try {
+			if(!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			
+			em.remove(o);
+			
+		}catch(IllegalArgumentException | TransactionRequiredException e) {
 			throw new DbException(e);
 		}
 	}

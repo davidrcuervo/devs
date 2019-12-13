@@ -17,6 +17,7 @@ import com.laetienda.app.AppException;
 import com.laetienda.dap.DapException;
 import com.laetienda.dap.DapManager;
 import com.laetienda.db.Db;
+import com.laetienda.db.DbException;
 import com.laetienda.db.DbManager;
 import com.laetienda.db.Installer;
 
@@ -99,20 +100,29 @@ public class Instalador {
 	public void database() throws AppException {
 		
 		log.info("Installing database structure");
-
-		DapManager dap = new DapManager(directory);
-		DbManager dbManager = new DbManager(directory);
-		dbManager.setCreateDatabaseVariable();
-		dbManager.open();
-					
-//		Installer dbInstaller = new Installer(new File(directory.getAbsolutePath()));
-		Installer dbInstaller = new Installer();
-		Db db = dbManager.createTransaction();
-		LdapConnection ldap = dap.createLdap(line.getOptionValue("user"), line.getOptionValue("password"));		
-		dbInstaller.run(ldap, db.getEm());
-		dap.closeConnection(ldap);
-		dbManager.closeTransaction(db);
-		dbManager.close();
-		log.info("Database has been installed succesfully");
+		DapManager dap = null;
+		DbManager dbManager = null;
+		LdapConnection ldap = null;
+		Db db = null;
+		
+		try {
+			dap = new DapManager(directory);
+			dbManager = new DbManager(directory);
+			dbManager.setCreateDatabaseVariable();
+			dbManager.open();
+						
+	//		Installer dbInstaller = new Installer(new File(directory.getAbsolutePath()));
+			Installer dbInstaller = new Installer();
+			db = dbManager.createTransaction();
+			ldap = dap.createLdap(line.getOptionValue("user"), line.getOptionValue("password"));		
+			dbInstaller.run(ldap, db.getEm());
+			log.info("Database has been installed succesfully");
+		}catch(DapException | DbException e) {
+			throw e;
+		}finally {
+			dbManager.closeTransaction(db);
+			dbManager.close();
+			dap.closeConnection(ldap);
+		}
 	}
 }

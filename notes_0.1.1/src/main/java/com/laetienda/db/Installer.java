@@ -87,21 +87,20 @@ public class Installer {
 			dbase.commit(em);	
 			Usuario usuario = new Usuario();
 
-			User sysadmin = new User("uid=sysadmin", "sysadmin@la-etienda.com", status, language, conn);
+			User sysadmin = new User("sysadmin", "SysAdmin", "SnLess", "sysadmin@la-etienda.com", status, language, conn);
 			usuario.save(sysadmin, em, conn);
-			User tomcat = new User("uid=tomcat", "tomcat@la-etienda.com", status, language, conn);
+			User tomcat = new User("tomcat", "Tomcat", "SnLess", "tomcat@la-etienda.com", status, language, conn);
 			usuario.save(tomcat, em, conn);
-			User owner = new User("uid=owner", "owner@mail.com", status, language, conn);
-		
-			User groupUser = new User("uid=group", "group@mail.com", status, language, conn);
+			User owner = new User("owner", "Owner", "SnLess","owner@mail.com", status, language, conn);
+			usuario.save(owner, em, conn);
+			User groupUser = new User("group", "Group", "SnLess", "group@mail.com", status, language, conn);
 			usuario.save(groupUser, em, conn);
-			User allUser = new User("uid=all", "todos@mail.com", status, language, conn);
+			User allUser = new User("all", "All", "SnLess", "todos@mail.com", status, language, conn);
 			usuario.save(allUser, em, conn);
 			
-			User manager = new User("uid=manager", "manager@mail.com", userActiveStatus, language, conn);
+			User manager = new User("manager", "Manager", "SnLess", "manager@mail.com", userActiveStatus, language, conn);
+			//TODO cipher password
 			manager.setPassword("Welcome@1", "Welcome@1");
-			manager.setCn("Manager");
-			manager.setSn("Snless");
 			usuario.save(manager, em, conn);
 			
 			AccessList acl = new AccessList();
@@ -156,7 +155,11 @@ public class Installer {
 			
 			dbase.commit(em);
 		
+		}catch(DapException | DbException e) {
+			dbase.rollback(em);
+			throw e;
 		}catch(IllegalArgumentException e) {
+			dbase.rollback(em);
 			throw new DbException(e);
 		}
 	}

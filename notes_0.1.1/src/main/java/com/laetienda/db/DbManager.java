@@ -102,19 +102,11 @@ public class DbManager {
 		    
 		try{ 
 		   		
-	   		/*
-	   		 * ENABLE FOR DEBUGGING ONLY
-	   		 * -------------------------
-	   		 */
-	   		
-	   		for(Map.Entry<String, String> temp : settings.entrySet()){
-	   			log4j.debug(temp.getKey() + ": " + temp.getValue());
-	   		}
-	   		
-	   		/*
-	   		 * End of debugging
-	   		 * -------------------------------
-	   		 */
+			if(log4j.isDebugEnabled()) {
+		   		for(Map.Entry<String, String> temp : settings.entrySet()){
+		   			log4j.debug(temp.getKey() + ": " + temp.getValue());
+		   		}
+			}
 	   		
     		emfactory = Persistence.createEntityManagerFactory(
     				settings.get("PERSISTENCE_UNIT_NAME"),

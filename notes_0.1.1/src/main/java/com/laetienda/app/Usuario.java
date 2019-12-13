@@ -54,27 +54,24 @@ public class Usuario {
 		
 		try {
 			dbase.insert(em, user);
-//			dap = dapManager.createDap();
-//			dap.insertUser(user);
-//			ldap.insertUser(user, conn);
+			ldap.insertUser(user, conn);
 		}catch (DbException e) {
 			user.addError("user", "Internal error. Failed to add user");
 			log.error("Failed to persist user. $excpetion: " + e.getMessage());
 			throw e;
-//		}catch(DapException e) {
-//			user.addError("user", "Internal error. Failed to add user");
-//			
-//			try {
-//				db.remove(user);
-//				throw e;
-//			}catch(DbException ex) {
-//				log.fatal("Failed to remove user from DB that was not able to be saved in ldap directory. $exception: " + e.getMessage());
-//				throw ex;
-//			}
-		}finally {
-//			dbManager.closeTransaction(db);
-//			dapManager.closeConnection(dap);
+		}catch(DapException e) {
+			user.addError("user", "Internal error. Failed to add user");
+			log.error("Failed to save user in LDAP. $error: {}", e.getMessage());
+			
+			try {
+				dbase.delete(user, em);
+				throw e;
+			}catch(DbException ex) {
+				log.fatal("Failed to remove user from DB that was not able to be saved in ldap directory. $exception: " + e.getMessage());
+				throw ex;
+			}
 		}
+		
 		return this;
 	}
 }
