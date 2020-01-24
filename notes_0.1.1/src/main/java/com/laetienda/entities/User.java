@@ -1,6 +1,8 @@
 package com.laetienda.entities;
 
 import java.io.Serializable;
+import java.util.List;
+
 import javax.persistence.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
@@ -65,7 +67,6 @@ public class User extends Objeto implements Serializable{
 	public User(String uid) throws DapException {
 		ldap = new Ldap();
 		this.uid = uid;
-		
 	}
 	
 	/**
@@ -79,13 +80,13 @@ public class User extends Objeto implements Serializable{
 	 * @param conn
 	 * @throws DapException
 	 */
-	public User(String username, String name, String lastname, String email, Option status, Option language, LdapConnection conn) throws DapException {
+	public User(String username, String name, String lastname, String email, Option status, Option language, LdapConnection conn, EntityManager em) throws DapException {
 		ldap = new Ldap();
 		
-		String tempUid = "uid=" + username;		
-		setUid(tempUid, conn);
+//		String tempUid = "uid=" + username;		
+		setUid(username, conn, em);
 		
-		ldapEntry = setLdapEntry(conn);
+		setLdapEntry(conn);
 		setCn(name);
 		setSn(lastname);
 		setEmail(email, conn);
@@ -93,15 +94,15 @@ public class User extends Objeto implements Serializable{
 		setLanguage(language);
 	}
 
-	private Entry setLdapEntry(LdapConnection conn) throws DapException {
-		
-		Entry result = ldap.searchDn(uid, conn);
-		
+	public User setLdapEntry(LdapConnection conn) throws DapException {
+				
 		try {
-			if(result == null) {
-				Dn dn = new Dn(uid, "ou=People", ldap.getDomainDn().getName());
-				result = new DefaultEntry(dn);
-				result.add("objectclass", "person")
+			Dn dn = new Dn("uid=" + uid, "ou=People", ldap.getDomainDn().getName());
+			ldapEntry = ldap.searchDn(dn, conn);
+			
+			if(ldapEntry == null) {				
+				ldapEntry = new DefaultEntry(dn);
+				ldapEntry.add("objectclass", "person")
 					.add("objectclass", "inetOrgPerson")
 					.add("uid", dn.getRdn(0).getValue())
 					.add("ou", "People");
@@ -110,20 +111,15 @@ public class User extends Objeto implements Serializable{
 			throw new DapException(e);
 		} 
 		
-		return result;
+		return this;
 	}
 
 	public String getUid() {
 		return uid;
 	}
 	
-	/*
-	public void setUid(String uid, Db db) {
-		setUid(uid, db.getEm());
-	}
-	*/
-	public void setUid(String uid, LdapConnection conn) throws DapException {
-		this.uid = uid;
+	public void setUid(String username, LdapConnection conn, EntityManager em) throws DapException {
+		this.uid = username;
 		
 		if(uid == null || uid.isEmpty()) {
 			addError("uid", "Username can't be empty");
@@ -136,15 +132,22 @@ public class User extends Objeto implements Serializable{
 				addError("uid", "Username can't have more than 64 characters");
 			}
 			
-			if(ldap.searchDn(uid, conn) != null) {
+			if(ldap.searchDn("uid=" + username, conn) != null) {
 				addError("uid", "Username already exists");
+			}else {
+							
+				List<User> temp = em.createNamedQuery("User.findByUid", User.class).setParameter("uid", username).getResultList();
+				if(temp.size() > 0) {
+					addError("uid", "Username already exists");
+					log4j.fatal("Usernam does not exist in ldap but it exists in database. $uid: {}", username);
+				}
 			}
 		}
 	}
 	
 	public String getEmail() throws DapException {
 		try {
-			return ldapEntry.get("email").getString();
+			return ldapEntry.get("mail").getString();
 		} catch (LdapInvalidAttributeValueException e) {
 			throw new DapException(e);
 		}

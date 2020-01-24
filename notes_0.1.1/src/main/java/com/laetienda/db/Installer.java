@@ -23,7 +23,7 @@ public class Installer {
 		
 	}
 	
-	public void run(LdapConnection conn, EntityManager em) throws AppException {
+	public void run(LdapConnection conn, EntityManager em, String tomcatPass) throws AppException {
 
 		Dbase dbase = new Dbase();
 		log4j.info("Database should be created at this point, now it will add application rows");
@@ -87,18 +87,19 @@ public class Installer {
 			dbase.commit(em);	
 			Usuario usuario = new Usuario();
 
-			User sysadmin = new User("sysadmin", "SysAdmin", "SnLess", "sysadmin@la-etienda.com", status, language, conn);
+			User sysadmin = new User("sysadmin", "SysAdmin", "SnLess", "sysadmin@la-etienda.com", status, language, conn, em);
 			usuario.save(sysadmin, em, conn);
-			User tomcat = new User("tomcat", "Tomcat", "SnLess", "tomcat@la-etienda.com", status, language, conn);
+			User tomcat = new User("tomcat", "Tomcat", "SnLess", "tomcat@la-etienda.com", status, language, conn, em);
+			tomcat.setPassword(tomcatPass, tomcatPass);
 			usuario.save(tomcat, em, conn);
-			User owner = new User("owner", "Owner", "SnLess","owner@mail.com", status, language, conn);
+			User owner = new User("owner", "Owner", "SnLess","owner@mail.com", status, language, conn, em);
 			usuario.save(owner, em, conn);
-			User groupUser = new User("group", "Group", "SnLess", "group@mail.com", status, language, conn);
+			User groupUser = new User("group", "Group", "SnLess", "group@mail.com", status, language, conn, em);
 			usuario.save(groupUser, em, conn);
-			User allUser = new User("all", "All", "SnLess", "todos@mail.com", status, language, conn);
+			User allUser = new User("allusers", "AllUsers", "SnLess", "todos@mail.com", status, language, conn, em);
 			usuario.save(allUser, em, conn);
 			
-			User manager = new User("manager", "Manager", "SnLess", "manager@mail.com", userActiveStatus, language, conn);
+			User manager = new User("manager", "Manager", "SnLess", "manager@mail.com", userActiveStatus, language, conn, em);
 			//TODO cipher password
 			manager.setPassword("Welcome@1", "Welcome@1");
 			usuario.save(manager, em, conn);
@@ -185,7 +186,7 @@ public class Installer {
 			db = dbManager.createTransaction();
 			
 			Installer installer = new Installer();
-			installer.run(conn,db.getEm());
+			installer.run(conn,db.getEm(), dapManager.getSetting("tomcatpassword"));
 			log4j.info("Database has installed succesfully");
 		} catch (AppException ex) {
 			log4j.error(ex.getMessage(), ex.getRootParent());

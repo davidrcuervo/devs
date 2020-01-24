@@ -49,11 +49,18 @@ public class DapManager {
 	
 
 	private void setTomcatAndBase() throws DapException {
+		Ldap ldap = new Ldap();
+
 		try {
 			base = new DefaultEntry(Ldif.getDomain());
-			tomcat = new DefaultEntry("uid=tomcat,ou=people" + base.getDn().getName());
+			Dn tomcatDn = ldap.buildDn("uid=tomcat,ou=people");
+			tomcat = new DefaultEntry(tomcatDn);				
+
+			
 		} catch (LdapException e) {
 			throw new DapException(e);
+		} finally {
+			
 		}
 	}
 
@@ -125,8 +132,10 @@ public class DapManager {
 		LdapConnection conn = new LdapNetworkConnection(getSetting("server_address"), Integer.parseInt(getSetting("service_port")) ,true);
 		
 		try {
+			log4j.debug("$dn: {} -> $password: {}", dn.getName(), password);
 			conn.bind(dn, password);
 		}catch (LdapException e) {
+			log4j.info("Failed to bind user to LDAP. $error: {}", e.getMessage());
 			closeConnection(conn);
 			throw new DapException(e);
 		}

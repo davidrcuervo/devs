@@ -115,7 +115,7 @@ public class Instalador {
 			Installer dbInstaller = new Installer();
 			db = dbManager.createTransaction();
 			ldap = dap.createLdap(line.getOptionValue("user"), line.getOptionValue("password"));		
-			dbInstaller.run(ldap, db.getEm());
+			dbInstaller.run(ldap, db.getEm(), dap.getSetting("tomcatpassword"));
 			log.info("Database has been installed succesfully");
 		}catch(DapException | DbException e) {
 			throw e;

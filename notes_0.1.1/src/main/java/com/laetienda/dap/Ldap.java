@@ -35,6 +35,18 @@ public class Ldap {
 		return domainDn;
 	}
 	
+	public Dn buildDn(String temp) {
+		Dn result = null;
+		
+		try {
+			result = new Dn(temp, domainDn.getName());
+		} catch (LdapInvalidDnException e) {
+			log4j.debug("Failed to create Dn. $Error: {}", e.getMessage());
+		}
+		
+		return result;
+	}
+	
 	public Entry searchDn(String dnstr, LdapConnection conn) throws DapException {
 		Entry result = null;
 		
