@@ -61,8 +61,17 @@ public class Usuario {
 		return result;
 	}
 	
+	public Usuario update(User user, EntityManager em, LdapConnection conn) throws AppException{
+		saveOrUpdate(user, em, conn, "update");
+		return this;
+	}
+	
 	public Usuario save(User user, EntityManager em, LdapConnection conn) throws AppException {
-		
+		saveOrUpdate(user, em, conn, "save");
+		return this;
+	}	
+	
+	private Usuario saveOrUpdate(User user, EntityManager em, LdapConnection conn, String operation) throws AppException {
 		if(user.getErrors().size() > 0) {
 			throw new GeneralException("User has errors and can't be persisted");
 		}
@@ -71,8 +80,13 @@ public class Usuario {
 		Ldap ldap = new Ldap();
 		
 		try {
-			dbase.insert(em, user);
-			ldap.insertUser(user, conn);
+			if(operation.equals("save")) {
+				dbase.insert(em, user);
+				ldap.insertUser(user, conn);
+			}else {
+				dbase.commit(em);
+				ldap.modify(user, conn);
+			}
 		}catch (DbException e) {
 			user.addError("user", "Internal error. Failed to add user");
 			log.error("Failed to persist user. $excpetion: " + e.getMessage());
@@ -82,7 +96,9 @@ public class Usuario {
 			log.error("Failed to save user in LDAP. $error: {}", e.getMessage());
 			
 			try {
-				dbase.delete(user, em);
+				if(operation.equals("save")) {
+					dbase.delete(user, em);
+				}
 				throw e;
 			}catch(DbException ex) {
 				log.fatal("Failed to remove user from DB that was not able to be saved in ldap directory. $exception: " + e.getMessage());
@@ -91,5 +107,5 @@ public class Usuario {
 		}
 		
 		return this;
-	}
+	}	
 }

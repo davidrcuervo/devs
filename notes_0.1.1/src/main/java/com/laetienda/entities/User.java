@@ -1,13 +1,17 @@
 package com.laetienda.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.entry.DefaultEntry;
+import org.apache.directory.api.ldap.model.entry.DefaultModification;
 import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.entry.Modification;
+import org.apache.directory.api.ldap.model.entry.ModificationOperation;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
@@ -54,6 +58,9 @@ public class User extends Objeto implements Serializable{
 
 	@Transient
 	private Ldap ldap;
+	
+	@Transient 
+	private List<Modification> modifications = new ArrayList<Modification>();
 
 	public User() {
 		ldap = new Ldap();
@@ -72,12 +79,13 @@ public class User extends Objeto implements Serializable{
 	/**
 	 * 
 	 * @param username Must be unique in ldap. It will be used to build uid.
-	 * @param name 
-	 * @param lastname
-	 * @param email
-	 * @param status
-	 * @param language
-	 * @param conn
+	 * @param name String
+	 * @param lastname String
+	 * @param email String 
+	 * @param status Option
+	 * @param language Option
+	 * @param conn LdapConnection
+	 * @param em EntityManager
 	 * @throws DapException
 	 */
 	public User(String username, String name, String lastname, String email, Option status, Option language, LdapConnection conn, EntityManager em) throws DapException {
@@ -156,7 +164,14 @@ public class User extends Objeto implements Serializable{
 	public void setEmail(String email, LdapConnection conn) throws DapException {
 		
 		try {
-			ldapEntry.add("mail", email);
+			
+			if(ldapEntry.get("mail") == null) {
+				ldapEntry.add("mail", email);
+			}else {
+				Modification modification = new DefaultModification(ModificationOperation.REPLACE_ATTRIBUTE, "mail", email);
+				modifications.add(modification);
+			}
+			
 			if(email == null || email.isEmpty()) {
 				addError("email", "The email can't be empty");
 			}else if(email.length() > 254) {
@@ -167,7 +182,7 @@ public class User extends Objeto implements Serializable{
 				if(search.iterator().hasNext()) {
 					addError("email", "This email address has already been registered");
 				}
-			}
+			}			
 		} catch (DapException | LdapException e) {
 			addError("email", "The application were not able to find out if email has been registered");
 			throw new DapException(e);
@@ -339,5 +354,9 @@ public class User extends Objeto implements Serializable{
 	
 	public Entry getLdapEntry() {
 		return ldapEntry;
+	}
+	
+	public List<Modification> getModifications(){
+		return modifications;
 	}
 }

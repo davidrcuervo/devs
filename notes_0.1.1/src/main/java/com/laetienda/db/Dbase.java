@@ -45,6 +45,15 @@ public class Dbase {
 		}
 	}
 	
+	public void begin(EntityManager em) throws DbException {
+		try {
+			em.getTransaction().begin();
+		}catch(IllegalStateException e) {
+			log.debug("Failed to start database transaction. $error: {}", e.getMessage());
+			throw new DbException(e);
+		}
+	}
+	
 	public void commit(EntityManager em) throws DbException {
 		try{
 			em.getTransaction().commit();

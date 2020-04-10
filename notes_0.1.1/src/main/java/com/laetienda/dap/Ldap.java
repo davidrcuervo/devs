@@ -7,6 +7,7 @@ import org.apache.directory.api.ldap.model.cursor.CursorException;
 import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.entry.Attribute;
 import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.entry.Modification;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
@@ -103,6 +104,16 @@ public class Ldap {
 		}
 	}
 	
+	public void modify(User user, LdapConnection conn) throws DapException {
+		try {
+			for(Modification modification : user.getModifications()) {
+				conn.modify(user.getLdapEntry().getDn(), modification);
+			}
+		} catch (LdapException e) {
+			throw new DapException(e);
+		}
+	}
+	
 	public Entry getPeopleLdapEntry(LdapConnection conn) throws DapException {
 		Entry result = null;
 		
@@ -117,8 +128,7 @@ public class Ldap {
 		
 		return result;
 	}
-
-
+	
 	private void closeCursor(EntryCursor cursor) throws DapException {
 		try {
 			if(cursor != null && !cursor.isClosed()) {

@@ -8,9 +8,9 @@ import org.apache.directory.ldap.client.api.LdapConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.laetienda.dap.DapException;
 import com.laetienda.dap.DapManager;
 import com.laetienda.db.DbManager;
+import com.laetienda.db.Dbase;
 import com.laetienda.entities.Option;
 import com.laetienda.entities.User;
 
@@ -34,21 +34,14 @@ public class TestUsuario {
 		EntityManager em = null;
 		Usuario usuario = new Usuario();
 		
-		User testUser = new User();
-		testUser.setCn("First Name");
-		testUser.setSn("Last Name");
-		testUser.setPassword("p4ssw0rd", "p4ssw0rd");
-		
 		try {
 			em = dbManager.createTransaction().getEm();
 			conn = dapManager.createLdap();
 			
 			Option userStatus = em.createNamedQuery("Option.findByOptionAndVariable", Option.class).setParameter("variable", "user status").setParameter("option", "registered").getSingleResult();
 			Option english = em.createNamedQuery("Option.findByOptionAndVariable", Option.class).setParameter("variable", "languages").setParameter("option", "en").getSingleResult();
-			testUser.setUid("test", conn, em);
-			testUser.setEmail("email@domain.com", conn);
-			testUser.setStatus(userStatus);
-			testUser.setLanguage(english);
+			User testUser = new User("test", "First Name", "Last Name", "testuser@mail.com", userStatus, english, conn, em);
+			testUser.setPassword("p4ssw0rd", "p4ssw0rd");
 			log.debug("$userStatus: " + userStatus.getName());
 			
 			usuario.save(testUser, em, conn);
@@ -86,6 +79,27 @@ public class TestUsuario {
 			dapManager.closeConnection(conn);
 		}
 	}
+	
+	public void testModifyUser() throws AppException {
+		
+		LdapConnection conn = null;
+		Dbase dbase = new Dbase();
+		Usuario usuario = new Usuario();
+		EntityManager em = dbManager.createTransaction().getEm();
+		
+		try {
+			conn = dapManager.createLdap();
+			User user = usuario.getUser("test", em, conn);
+			dbase.begin(em);
+			user.setEmail("testuser2@mail.com", conn);
+			usuario.update(user, em, conn);
+		} catch (AppException e) {
+			log.error("Failed to find users. $error: {}", e.getMessage());
+			throw e;
+		}finally {
+			dapManager.closeConnection(conn);
+		}
+	}
 
 	public static void main(String[] args) {
 		
@@ -94,6 +108,7 @@ public class TestUsuario {
 			test = new TestUsuario();
 			test.testSave();
 //			test.testFindUser();
+			test.testModifyUser();
 		} catch (AppException e) {
 			log.error(e.getMessage(), e);
 		}
